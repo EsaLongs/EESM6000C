@@ -52,3 +52,6 @@ WARNING: File solution.dat referenced on C:/Users/ytangdg/project_EESM6000C_lab1
 INFO: [USF-XSim-96] XSim completed. Design snapshot 'tb_top_modeule_behav' loaded.
 INFO: [USF-XSim-97] XSim simulation ran for 1000ns
 launch_simulation: Time (s): cpu = 00:00:02 ; elapsed = 00:00:11 . Memory (MB): peak = 2678.316 ; gain = 0.000
+run all
+Your answer is correct!
+Stopped at time : 1015 ns : File "C:/Users/ytangdg/project_EESM6000C_lab1/project_EESM6000C_lab1.srcs/sim_1/imports/Verilog/binary2bcd_double_dabble-tb.v" Line 86
