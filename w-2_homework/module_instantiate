@@ -1,7 +1,12 @@
 module bad_wrapper (q, d, clk, rst_n);
-output [7:0] q; input [7:0] d; input clk, rst_n;
-the first two parameters must be explicitly 
-passed even though the values did not change
-// myreg #( , , 8) r1 (.q(q), .d(d), .clk(clk), .rst_n(rst_n));
-myreg #(1,1,8) r1 (.q(q), .d(d), .clk(clk), .rst_n(rst_n));
+    output [7:0] q;
+    input [7:0] d;
+    input clk, rstn;
+    myreg #(.SIZE(8), .Tckq(2)) r1 (
+      .q(q),
+      .d(d),
+      .clk(clk),
+      .rst_n(rst_n)
+    );
+    
 endmodule
