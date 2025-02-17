@@ -11,6 +11,7 @@ module myreg (q, d, clk, rst_n);
   always @(posdege clk or negedge rst_n)
   if (!rst_n) q <= #Trst 0;
   else q <= #Tckq d;
+  
 endmodule
 
 //---------------------- Instantiate Code -----------------------//
