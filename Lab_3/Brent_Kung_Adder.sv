@@ -1,4 +1,16 @@
 `include "define.sv"
+module adder_unit (
+  input  logic g1, g2,
+  input  logic p1, p2,
+  output logic gout,
+  output logic pout,
+);
+
+  assign gout = g2 || (p2 && g1);
+  assign pout = p2 && p1;
+endmodule
+
+
 module brent_kung_adder (
   input  logic [`ADDER_SIZE-1:0] in_op1,
   input  logic [`ADDER_SIZE-1:0] in_op2,
@@ -8,13 +20,15 @@ module brent_kung_adder (
   output logic Cout
 );
 
-    logic [`ADDER_SIZE-1:0] P;  // 生成传播信号
-    logic [`ADDER_SIZE-1:0] G;  // 生成进位信号
-    logic [`ADDER_SIZE-1:0] C;  // 进位信号
+//------------------------ Stage 0 -------------------------//
+  logic [`ADDER_SIZE-1:0] P0;  // Propagate signal
+  logic [`ADDER_SIZE-1:0] G0;  // Generate signal
+  assign P0 = in_op1 ^ in_op2;
+  assign G0 = in_op1 & in_op2;
+//------------------------ Stage 1 -------------------------//
 
     // 第一步：计算传播和生成信号
-    assign P = in_op1 ^ in_op2;
-    assign G = in_op1 & in_op2;
+ 
 
     // 第二步：计算进位信号（in_op2rent - Kung算法）
     // 级别1
