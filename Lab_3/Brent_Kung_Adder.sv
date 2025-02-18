@@ -11,7 +11,6 @@ module adder_unit (
 
 endmodule
 
-
 module brent_kung_adder (
   input  logic [`ADDER_SIZE - 1 : 0] in_op1,
   input  logic [`ADDER_SIZE - 1 : 0] in_op2,
@@ -209,4 +208,5 @@ module brent_kung_adder (
 //------------------------ Calculate Result ----------------//
     assign out_res = P0 ^ CIN;
     assign cout = G0[`ADDER_SIZE - 1] || (P0[`ADDER_SIZE - 1] && CIN[`ADDER_SIZE - 1]);
+
 endmodule
