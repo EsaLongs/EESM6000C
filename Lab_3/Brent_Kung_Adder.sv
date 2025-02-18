@@ -1,4 +1,4 @@
-module Brent_Kung_Adder (
+module brent_kung_adder (
   ports
 );
   
