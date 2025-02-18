@@ -1,5 +1,5 @@
 `include "define.sv"
-module adder_unit (
+module gp_unit (
   input  logic in_g1, in_g2,
   input  logic in_p1, in_p2,
   output logic out_g,
@@ -33,7 +33,7 @@ module brent_kung_adder (
   genvar i;
   generate
     for (i = 0; i < (`ADDER_SIZE / 2); i = i + 1) begin : STAGE_1
-      adder_unit stage_1_gp(
+      gp_unit stage_1_gp (
         .in_g1  ( G0[i * 2]     ),
         .in_g2  ( G0[i * 2 + 1] ),
         .in_p1  ( P0[i * 2]     ),
@@ -50,7 +50,7 @@ module brent_kung_adder (
   
   generate
     for (i = 0; i < (`ADDER_SIZE / 4); i = i + 1) begin : STAGE_2
-      adder_unit stage_2_gp(
+      gp_unit stage_2_gp (
         .in_g1  ( G1[i * 2]     ),
         .in_g2  ( G1[i * 2 + 1] ),
         .in_p1  ( P1[i * 2]     ),
@@ -67,7 +67,7 @@ module brent_kung_adder (
   
   generate
     for (i = 0; i < (`ADDER_SIZE / 8); i = i + 1) begin : STAGE_3
-      adder_unit stage_3_gp(
+      gp_unit stage_3_gp (
         .in_g1  ( G2[i * 2]     ),
         .in_g2  ( G2[i * 2 + 1] ),
         .in_p1  ( P2[i * 2]     ),
@@ -84,7 +84,7 @@ module brent_kung_adder (
   
   generate
     for (i = 0; i < (`ADDER_SIZE / 16); i = i + 1) begin : STAGE_4
-      adder_unit stage_4_gp(
+      gp_unit stage_4_gp (
         .in_g1  ( G3[i*2]   ),
         .in_g2  ( G3[i*2+1] ),
         .in_p1  ( P3[i*2]   ),
@@ -101,7 +101,7 @@ module brent_kung_adder (
   
   generate
     for (i = 0; i < (`ADDER_SIZE / 32); i = i + 1) begin : STAGE_5
-      adder_unit stage_5_gp(
+      gp_unit stage_5_gp (
         .in_g1  ( G4[i * 2]     ),
         .in_g2  ( G4[i * 2 + 1] ),
         .in_p1  ( P4[i * 2]     ),
@@ -118,7 +118,7 @@ module brent_kung_adder (
   
   generate
     for (i = 0; i < (`ADDER_SIZE / 64); i = i + 1) begin: STAGE_6
-      adder_unit stage_6_gp(
+      gp_unit stage_6_gp (
         .in_g1  ( G5[i * 2]     ),
         .in_g2  ( G5[i * 2 + 1] ),
         .in_p1  ( P5[i * 2]     ),
