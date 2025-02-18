@@ -1,28 +1,25 @@
 `include "define.sv"
 module brent_kung_adder (
-  input [31:0] A,
-  input [31:0] B,
-  input Cin,
-  output [31:0] Sum,
-  output Cout
-);
-endmodule
-module Brent_Kung_Adder_32bit (
+  input  logic [`ADDER_SIZE-1:0] in_op1,
+  input  logic [`ADDER_SIZE-1:0] in_op2,
+  output logic [`ADDER_SIZE-1:0] out_res,
 
+  input  logic Cin,
+  output logic Cout
 );
 
-    wire [31:0] P;  // 生成传播信号
-    wire [31:0] G;  // 生成进位信号
-    wire [31:0] C;  // 进位信号
+    logic [`ADDER_SIZE-1:0] P;  // 生成传播信号
+    logic [`ADDER_SIZE-1:0] G;  // 生成进位信号
+    logic [`ADDER_SIZE-1:0] C;  // 进位信号
 
     // 第一步：计算传播和生成信号
-    assign P = A ^ B;
-    assign G = A & B;
+    assign P = in_op1 ^ in_op2;
+    assign G = in_op1 & in_op2;
 
-    // 第二步：计算进位信号（Brent - Kung算法）
+    // 第二步：计算进位信号（in_op2rent - Kung算法）
     // 级别1
-    wire [15:0] P1;
-    wire [15:0] G1;
+    logic [15:0] P1;
+    logic [15:0] G1;
     generate
         genvar i;
         for (i = 0; i < 16; i = i + 1) begin
@@ -32,8 +29,8 @@ module Brent_Kung_Adder_32bit (
     endgenerate
 
     // 级别2
-    wire [7:0] P2;
-    wire [7:0] G2;
+    logic [7:0] P2;
+    logic [7:0] G2;
     generate
         for (i = 0; i < 8; i = i + 1) begin
             assign P2[i] = P1[2*i] & P1[2*i+1];
@@ -42,8 +39,8 @@ module Brent_Kung_Adder_32bit (
     endgenerate
 
     // 级别3
-    wire [3:0] P3;
-    wire [3:0] G3;
+    logic [3:0] P3;
+    logic [3:0] G3;
     generate
         for (i = 0; i < 4; i = i + 1) begin
             assign P3[i] = P2[2*i] & P2[2*i+1];
@@ -52,22 +49,22 @@ module Brent_Kung_Adder_32bit (
     endgenerate
 
     // 级别4
-    wire [1:0] P4;
-    wire [1:0] G4;
+    logic [1:0] P4;
+    logic [1:0] G4;
     assign P4[0] = P3[0] & P3[1];
     assign G4[0] = G3[1] | (G3[0] & P3[1]);
     assign P4[1] = P3[2] & P3[3];
     assign G4[1] = G3[3] | (G3[2] & P3[3]);
 
     // 级别5
-    wire P5;
-    wire G5;
+    logic P5;
+    logic G5;
     assign P5 = P4[0] & P4[1];
     assign G5 = G4[1] | (G4[0] & P4[1]);
 
     // 回溯计算进位信号
     // 最高位进位
-    assign C[31] = G[31] | (G[30] & P[31]) | (G2[7] & P[31] & P[30]) | (G3[3] & P[31] & P[30] & P1[15]) | (G4[1] & P[31] & P[30] & P1[15] & P2[7]) | (G5 & P[31] & P[30] & P1[15] & P2[7] & P3[3]);
+    assign C[`ADDER_SIZE-1] = G[`ADDER_SIZE-1] | (G[30] & P[`ADDER_SIZE-1]) | (G2[7] & P[`ADDER_SIZE-1] & P[30]) | (G3[3] & P[`ADDER_SIZE-1] & P[30] & P1[15]) | (G4[1] & P[`ADDER_SIZE-1] & P[30] & P1[15] & P2[7]) | (G5 & P[`ADDER_SIZE-1] & P[30] & P1[15] & P2[7] & P3[3]);
     // 其他进位
     generate
         for (i = 30; i > 0; i = i - 1) begin
@@ -85,7 +82,7 @@ module Brent_Kung_Adder_32bit (
     assign C[0] = Cin;
 
     // 第三步：计算和
-    assign Sum = P ^ C;
-    assign Cout = C[31];
+    assign out_res = P ^ C;
+    assign Cout = C[`ADDER_SIZE-1];
 
 endmodule
