@@ -209,5 +209,4 @@ module brent_kung_adder (
 //------------------------ Calculate Result ----------------//
     assign out_res = P0 ^ CIN;
     assign cout = G0[`ADDER_SIZE - 1] || (P0[`ADDER_SIZE - 1] && CIN[`ADDER_SIZE - 1]);
-
 endmodule
