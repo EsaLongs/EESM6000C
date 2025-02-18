@@ -1,13 +1,14 @@
+`include "define.sv"
 module brent_kung_adder (
-  ports
+  input [31:0] A,
+  input [31:0] B,
+  input Cin,
+  output [31:0] Sum,
+  output Cout
 );
 endmodule
 module Brent_Kung_Adder_32bit (
-    input [31:0] A,
-    input [31:0] B,
-    input Cin,
-    output [31:0] Sum,
-    output Cout
+
 );
 
     wire [31:0] P;  // 生成传播信号
