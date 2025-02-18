@@ -147,51 +147,6 @@ module brent_kung_adder (
 
   //------------------------ Other bits Carry in -----------//
   ////////////////////////////////////////////////////////////
-  // Odd bits
-  ////////////////////////////////////////////////////////////
-  generate
-    for (i = 1; i < (`ADDER_SIZE - 1); i = i + 2) begin
-      assign CIN[i] = G0[i] || (G0[i - 1] && P0[i]);
-    end
-  endgenerate
-
-  ////////////////////////////////////////////////////////////
-  // Bits that divisible by 4
-  ////////////////////////////////////////////////////////////
-  generate
-    for (i = 4; i < (`ADDER_SIZE - 1); i = i + 4) begin
-      assign CIN[i] = (G0[i])
-                   || (G0[i + 1] && P0[i]) 
-                   || (G1[i / 4] && P0[i] && P0[i + 1]);
-    end
-  endgenerate
-
-  ////////////////////////////////////////////////////////////
-  // Bits that divisible by 8
-  ////////////////////////////////////////////////////////////
-  generate
-    for (i = 8; i < (`ADDER_SIZE - 1); i = i + 8) begin
-      assign CIN[i] = (G0[i])
-                   || (G0[i + 1] && P0[i]) 
-                   || (G1[(i + 2) / 4] && P0[i] && P0[i + 1]) 
-                   || (G2[i / 8] && P0[i] && P0[i + 1] && P1[(i + 2) / 2]);
-    end
-  endgenerate
-
-  ////////////////////////////////////////////////////////////
-  // Bits that divisible by 16
-  ////////////////////////////////////////////////////////////
-  generate
-    for (i = 16; i < (`ADDER_SIZE - 1); i = i + 16) begin
-      assign CIN[i] = (G0[i])
-                   || (G0[i + 1]       && P0[i]) 
-                   || (G1[(i + 2) / 4] && P0[i] && P0[i + 1]) 
-                   || (G2[(i + 4) / 8] && P0[i] && P0[i + 1] && P1[(i + 2) / 2]) 
-                   || (G3[i / 16]      && P0[i] && P0[i + 1] && P1[(i + 2) / 2] && P2[(i + 4) / 4]);
-    end
-  endgenerate
-
-  ////////////////////////////////////////////////////////////
   // Bits that divisible by 32
   ////////////////////////////////////////////////////////////
   generate
@@ -205,6 +160,60 @@ module brent_kung_adder (
     end
   endgenerate
 
+  ////////////////////////////////////////////////////////////
+  // Bits that divisible by 16 but not 32
+  ////////////////////////////////////////////////////////////
+  generate
+    for (i = 16; i < (`ADDER_SIZE - 1); i = i + 32) begin
+        assign CIN[i] = (G0[i])
+                     || (G0[i + 1]       && P0[i]) 
+                     || (G1[(i + 2) / 4] && P0[i] && P0[i + 1]) 
+                     || (G2[(i + 4) / 8] && P0[i] && P0[i + 1] && P1[(i + 2) / 2]) 
+                     || (G3[i / 16]      && P0[i] && P0[i + 1] && P1[(i + 2) / 2] && P2[(i + 4) / 4]);
+    end
+  endgenerate  
+      
+  ////////////////////////////////////////////////////////////
+  // Bits that divisible by 8 but not 16, 32
+  ////////////////////////////////////////////////////////////
+  generate
+    for (i = 8; i < (`ADDER_SIZE - 1); i = i + 16) begin
+        assign CIN[i] = (G0[i])
+                     || (G0[i + 1] && P0[i]) 
+                     || (G1[(i + 2) / 4] && P0[i] && P0[i + 1]) 
+                     || (G2[i / 8] && P0[i] && P0[i + 1] && P1[(i + 2) / 2]);
+    end
+  endgenerate    
+      
+  ////////////////////////////////////////////////////////////
+  // Bits that divisible by 4 but not 8, 16, 32
+  ////////////////////////////////////////////////////////////
+  generate
+    for (i = 4; i < (`ADDER_SIZE - 1); i = i + 8) begin  
+      assign CIN[i] = (G0[i])
+                   || (G0[i + 1] && P0[i]) 
+                   || (G1[i / 4] && P0[i] && P0[i + 1]);
+    end
+  endgenerate
+
+  ////////////////////////////////////////////////////////////
+  // Bits that divisible by 2 but not 4, 8, 16, 32
+  ////////////////////////////////////////////////////////////
+  generate
+    for (i = 2; i < (`ADDER_SIZE - 1); i = i + 4) begin  
+      assign CIN[i] = G0[i] || (G0[i - 1] && P0[i]);
+    end
+  endgenerate
+
+  ////////////////////////////////////////////////////////////
+  // Odd bits
+  ////////////////////////////////////////////////////////////
+  generate
+    for (i = 1; i < (`ADDER_SIZE - 1); i = i + 2) begin  
+      assign CIN[i] = G0[i] || (G0[i - 1] && P0[i]);
+    end
+  endgenerate 
+  
 //------------------------ Calculate Result ----------------//
     assign out_res = P0 ^ CIN;
     assign cout = G0[`ADDER_SIZE - 1] || (P0[`ADDER_SIZE - 1] && CIN[`ADDER_SIZE - 1]);
