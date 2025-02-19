@@ -1,0 +1,1 @@
+This is a brent kung adder, top module is brent_kung_adder_nbit and it instantiates brent_kung_adder_16bit. You can modify the value of ADDER_SIZE in "define.sv". Please kindly know that the value could only be 16 * n (16 , 32, 48, 64 ....).
