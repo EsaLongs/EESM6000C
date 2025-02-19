@@ -12,8 +12,11 @@ module brent_kung_adder (
 //------------------------ Stage 0 -------------------------//
   logic [16 - 1 : 0] P0;  // Propagate signal
   logic [16 - 1 : 0] G0;  // Generate signal
-  assign P0 = in_op1 ^ in_op2;
-  assign G0 = in_op1 & in_op2;
+  
+  assign P0[16 - 1 : 1] = in_op1[16 - 1 : 1] ^ in_op2[16 - 1 : 1];
+  assign G0[16 - 1 : 1] = in_op1[16 - 1 : 1] & in_op2[16 - 1 : 1];
+  assign P0[0] = 1'b0;
+  assign G0[0] = (in_op1[0] && in_op2[0]) || (in_op1[0] && cin) || (in_op2[0] && cin);
 
 //------------------------ Stage 1 -------------------------//
   logic [16 / 2 - 1 : 0] P1;
@@ -194,8 +197,7 @@ module brent_kung_adder (
   logic [15 : 0] COUT;
   logic [15 : 0] CIN;
   //------------------------ Carry In ----------------------//
-  assign CIN[0]    = cin;
-  assign CIN[15:1] = COUT[14:0];
+  assign CIN[15:0] = {COUT[14:0], 1'b0};
   
   //------------------------ Carry  Out --------------------//
   ////////////////////////////////////////////////////////////
@@ -221,7 +223,8 @@ module brent_kung_adder (
   endgenerate
 
 //------------------------ Calculate Result ----------------//
-  assign out_res = P0 ^ CIN;
+  assign out_res[15 : 1] = P0[15 : 1] ^ CIN[15 : 1];
+  assign out_res[0] = cin ^^ in_op1[0] ^^ in_op2[0];
   assign cout    = COUT[15];
 
 endmodule
