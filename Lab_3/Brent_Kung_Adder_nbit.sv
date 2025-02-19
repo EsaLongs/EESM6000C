@@ -1,4 +1,4 @@
-module gp_unit (
+module brent_kung_adder_nbit (
   input  logic in_g1, in_g2,
   input  logic in_p1, in_p2,
   output logic out_g,

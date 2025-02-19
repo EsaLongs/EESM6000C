@@ -1,4 +1,4 @@
-module brent_kung_adder (
+module brent_kung_adder_16bit (
   input  logic [16 - 1 : 0] in_op1,
   input  logic [16 - 1 : 0] in_op2,
   output logic [16 - 1 : 0] out_res,
