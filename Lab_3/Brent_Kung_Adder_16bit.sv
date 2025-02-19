@@ -70,6 +70,15 @@ module brent_kung_adder (
   logic P4;
   logic G4;
 
+  gp_unit stage_4_gp (
+          .in_g1  ( G3[0] ),
+          .in_g2  ( G3[1] ),
+          .in_p1  ( P3[0] ),
+          .in_p2  ( P3[1] ),
+          .out_g  ( G4    ),
+          .out_p  ( P4    )
+  );
+
 //------------------------ Stage 5 -------------------------//
   logic P5;
   logic G5;
@@ -186,9 +195,9 @@ module brent_kung_adder (
   logic [15 : 0] CIN;
   //------------------------ Carry In ----------------------//
   assign CIN[0]    = cin;
-  assign CIN[15:1] = COUT[14:0]
+  assign CIN[15:1] = COUT[14:0];
   
-  //------------------------ Other Carry  Out --------------//
+  //------------------------ Carry  Out --------------------//
   ////////////////////////////////////////////////////////////
   // Bits 0, 1, 5, 0, 11, 13
   ////////////////////////////////////////////////////////////
@@ -207,7 +216,7 @@ module brent_kung_adder (
   ////////////////////////////////////////////////////////////
   generate
     for (i = 2; i < 15; i = i + 2) begin
-      COUT[i] = G7[i / 2];
+      assign COUT[i] = G7[i / 2 - 1];
     end
   endgenerate
 
