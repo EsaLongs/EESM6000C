@@ -1,7 +1,7 @@
-module brent_kung_adder_16bit (
-  input  logic [16 - 1 : 0] in_op1,
-  input  logic [16 - 1 : 0] in_op2,
-  output logic [16 - 1 : 0] out_res,
+module brent_kung_adder_32bit (
+  input  logic [32 - 1 : 0] in_op1,
+  input  logic [32 - 1 : 0] in_op2,
+  output logic [32 - 1 : 0] out_res,
 
   input  logic cin,
   output logic cout
@@ -10,20 +10,20 @@ module brent_kung_adder_16bit (
   genvar i;
 
 //------------------------ Stage 0 -------------------------//
-  logic [16 - 1 : 0] P0;  // Propagate signal
-  logic [16 - 1 : 0] G0;  // Generate signal
+  logic [32 - 1 : 0] P0;  // Propagate signal
+  logic [32 - 1 : 0] G0;  // Generate signal
   
-  assign P0[16 - 1 : 1] = in_op1[16 - 1 : 1] ^ in_op2[16 - 1 : 1];
-  assign G0[16 - 1 : 1] = in_op1[16 - 1 : 1] & in_op2[16 - 1 : 1];
+  assign P0[32 - 1 : 1] = in_op1[32 - 1 : 1] ^ in_op2[32 - 1 : 1];
+  assign G0[32 - 1 : 1] = in_op1[32 - 1 : 1] & in_op2[32 - 1 : 1];
   assign P0[0] = 1'b0;
   assign G0[0] = (in_op1[0] && in_op2[0]) || (in_op1[0] && cin) || (in_op2[0] && cin);
 
 //------------------------ Stage 1 -------------------------//
-  logic [16 / 2 - 1 : 0] P1;
-  logic [16 / 2 - 1 : 0] G1;
+  logic [32 / 2 - 1 : 0] P1;
+  logic [32 / 2 - 1 : 0] G1;
 
   generate
-    for (i = 0; i < (16 / 2); i = i + 1) begin : STAGE_1
+    for (i = 0; i < (32 / 2); i = i + 1) begin : STAGE_1
       gp_unit stage_1_gp (
         .in_g1  ( G0[i * 2]     ),
         .in_g2  ( G0[i * 2 + 1] ),
@@ -36,11 +36,11 @@ module brent_kung_adder_16bit (
   endgenerate
 
 //------------------------ Stage 2 -------------------------//  
-  logic [16 / 4 - 1 : 0] P2;
-  logic [16 / 4 - 1 : 0] G2;
+  logic [32 / 4 - 1 : 0] P2;
+  logic [32 / 4 - 1 : 0] G2;
 
   generate
-    for (i = 0; i < (16 / 4); i = i + 1) begin : STAGE_2
+    for (i = 0; i < (32 / 4); i = i + 1) begin : STAGE_2
       gp_unit stage_2_gp (
         .in_g1  ( G1[i * 2]     ),
         .in_g2  ( G1[i * 2 + 1] ),
@@ -50,14 +50,14 @@ module brent_kung_adder_16bit (
         .out_p  ( P2[i]         )
       );
     end
-  endgenerate
+endgenerate
 
 //------------------------ Stage 3 -------------------------//
-  logic [16 / 8 - 1 : 0] P3;
-  logic [16 / 8 - 1 : 0] G3;
+  logic [32 / 8 - 1 : 0] P3;
+  logic [32 / 8 - 1 : 0] G3;
 
   generate
-    for (i = 0; i < (16 / 8); i = i + 1) begin : STAGE_3
+    for (i = 0; i < (32 / 8); i = i + 1) begin : STAGE_3
       gp_unit stage_3_gp (
         .in_g1  ( G2[i * 2]     ),
         .in_g2  ( G2[i * 2 + 1] ),
@@ -73,14 +73,18 @@ module brent_kung_adder_16bit (
   logic P4;
   logic G4;
 
-  gp_unit stage_4_gp (
-    .in_g1  ( G3[0] ),
-    .in_g2  ( G3[1] ),
-    .in_p1  ( P3[0] ),
-    .in_p2  ( P3[1] ),
-    .out_g  ( G4    ),
-    .out_p  ( P4    )
-  );
+  generate
+    for (i = 0; i < (32 / 8); i = i + 1) begin : STAGE_3
+      gp_unit stage_3_gp (
+        .in_g1  ( G2[i * 2]     ),
+        .in_g2  ( G2[i * 2 + 1] ),
+        .in_p1  ( P2[i * 2]     ),
+        .in_p2  ( P2[i * 2 + 1] ),
+        .out_g  ( G3[i]         ),
+        .out_p  ( P3[i]         )
+      );
+    end
+  endgenerate
 
 //------------------------ Stage 5 -------------------------//
   logic P5;
