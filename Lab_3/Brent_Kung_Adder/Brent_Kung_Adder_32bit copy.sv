@@ -32,7 +32,7 @@ module brent_kung_adder_`ADDER_SIZEbit (
         );
         end else begin
           assign G[i][j] = G[i - 1][j];
-          assign P[i][j] = P[i - 1][i];
+          assign P[i][j] = P[i - 1][j];
         end
       end
     end
@@ -40,20 +40,20 @@ module brent_kung_adder_`ADDER_SIZEbit (
 
 //------------------------ Stage log2(`ADDER_SIZE) + 1 to 2log2(`ADDER_SIZE) - 1 ----//
   generate
-    for (j = 1; j < ($clog2(`ADDER_SIZE) + 1); j = j + 1) begin
-      for (i = 0; i < (`ADDER_SIZE); i = i + 1) begin :
-        if ((i + 1) % (2 * j) == 0) begin
+    for (i = 1; i < ($clog2(`ADDER_SIZE) + 1); i = i + 1) begin
+      for (j = 0; j < (`ADDER_SIZE); j = j + 1) begin :
+        if ((j + 1) % (2 * i) == 0) begin
           gp_unit stage_gp (
-            .in_g1  ( G[j - 1][i - 1] ),
-            .in_g2  ( G[j - 1][i]     ),
-            .in_p1  ( P[j - 1][i - 1] ),
-            .in_p2  ( P[j - 1][i]     ),
-            .out_g  ( G[j][i]         ),
-            .out_p  ( P[j][i]         )
+            .in_g1  ( G[i - 1][j - 1] ),
+            .in_g2  ( G[i - 1][j]     ),
+            .in_p1  ( P[i - 1][j - 1] ),
+            .in_p2  ( P[i - 1][j]     ),
+            .out_g  ( G[i][j]         ),
+            .out_p  ( P[i][j]         )
         );
         end else begin
-          assign G[j][i] = G[j - 1][i];
-          assign P[j][i] = P[j - 1][i];
+          assign G[i][j] = G[i - 1][j];
+          assign P[i][j] = P[i - 1][j];
         end
       end
     end
