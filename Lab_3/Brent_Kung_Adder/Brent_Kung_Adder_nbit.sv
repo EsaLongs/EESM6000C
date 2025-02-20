@@ -24,12 +24,12 @@ module brent_kung_adder_nbit (
       for (j = 0; j < `ADDER_SIZE; j = j + 1) begin
         if (((j + 1) % (2 ** i)) == 0) begin
           gp_unit stage_gp (
-            .in_g1  ( G[i - 1][j - 2 ** (i - 1)] ),
-            .in_g2  ( G[i - 1][j]                ),
+            .in_g1  ( G[i - 1][j - 2 ** (i - 1)]),
+            .in_g2  ( G[i - 1][j]          ),
             .in_p1  ( P[i - 1][j - 2 ** (i - 1)] ),
-            .in_p2  ( P[i - 1][j]                ),
-            .out_g  ( G[i][j]                    ),
-            .out_p  ( P[i][j]                    )
+            .in_p2  ( P[i - 1][j]          ),
+            .out_g  ( G[i][j]              ),
+            .out_p  ( P[i][j]              )
           );
         end else begin
           assign G[i][j] = G[i - 1][j];
@@ -41,15 +41,17 @@ module brent_kung_adder_nbit (
 
 //------------------------ Stage log2(`ADDER_SIZE) + 1 to 2log2(`ADDER_SIZE) - 1 ----//
   generate
-    localparam b = $clog2(`ADDER_SIZE);          // The Last row for the first part
+    localparam b = $clog2(`ADDER_SIZE);          // The first row for the second part
     localparam e = 2 * $clog2(`ADDER_SIZE) - 1;  // The end row for the second part
     for (i = b + 1; i < e + 1; i = i + 1) begin
       for (j = 0; j < `ADDER_SIZE; j = j + 1) begin
         if (
             (
-             (j - ((`ADDER_SIZE / (4 * (i - b))) * 3 - 1))
-           % (`ADDER_SIZE / (2 ** (i - b)))
-            ) == 0
+             ((j - ((`ADDER_SIZE / (2 ** (i - b + 1))) * 3 - 1))
+           % (`ADDER_SIZE / (2 ** (i - b)))) 
+          == 0
+            )
+         && ( (j - ((`ADDER_SIZE / (2 ** (i - b + 1))) * 3 - 1)) >= 0)
            ) begin
           gp_unit stage_gp (
             .in_g1  ( G[i - 1][j - ((`ADDER_SIZE / (2 ** (i - b))) / 2)] ),
