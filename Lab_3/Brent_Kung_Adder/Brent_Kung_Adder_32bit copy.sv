@@ -7,43 +7,63 @@ module brent_kung_adder_`ADDER_SIZEbit (
   output logic cout
 );
 
-  logic [`ADDER_SIZE - 1 : 0] G [$clog2(`ADDER_SIZE) : 0];
+  logic [`ADDER_SIZE - 1 : 0] G [2 * ($clog2(`ADDER_SIZE)) - 1 : 0];
   
+//------------------------ Stage 0 --------------------------------------------------//
   assign G[0][`ADDER_SIZE - 1 : 1] = in_op1[`ADDER_SIZE - 1 : 1] & in_op2[`ADDER_SIZE - 1 : 1];
   assign P[0][`ADDER_SIZE - 1 : 1] = in_op1[`ADDER_SIZE - 1 : 1] ^ in_op2[`ADDER_SIZE - 1 : 1];
   assign G[0][0] = (in_op1[0] && in_op2[0]) || (in_op1[0] && cin) || (in_op2[0] && cin);
   assign P[0][0] = 1'b0;
   
+//------------------------ Stage 1 to log2(`ADDER_SIZE) -----------------------------//
   genvar i, j;
   
   generate
-    for (j = 1; j < ($clog2(`ADDER_SIZE) + 1); j = j + 1) begin
-      for (i = 0; i < (`ADDER_SIZE); i = i + 1) begin : STAGE_1
-        if ((i + 1) % 2 == 0) begin
-          gp_unit stage_1_gp (
-            .in_g1  ( G[j][i - 1]     ),
-            .in_g2  ( G[0][i]         ),
-            .in_p1  ( P[0][i - 1]     ),
-            .in_p2  ( P[0][i]         ),
-            .out_g  ( G1[i]         ),
-            .out_p  ( P1[i]         )
+    for (i = 1; i < ($clog2(`ADDER_SIZE) + 1); i = i + 1) begin
+      for (j = 0; j < (`ADDER_SIZE); j = j + 1) begin :
+        if ((j + 1) % (2 * i) == 0) begin
+          gp_unit stage_gp (
+            .in_g1  ( G[i - 1][j - 1] ),
+            .in_g2  ( G[i - 1][j]     ),
+            .in_p1  ( P[i - 1][j - 1] ),
+            .in_p2  ( P[i - 1][j]     ),
+            .out_g  ( G[i][j]         ),
+            .out_p  ( P[i][j]         )
         );
         end else begin
-          assign G1[i] = G[0][i];
-          assign P1[i] = P[0][i];
+          assign G[i][j] = G[i - 1][j];
+          assign P[i][j] = P[i - 1][j];
         end
       end
     end
   endgenerate
 
-//------------------------ Stage 0 -------------------------//
-  logic [`ADDER_SIZE - 1 : 0] P[0];  // Propagate signal
-  logic [`ADDER_SIZE - 1 : 0] G[0];  // Generate signal
-  
-  assign G[0][`ADDER_SIZE - 1 : 1] = in_op1[`ADDER_SIZE - 1 : 1] & in_op2[`ADDER_SIZE - 1 : 1];
-  assign P[0][`ADDER_SIZE - 1 : 1] = in_op1[`ADDER_SIZE - 1 : 1] ^ in_op2[`ADDER_SIZE - 1 : 1];
-  assign G[0][0] = (in_op1[0] && in_op2[0]) || (in_op1[0] && cin) || (in_op2[0] && cin);
-  assign P[0][0] = 1'b0;
+//------------------------ Stage log2(`ADDER_SIZE) + 1 to 2log2(`ADDER_SIZE) - 1 ----//
+  generate
+    for (j = 1; j < ($clog2(`ADDER_SIZE) + 1); j = j + 1) begin
+      for (i = 0; i < (`ADDER_SIZE); i = i + 1) begin :
+        if ((i + 1) % (2 * j) == 0) begin
+          gp_unit stage_gp (
+            .in_g1  ( G[j - 1][i - 1] ),
+            .in_g2  ( G[j - 1][i]     ),
+            .in_p1  ( P[j - 1][i - 1] ),
+            .in_p2  ( P[j - 1][i]     ),
+            .out_g  ( G[j][i]         ),
+            .out_p  ( P[j][i]         )
+        );
+        end else begin
+          assign G[j][i] = G[j - 1][i];
+          assign P[j][i] = P[j - 1][i];
+        end
+      end
+    end
+  endgenerate
+
+
+
+
+
+//------------------------ Stage 1 to (log2(`ADDER_SIZE)) ---------------------------//
 
 //------------------------ Stage 1 -------------------------//
   logic [`ADDER_SIZE - 1 : 0] P1;
