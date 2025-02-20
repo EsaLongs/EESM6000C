@@ -1,1 +1,1 @@
-`define ADDER_SIZE 64 // Can be ste as 16 * n
+`define ADDER_SIZE 32
