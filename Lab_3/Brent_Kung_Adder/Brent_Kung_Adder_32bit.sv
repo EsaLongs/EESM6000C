@@ -70,11 +70,11 @@ endgenerate
   endgenerate
 
 //------------------------ Stage 4 -------------------------//
-  logic P4;
-  logic G4;
+  logic [32 / 16 - 1 : 0] P4;
+  logic [32 / 16 - 1 : 0] G4;
 
   generate
-    for (i = 0; i < (32 / 8); i = i + 1) begin : STAGE_3
+    for (i = 0; i < (32 / 16); i = i + 1) begin : STAGE_3
       gp_unit stage_3_gp (
         .in_g1  ( G2[i * 2]     ),
         .in_g2  ( G2[i * 2 + 1] ),
