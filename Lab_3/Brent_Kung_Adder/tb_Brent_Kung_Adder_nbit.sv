@@ -7,7 +7,7 @@ module tb_adder ();
   logic cin;
   logic cout;
 
-  brent_kung_adder_32bit tb_brent_kung_adder_nbit (
+  brent_kung_adder_nbit tb_brent_kung_adder_nbit (
       .in_op1     ( in_op1  ),
       .in_op2     ( in_op2  ),
       .out_res    ( out_res ),
