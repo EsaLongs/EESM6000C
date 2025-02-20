@@ -32,7 +32,7 @@ module brent_kung_adder_`ADDER_SIZEbit (
         );
         end else begin
           assign G[i][j] = G[i - 1][j];
-          assign P[i][j] = P[i - 1][i];
+          assign P[i][j] = P[i - 1][j];
         end
       end
     end
