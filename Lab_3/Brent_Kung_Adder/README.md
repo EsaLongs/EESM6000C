@@ -1,1 +1,2 @@
-This is a brent kung adder. It can be synthesized as any bits of 32 * n. (4, 8,16 , 32, 64 ....).
+This is a brent kung adder. It can be synthesized as any bits of 2 ^ n. (4, 8,16 , 32, 64 ....).
+The essential files are "Brent_Kung_Adder_nbit.sv", "define.sv" and "pg_unit.sv". You can set the bits you want in "define.sv".
