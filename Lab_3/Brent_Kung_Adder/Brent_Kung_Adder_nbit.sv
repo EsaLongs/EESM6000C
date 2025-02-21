@@ -43,7 +43,7 @@ module brent_kung_adder_nbit (
     for (i = 1; i < ($clog2(`ADDER_SIZE) + 1); i = i + 1) begin
       for (j = 0; j < `ADDER_SIZE; j = j + 1) begin
         if (((j + 1) % (2 ** i)) == 0) begin
-          gp_unit stage_gp (
+          gp_unit stage_gp[i][j] (
             .in_g1  ( G[i - 1][j - 2 ** (i - 1)]),
             .in_g2  ( G[i - 1][j]          ),
             .in_p1  ( P[i - 1][j - 2 ** (i - 1)] ),
@@ -82,7 +82,7 @@ module brent_kung_adder_nbit (
             )
          && ( (j - ((`ADDER_SIZE / (2 ** (i - b + 1))) * 3 - 1)) >= 0)
            ) begin
-          gp_unit stage_gp (
+          gp_unit stage_gp[i][j] (
             .in_g1  ( G[i - 1][j - ((`ADDER_SIZE / (2 ** (i - b))) / 2)] ),
             .in_g2  ( G[i - 1][j]           ),
             .in_p1  ( P[i - 1][j - ((`ADDER_SIZE / (2 ** (i - b))) / 2)] ),
