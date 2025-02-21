@@ -1,2 +1,3 @@
 This is a brent kung adder. It can be synthesized as any bits of 2 ^ n. (4, 8,16 , 32, 64, 128 ....).
 The essential files are "Brent_Kung_Adder_nbit.sv", "define.sv" and "pg_unit.sv". You can set the bits you want in "define.sv". You can also integrate them in one file by yourself.
+Here shows the schematic of this kind of adder with setting size to be 32 bit. It shows that we use 57 gp_units in total and is equal to original algorithm's value (16 + 8 + 4 + 2 + 1 + 1 + 3 + 7 + 15 = 57).
