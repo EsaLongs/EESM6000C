@@ -1,3 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Company: Hong Kong University of Science and Technology
+// Engineer: TANG Yue
+// 
+// Create Date: 20.02.2025 19:44:04
+// Design Name: n-bit brent kung adder
+// Module Name: brent_kung_adder_nbit
+// Project Name: 
+// Target Devices: 
+// Tool Versions: Vivado 2023.1
+// Description: This is a brent kung adder, you can set the value of `ADDER_SIZE in
+//              "define.sv" to be 2 ^ n (2, 4, 8, 16, 32, 64, 128 ....).
+// 
+// Dependencies: "define.sv" (get `ADDER_SIZE value), "gp_unit.sv" (instantiate unit)
+// 
+// Revision: 0.01
+// 
+// Additional Comments: Nothing
+// 
+///////////////////////////////////////////////////////////////////////////////////////
 `include "define.sv"
 module brent_kung_adder_nbit (
   input  logic [`ADDER_SIZE - 1 : 0] in_op1,
