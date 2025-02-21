@@ -41,10 +41,19 @@ module brent_kung_adder_nbit (
 
 //------------------------ Stage log2(`ADDER_SIZE) + 1 to 2log2(`ADDER_SIZE) - 1 ----//
   generate
-    localparam b = $clog2(`ADDER_SIZE);          // The first row for the second part
+    localparam b = $clog2(`ADDER_SIZE);          // The last row for the first part
     localparam e = 2 * $clog2(`ADDER_SIZE) - 1;  // The end row for the second part
     for (i = b + 1; i < e + 1; i = i + 1) begin
       for (j = 0; j < `ADDER_SIZE; j = j + 1) begin
+      // The if condition below may looks confusing. It can be written with another
+      // another structure: if ((j - a) % b ==0) && ((j - a) >= 0). 'a' is the first
+      // bit that uses gp_unit in each row of the second part. It can be written as
+      // a = (`ADDER_SIZE / (2 ** (i - b + 1))) * 3 - 1. 'b' is the distance between
+      // two gp_unit in each row. b = `ADDER_SIZE / (2 ** (i - b)). The last condition
+      // ((j - a) >= 0) is to throw the bits on the right side of the a. For example,
+      // 3(j here) - 11(a here) = -8(-b here), -8 % 8 is also 0, but this kind of bit
+      // should not be used with gp_unit.
+
         if (
             (
              ((j - ((`ADDER_SIZE / (2 ** (i - b + 1))) * 3 - 1))
