@@ -3,8 +3,8 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 21.02.2025 20:20:12
-// Design Name: booth4_multiplier
-// Module Name: booth4_multiplier
+// Design Name: booth4_multiplier_nbit
+// Module Name: booth4_multiplier_nbit
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1

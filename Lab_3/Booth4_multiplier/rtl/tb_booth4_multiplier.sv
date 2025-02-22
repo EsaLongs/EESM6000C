@@ -29,7 +29,7 @@ module tb_booth4_multiplier ();
   logic test4_pass;
 
   // Instantiate the booth4_multiplier module
-  booth4_multiplier tb_booth4_multiplier (
+  booth4_multiplier_nbit tb_booth4_multiplier (
     .in_op1         ( in_op1        ),
     .in_op2         ( in_op2        ),
     .out_res        ( out_res       ),
