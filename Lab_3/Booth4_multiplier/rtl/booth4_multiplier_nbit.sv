@@ -3,7 +3,7 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 21.02.2025 20:20:12
-// Design Name: booth4_multiplier_nbit
+// Design Name: nbit booth4 multiplier
 // Module Name: booth4_multiplier_nbit
 // Project Name: 
 // Target Devices: 
