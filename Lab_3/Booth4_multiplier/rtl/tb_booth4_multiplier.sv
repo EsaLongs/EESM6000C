@@ -6,6 +6,7 @@ module tb_booth4_multiplier ();
   logic [`MUL_SIZE - 1 : 0] in_op1;
   logic [`MUL_SIZE - 1 : 0] in_op2;
   logic [`ADDER_SIZE - 1 : 0] out_res;
+  logic [`ADDER_SIZE - 1 : 0] tb_res;
 
   logic in_op1_signed;
   logic in_op2_signed;
@@ -67,6 +68,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $unsigned($random);
       in_op2 = $unsigned($random);
+      tb_res = $unsigned(in_op1 * in_op2);
+
       in_op1_signed = 1'b0;
       in_op2_signed = 1'b0;
       #100;
@@ -76,11 +79,11 @@ module tb_booth4_multiplier ();
       
       #((`MUL_SIZE / 2) * 20);
       test1_pass = 1'b0;
-      if ($unsigned(out_res) === $unsigned($unsigned(in_op1) * $unsigned(in_op2))) begin
-          $display("Test Case 1 (Unsigned Multiplication) passed! op1 %d, op2 %d, Expected %d, Got %d", $unsigned(in_op1), $unsigned(in_op2), $unsigned($unsigned(in_op1) * $unsigned(in_op2)), out_res);
+      if ($unsigned(out_res) === tb_res) begin
+          $display("Test Case 1 (Unsigned * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
           test1_pass = 1'b1;
       end else begin
-          $display("Test Case 1 (Unsigned Multiplication) failed! op1 %d, op2 %d, Expected %d, Got %d", $unsigned(in_op1), $unsigned(in_op2), $unsigned($unsigned(in_op1) * $unsigned(in_op2)), out_res);
+          $display("Test Case 1 (Unsigned * unsigned) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
       end
       
       // Finish sending
@@ -95,6 +98,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $signed($random);
       in_op2 = $signed($random);
+      tb_res = $signed(in_op1 * in_op2);
+
       in_op1_signed = 1'b1;
       in_op2_signed = 1'b1;
       
@@ -104,11 +109,11 @@ module tb_booth4_multiplier ();
       
       #((`MUL_SIZE / 2) * 20);
       test2_pass = 1'b0;
-      if ($signed(out_res) === $signed($signed(in_op1) * $signed(in_op2))) begin
-          $display("Test Case 2 (Signed Multiplication) passed! op1 %d, op2 %d, Expected %d, Got %d", $signed(in_op1), $signed(in_op2), $signed($signed(in_op1) * $signed(in_op2)), $signed(out_res));
+      if ($signed(out_res) === tb_res) begin
+          $display("Test Case 2 (Signed * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
           test2_pass = 1'b1;
       end else begin
-          $display("Test Case 2 (Signed Multiplication) Failed! op1 %d, op2 %d, Expected %d, Got %d", $signed(in_op1), $signed(in_op2), $signed($signed(in_op1) * $signed(in_op2)), $signed(out_res));
+          $display("Test Case 2 (Signed * signed) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
       end
       
       // Finish sending
@@ -124,6 +129,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $unsigned($random);
       in_op2 = $signed($random);
+      tb_res = $signed(in_op1 * in_op2);
+      
       in_op1_signed = 1'b0;
       in_op2_signed = 1'b1;
       
@@ -134,11 +141,11 @@ module tb_booth4_multiplier ();
 
       #((`MUL_SIZE / 2) * 20);      
       test3_pass = 1'b0;
-      if ($signed(out_res) === $signed($unsigned(in_op1) * $signed(in_op2))) begin
-          $display("Test Case 3 (Unsigned * Signed) passed! op1 %d, op2 %d, Expected %d, Got %d", $unsigned(in_op1), $signed(in_op2), $signed($unsigned(in_op1) * $signed(in_op2)), $signed(out_res));
+      if ($signed(out_res) === tb_res) begin
+          $display("Test Case 3 (Unsigned * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
           test3_pass = 1'b1;
       end else begin
-          $display("Test Case 3 (Unsigned * Signed) Failed! op1 %d, op2 %d, Expected %d, Got %d", $unsigned(in_op1), $signed(in_op2), $signed($unsigned(in_op1) * $signed(in_op2)), $signed(out_res));
+          $display("Test Case 3 (Unsigned * signed) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
       end
       
       // Finish sending
@@ -152,6 +159,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $signed($random);
       in_op2 = $unsigned($random);
+      tb_res = $signed(in_op1 * in_op2);
+
       in_op1_signed = 1'b1;
       in_op2_signed = 1'b0;
       
@@ -161,11 +170,11 @@ module tb_booth4_multiplier ();
       
       #((`MUL_SIZE / 2) * 20);
       test4_pass = 1'b0;
-      if ($signed(out_res) === $signed($signed(in_op1) * $unsigned(in_op2))) begin
+      if ($signed(out_res) === tb_res) begin
           test4_pass = 1'b1;
-          $display("Test Case 4 (Signed * unSigned) passed! op1 %d, op2 %d, Expected %d, Got %d", $signed(in_op1), $unsigned(in_op2), $signed($signed(in_op1) * $unsigned(in_op2)), $signed(out_res));
+          $display("Test Case 4 (Signed * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
       end else begin
-          $display("Test Case 4 (Signed * unSigned) Failed! op1 %d, op2 %d, Expected %d, Got %d", $signed(in_op1), $unsigned(in_op2), $signed($signed(in_op1) * $unsigned(in_op2)), $signed(out_res));
+          $display("Test Case 4 (Signed * unsigned) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, out_res);
       end
       
       // Finish sending
