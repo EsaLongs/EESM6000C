@@ -1,1 +1,1 @@
-`define ADDER_SIZE 32
+`define ADDER_SIZE 64
