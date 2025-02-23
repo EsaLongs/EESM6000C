@@ -1,6 +1,3 @@
-
-
-
 # Booth4 Multiplier
 ## Basic Function
 This is a Booth4-based multiplier. It instantiates a Brent-Kung adder inside to execute the add operation. It takes half-width numbers’ cycles in total to get the output. The data width of the multiplier has been set as a parameter, and you can modify it to be 4, 16, 32, 64, 128, 256, .... **(2 ^ n)**.
