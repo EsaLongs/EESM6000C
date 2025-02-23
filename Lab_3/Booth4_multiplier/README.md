@@ -21,14 +21,16 @@ This multiplier includes a state machine (IDLE state, CALCULATION state, and SEN
 Please kindly know that the input data should be complementary. You should also set the value of __in_op1_signed__ and __in_op2_signed__ to indicate whether the operand 1 or operand 2 is signed or unsigned. This is important because it will affect the sign bit extension in the code.
 
 ## Simulation Result
-***GTKWAVE***
+**GTKWAVE**
+
 The simulation tool is Vivado 2023.1. Here we show the process of one round calculation. In this case, we set the __MUL_SIZE__ to be 64 bits, which means it takes 32 clock cycles to calculate.
 
 ![alt text](png/Simulation_result_wave.png)
 
 The red circle indicates the time state machine enters the CALCULATION state from the IDLE state. The blue circle indicates the calculation has finished and the SEND state. The pink circle indicates the result has been received and goes back to the IDLE state.
 
-***TEST RESULT***
+**TEST RESULT**
+
 The following figure shows some of the tests used to judge whether the result is correct.
 
 ![alt text](png/Simulation_result_test.png)
