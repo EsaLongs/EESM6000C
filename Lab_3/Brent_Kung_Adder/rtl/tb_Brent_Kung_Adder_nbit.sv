@@ -39,9 +39,9 @@ module tb_adder ();
       #CLK_PERIOD;
 
       if (out_res == (in_op1 + in_op2 + cin)) begin
-        $display("Test %0d passed: in_op1 = %h, in_op2 = %h, cin = %h, out_res = %h", i, in_op1, in_op2, cin, out_res);
+        $display("Test %0d passed: in_op1 = %h, in_op2 = %h, cin = %h, expected = %h, out_res = %h", i, in_op1, in_op2, cin, in_op1 + in_op2 + cin, out_res);
       end else begin
-        $display("Test %0d failed: in_op1 = %h, in_op2 = %h, cin = %h, out_res = %h, expected = %h", i, in_op1, in_op2, cin, out_res, in_op1 + in_op2 + cin);
+        $display("Test %0d failed: in_op1 = %h, in_op2 = %h, cin = %h, expected = %h, out_res = %h", i, in_op1, in_op2, cin, in_op1 + in_op2 + cin, out_res);
       end
     end
 
