@@ -79,7 +79,7 @@ module tb_booth4_multiplier_nbit ();
       in_op2_ex = {{TB_MUL_SIZE{1'b0}}, in_op2};
       // We need to extend here because 32 bit * 32 bit is still 32 bit in vivado
       
-      tb_res = $unsigned($unsigned(in_op1_ex) * $unsigned(in_op2_ex));
+      tb_res = $unsigned(in_op1_ex) * $unsigned(in_op2_ex);
 
       in_op1_signed = 1'b0;
       in_op2_signed = 1'b0;
@@ -91,10 +91,10 @@ module tb_booth4_multiplier_nbit ();
       #((TB_MUL_SIZE / 2) * 20);
       test1_pass = 1'b0;
       if ($unsigned(out_res) === tb_res) begin
-          $display("Test Case 1 (Unsigned * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $unsigned(out_res));
+          $display("Test Case 1 (Unsigned * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $unsigned(tb_res), $unsigned(out_res));
           test1_pass = 1'b1;
       end else begin
-          $display("Test Case 1 (Unsigned * unsigned) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $unsigned(out_res));
+          $display("Test Case 1 (Unsigned * unsigned) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $unsigned(tb_res), $unsigned(out_res));
       end
       
       // Finish sending
@@ -112,7 +112,7 @@ module tb_booth4_multiplier_nbit ();
       in_op1_ex = {{TB_MUL_SIZE{in_op1[TB_MUL_SIZE - 1]}}, in_op1};
       in_op2_ex = {{TB_MUL_SIZE{in_op2[TB_MUL_SIZE - 1]}}, in_op2};
       
-      tb_res = $signed($signed(in_op1_ex) * $signed(in_op2_ex));
+      tb_res = $signed(in_op1_ex) * $signed(in_op2_ex);
 
       in_op1_signed = 1'b1;
       in_op2_signed = 1'b1;
@@ -124,10 +124,10 @@ module tb_booth4_multiplier_nbit ();
       #((TB_MUL_SIZE / 2) * 20);
       test2_pass = 1'b0;
       if ($signed(out_res) === tb_res) begin
-          $display("Test Case 2 (Signed * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
+          $display("Test Case 2 (Signed * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $signed(tb_res), $signed(out_res));
           test2_pass = 1'b1;
       end else begin
-          $display("Test Case 2 (Signed * signed) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
+          $display("Test Case 2 (Signed * signed) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $signed(tb_res), $signed(out_res));
       end
       
       // Finish sending
@@ -146,7 +146,7 @@ module tb_booth4_multiplier_nbit ();
       in_op1_ex = {{TB_MUL_SIZE{1'b0}}, in_op1};
       in_op2_ex = {{TB_MUL_SIZE{in_op2[TB_MUL_SIZE - 1]}}, in_op2};
       
-      tb_res = $signed($unsigned(in_op1_ex) * $signed(in_op2_ex));
+      tb_res = $unsigned(in_op1_ex) * $signed(in_op2_ex);
       
       in_op1_signed = 1'b0;
       in_op2_signed = 1'b1;
@@ -158,10 +158,10 @@ module tb_booth4_multiplier_nbit ();
       #((TB_MUL_SIZE / 2) * 20);      
       test3_pass = 1'b0;
       if ($signed(out_res) === tb_res) begin
-          $display("Test Case 3 (Unsigned * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
+          $display("Test Case 3 (Unsigned * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $signed(tb_res), $signed(out_res));
           test3_pass = 1'b1;
       end else begin
-          $display("Test Case 3 (Unsigned * signed) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
+          $display("Test Case 3 (Unsigned * signed) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $signed(tb_res), $signed(out_res));
       end
       
       // Finish sending
@@ -178,7 +178,7 @@ module tb_booth4_multiplier_nbit ();
       in_op1_ex = {{TB_MUL_SIZE{in_op1[TB_MUL_SIZE - 1]}}, in_op1};
       in_op2_ex = {{TB_MUL_SIZE{1'b0}}, in_op2};
       
-      tb_res = $signed($signed(in_op1_ex) * $unsigned(in_op2_ex));
+      tb_res = $signed(in_op1_ex) * $unsigned(in_op2_ex);
 
       in_op1_signed = 1'b1;
       in_op2_signed = 1'b0;
@@ -191,9 +191,9 @@ module tb_booth4_multiplier_nbit ();
       test4_pass = 1'b0;
       if ($signed(out_res) === tb_res) begin
           test4_pass = 1'b1;
-          $display("Test Case 4 (Signed * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
+          $display("Test Case 4 (Signed * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $signed(tb_res), $signed(out_res));
       end else begin
-          $display("Test Case 4 (Signed * unsigned) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
+          $display("Test Case 4 (Signed * unsigned) failed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, $signed(tb_res), $signed(out_res));
       end
       
       // Finish sending
@@ -208,7 +208,6 @@ module tb_booth4_multiplier_nbit ();
       // End the simulation
       #20;
       $finish;
-      
     end
   end
   
