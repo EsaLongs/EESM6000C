@@ -1,6 +1,6 @@
 # Brent-Kung Adder
 ## Basic Function
-This is a brent kung adder. You can set the ADDER_SIZE parameter as any bits of **(2 ^ n)** (4, 8,16 , 32, 64, 128 ....).
+This is a brent kung adder. You can set the ADDER_SIZE parameter as any value of **(2 ^ n)** (4, 8,16 , 32, 64, 128 ....).
 
 ### Essential Files
 "Brent_Kung_Adder_nbit.sv" is the top module. You need "pg_unit.sv" as dependency.
