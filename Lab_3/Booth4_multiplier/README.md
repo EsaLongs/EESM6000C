@@ -2,7 +2,7 @@ This is a Booth4-based multiplier.
 
 It takes half-width numbers’ cycles to get the output.
 
-You can set the width of the multiplier and adder (it instantiates an adder inside) in "define.sv". You should notice that you can set the MUL_WIDTH to be 4, 16, 32, 64, 128, 256, .... (2 ^ n) but you must make sure the ADDER_WIDTH = 2 * MUL_WIDTH, unless it won't work.
+You can set the width of the multiplier (it instantiates an adder inside) as parameter.sv". Please kindly know that you can set the MUL_WIDTH to be 4, 16, 32, 64, 128, 256, .... (2 ^ n)
 
 It uses ready and valid signals to handshake.
 
