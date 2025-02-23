@@ -6,14 +6,6 @@ This is a brent kung adder. You can set the ADDER_SIZE parameter as any bits of 
 "Brent_Kung_Adder_nbit.sv" is the top module. You need "pg_unit.sv" as dependency.
 
 ## Simulation Result
-**WAVE VIEW**
-
-The simulation tool is Vivado 2023.1. Here we show the process of one round calculation. In this case, we set the __MUL_SIZE__ to be 64 bits, which means it takes 32 clock cycles to calculate.
-
-![alt text](png/Simulation_result_wave.png)
-
-The red circle indicates the time state machine enters the CALCULATION state from the IDLE state. The blue circle indicates the calculation has finished and the SEND state. The pink circle indicates the result has been received and goes back to the IDLE state.
-
 **TEST RESULT**
 
 The following figure shows some of the tests used to judge whether the result is correct.
