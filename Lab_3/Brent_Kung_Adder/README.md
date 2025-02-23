@@ -6,7 +6,6 @@ This is a brent kung adder. You can set the ADDER_SIZE parameter as any bits of 
 "Brent_Kung_Adder_nbit.sv" is the top module. You need "pg_unit.sv" as dependency.
 
 ## Simulation Result
-
 **TEST RESULT**
 The following figure shows some of the tests used to judge whether the result is correct.
 
