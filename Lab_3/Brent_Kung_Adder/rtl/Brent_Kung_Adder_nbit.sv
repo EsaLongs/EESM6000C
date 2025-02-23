@@ -18,6 +18,7 @@
 // Additional Comments: Nothing
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
+
 module brent_kung_adder_nbit #(parameter ADDER_SIZE = 128) (
   input  logic [ADDER_SIZE - 1 : 0] in_op1,
   input  logic [ADDER_SIZE - 1 : 0] in_op2,
