@@ -1,13 +1,14 @@
-`include "define.sv"
 module tb_adder ();
 
-  logic [`ADDER_SIZE - 1 : 0] in_op1;
-  logic [`ADDER_SIZE - 1 : 0] in_op2;
-  logic [`ADDER_SIZE - 1 : 0] out_res;
+  parameter ADDER_SIZE = 32;
+
+  logic [ADDER_SIZE - 1 : 0] in_op1;
+  logic [ADDER_SIZE - 1 : 0] in_op2;
+  logic [ADDER_SIZE - 1 : 0] out_res;
   logic cin;
   logic cout;
 
-  brent_kung_adder_nbit tb_brent_kung_adder_nbit (
+  brent_kung_adder_nbit #(.ADDER_SIZE  (ADDER_SIZE)) tb_brent_kung_adder_nbit (
       .in_op1     ( in_op1  ),
       .in_op2     ( in_op2  ),
       .out_res    ( out_res ),
@@ -30,7 +31,7 @@ module tb_adder ();
 
     #(CLK_PERIOD * 2);
 
-    for (int i = 0; i < 10; i++) begin
+    for (int i = 0; i < 20; i++) begin
       in_op1 = $random;
       in_op2 = $random;
       cin = $random;
