@@ -8,7 +8,6 @@ This is a brent kung adder. You can set the ADDER_SIZE parameter as any bits of 
 ## Simulation Result
 
 **TEST RESULT**
-
 The following figure shows some of the tests used to judge whether the result is correct.
 
 ![alt text](png/test.png)
