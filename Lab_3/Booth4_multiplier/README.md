@@ -2,6 +2,10 @@
 ## Basic Function
 This is a Booth4-based multiplier. It instantiates a Brent-Kung adder inside to execute the add operation. It takes half-width numbers’ cycles in total to get the output. The data width of the multiplier has been set as a parameter, and you can modify it to be 4, 16, 32, 64, 128, 256, .... **(2 ^ n)**.
 
+### Essential Files
+"booth4_multiplier_nbit" is the top module.
+You need "Brent_Kung_Adder_nbit.sv" and "pg_unit.sv" as dependency.
+
 ### Handshake Signal
 This multiplier includes a state machine (IDLE state, CALCULATION state, and SEND state) and uses a handshake signal to control the change of state.
 
