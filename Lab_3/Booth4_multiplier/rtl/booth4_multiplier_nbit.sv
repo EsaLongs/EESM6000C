@@ -9,9 +9,9 @@
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
 // Description: This is a booth 4 multiplier, you can set the value of MUL_SIZE in
-//              "define.sv" to be 2 ^ n (2, 4, 8, 16, 32, 64, 128 ....).
+//              to be 2 ^ n (2, 4, 8, 16, 32, 64, 128 ....).
 // 
-// Dependencies: "define.sv" (get MUL_SIZE value), "Brent_Kung_Adder_nbit" (instant
+// Dependencies: "Brent_Kung_Adder_nbit" (instant
 //               iate), "gp_unit.sv" (instantiate unit for adder)
 // 
 // Revision: 0.01
@@ -26,7 +26,7 @@
 // ation is finished and then enter SEND state. In SEND state, we will keep the result 
 // and won't exit present state until the destination module is ready to get the data.
 
-module booth4_multiplier #(
+module booth4_multiplier_nbit #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE
 ) (

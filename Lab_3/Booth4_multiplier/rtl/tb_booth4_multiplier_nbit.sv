@@ -1,16 +1,17 @@
 `timescale 1ns / 1ps
 
-module tb_booth4_multiplier ();
+module tb_booth4_multiplier_nbit ();
 
   parameter TB_MUL_SIZE = 64;
+  parameter TB_ADDER_SIZE = 2 * TB_MUL_SIZE;
+  
+  logic [TB_MUL_SIZE - 1 : 0] in_op1;
+  logic [TB_MUL_SIZE - 1 : 0] in_op2;
+  logic [TB_ADDER_SIZE - 1 : 0] out_res;
+  logic [TB_ADDER_SIZE - 1 : 0] tb_res;
 
-  logic [`MUL_SIZE - 1 : 0] in_op1;
-  logic [`MUL_SIZE - 1 : 0] in_op2;
-  logic [`ADDER_SIZE - 1 : 0] out_res;
-  logic [`ADDER_SIZE - 1 : 0] tb_res;
-
-  logic [`ADDER_SIZE - 1 : 0] in_op1_ex;
-  logic [`ADDER_SIZE - 1 : 0] in_op2_ex;
+  logic [TB_ADDER_SIZE - 1 : 0] in_op1_ex;
+  logic [TB_ADDER_SIZE - 1 : 0] in_op2_ex;
 
   logic in_op1_signed;
   logic in_op2_signed;
@@ -74,8 +75,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $random;
       in_op2 = $random;
-      in_op1_ex = {{`MUL_SIZE{1'b0}}, in_op1};
-      in_op2_ex = {{`MUL_SIZE{1'b0}}, in_op2};
+      in_op1_ex = {{TB_MUL_SIZE{1'b0}}, in_op1};
+      in_op2_ex = {{TB_MUL_SIZE{1'b0}}, in_op2};
       // We need to extend here because 32 bit * 32 bit is still 32 bit in vivado
       
       tb_res = $unsigned($unsigned(in_op1_ex) * $unsigned(in_op2_ex));
@@ -87,7 +88,7 @@ module tb_booth4_multiplier ();
       // Begin calculation
       in_valid = 1'b1;
       
-      #((`MUL_SIZE / 2) * 20);
+      #((TB_MUL_SIZE / 2) * 20);
       test1_pass = 1'b0;
       if ($unsigned(out_res) === tb_res) begin
           $display("Test Case 1 (Unsigned * unsigned) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $unsigned(out_res));
@@ -108,8 +109,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $random;
       in_op2 = $random;
-      in_op1_ex = {{`MUL_SIZE{in_op1[`MUL_SIZE - 1]}}, in_op1};
-      in_op2_ex = {{`MUL_SIZE{in_op2[`MUL_SIZE - 1]}}, in_op2};
+      in_op1_ex = {{TB_MUL_SIZE{in_op1[TB_MUL_SIZE - 1]}}, in_op1};
+      in_op2_ex = {{TB_MUL_SIZE{in_op2[TB_MUL_SIZE - 1]}}, in_op2};
       
       tb_res = $signed($signed(in_op1_ex) * $signed(in_op2_ex));
 
@@ -120,7 +121,7 @@ module tb_booth4_multiplier ();
       // Begin calculation
       in_valid = 1'b1;
       
-      #((`MUL_SIZE / 2) * 20);
+      #((TB_MUL_SIZE / 2) * 20);
       test2_pass = 1'b0;
       if ($signed(out_res) === tb_res) begin
           $display("Test Case 2 (Signed * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
@@ -142,8 +143,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $unsigned($random);
       in_op2 = $signed($random);
-      in_op1_ex = {{`MUL_SIZE{1'b0}}, in_op1};
-      in_op2_ex = {{`MUL_SIZE{in_op2[`MUL_SIZE - 1]}}, in_op2};
+      in_op1_ex = {{TB_MUL_SIZE{1'b0}}, in_op1};
+      in_op2_ex = {{TB_MUL_SIZE{in_op2[TB_MUL_SIZE - 1]}}, in_op2};
       
       tb_res = $signed($unsigned(in_op1_ex) * $signed(in_op2_ex));
       
@@ -154,7 +155,7 @@ module tb_booth4_multiplier ();
       // Begin calculation
       in_valid = 1'b1;
       
-      #((`MUL_SIZE / 2) * 20);      
+      #((TB_MUL_SIZE / 2) * 20);      
       test3_pass = 1'b0;
       if ($signed(out_res) === tb_res) begin
           $display("Test Case 3 (Unsigned * signed) passed! op1 %d, op2 %d, Expected %d, Got %d", in_op1, in_op2, tb_res, $signed(out_res));
@@ -174,8 +175,8 @@ module tb_booth4_multiplier ();
       #200;
       in_op1 = $signed($random);
       in_op2 = $unsigned($random);
-      in_op1_ex = {{`MUL_SIZE{in_op1[`MUL_SIZE - 1]}}, in_op1};
-      in_op2_ex = {{`MUL_SIZE{1'b0}}, in_op2};
+      in_op1_ex = {{TB_MUL_SIZE{in_op1[TB_MUL_SIZE - 1]}}, in_op1};
+      in_op2_ex = {{TB_MUL_SIZE{1'b0}}, in_op2};
       
       tb_res = $signed($signed(in_op1_ex) * $unsigned(in_op2_ex));
 
@@ -186,7 +187,7 @@ module tb_booth4_multiplier ();
       // Begin calculation
       in_valid = 1'b1;
       
-      #((`MUL_SIZE / 2) * 20);
+      #((TB_MUL_SIZE / 2) * 20);
       test4_pass = 1'b0;
       if ($signed(out_res) === tb_res) begin
           test4_pass = 1'b1;

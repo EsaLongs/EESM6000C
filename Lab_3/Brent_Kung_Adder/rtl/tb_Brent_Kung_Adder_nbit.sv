@@ -2,9 +2,9 @@ module tb_adder ();
 
   parameter TB_ADDER_SIZE = 32;
 
-  logic [ADDER_SIZE - 1 : 0] in_op1;
-  logic [ADDER_SIZE - 1 : 0] in_op2;
-  logic [ADDER_SIZE - 1 : 0] out_res;
+  logic [TB_ADDER_SIZE - 1 : 0] in_op1;
+  logic [TB_ADDER_SIZE - 1 : 0] in_op2;
+  logic [TB_ADDER_SIZE - 1 : 0] out_res;
   logic cin;
   logic cout;
 
