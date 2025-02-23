@@ -1,7 +1,8 @@
 `timescale 1ns / 1ps
-`include "define.sv"
 
 module tb_booth4_multiplier ();
+
+  parameter TB_MUL_SIZE = 64;
 
   logic [`MUL_SIZE - 1 : 0] in_op1;
   logic [`MUL_SIZE - 1 : 0] in_op2;
@@ -29,7 +30,7 @@ module tb_booth4_multiplier ();
   logic test4_pass;
 
   // Instantiate the booth4_multiplier module
-  booth4_multiplier_nbit tb_booth4_multiplier (
+  booth4_multiplier_nbit #(.MUL_SIZE  (TB_MUL_SIZE)) tb_booth4_multiplier (
     .in_op1         ( in_op1        ),
     .in_op2         ( in_op2        ),
     .out_res        ( out_res       ),

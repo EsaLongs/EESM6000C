@@ -1,6 +1,6 @@
 module tb_adder ();
 
-  parameter ADDER_SIZE = 32;
+  parameter TB_ADDER_SIZE = 32;
 
   logic [ADDER_SIZE - 1 : 0] in_op1;
   logic [ADDER_SIZE - 1 : 0] in_op2;
@@ -8,7 +8,7 @@ module tb_adder ();
   logic cin;
   logic cout;
 
-  brent_kung_adder_nbit #(.ADDER_SIZE  (ADDER_SIZE)) tb_brent_kung_adder_nbit (
+  brent_kung_adder_nbit #(.ADDER_SIZE  (TB_ADDER_SIZE)) tb_brent_kung_adder_nbit (
       .in_op1     ( in_op1  ),
       .in_op2     ( in_op2  ),
       .out_res    ( out_res ),

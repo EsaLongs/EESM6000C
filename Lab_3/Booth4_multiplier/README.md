@@ -14,6 +14,6 @@ in_ready comes from the destination module. When the calculation has finished, t
 
 out_valid is an output of the multiplier. It shows whether the result is valid.
 
-![alt text](rtl/png/Simulation_result_wave.png)
+![alt text](png/Simulation_result_wave.png)
 
-![alt text](rtl/png/Simulation_result_test.png)
+![alt text](png/Simulation_result_test.png)

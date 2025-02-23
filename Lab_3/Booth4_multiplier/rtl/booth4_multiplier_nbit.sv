@@ -8,10 +8,10 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a booth 4 multiplier, you can set the value of `MUL_SIZE in
+// Description: This is a booth 4 multiplier, you can set the value of MUL_SIZE in
 //              "define.sv" to be 2 ^ n (2, 4, 8, 16, 32, 64, 128 ....).
 // 
-// Dependencies: "define.sv" (get `MUL_SIZE value), "Brent_Kung_Adder_nbit" (instant
+// Dependencies: "define.sv" (get MUL_SIZE value), "Brent_Kung_Adder_nbit" (instant
 //               iate), "gp_unit.sv" (instantiate unit for adder)
 // 
 // Revision: 0.01
@@ -26,11 +26,13 @@
 // ation is finished and then enter SEND state. In SEND state, we will keep the result 
 // and won't exit present state until the destination module is ready to get the data.
 
-`include "define.sv"
-module booth4_multiplier (
-  input  logic [`MUL_SIZE - 1 : 0] in_op1,   // Multiplicand
-  input  logic [`MUL_SIZE - 1 : 0] in_op2,   // Multiplier
-  output logic [`ADDER_SIZE - 1 : 0] out_res,
+module booth4_multiplier #(
+  parameter MUL_SIZE = 32,
+  parameter ADDER_SIZE = 2 * MUL_SIZE
+) (
+  input  logic [MUL_SIZE - 1 : 0] in_op1,   // Multiplicand
+  input  logic [MUL_SIZE - 1 : 0] in_op2,   // Multiplier
+  output logic [ADDER_SIZE - 1 : 0] out_res,
 
   input  logic in_op1_signed,   // Whether the operand 1 is signed, if unsigned, should be 0
   input  logic in_op2_signed,   // Whether the operand 2 is signed, if unsigned, should be 0
@@ -72,7 +74,7 @@ module booth4_multiplier (
   logic state_send_exit_ena;
 
   // Counter is only used for judging when the calculation is finished
-  logic [$clog2(`MUL_SIZE) - 1 - 1 : 0] counter;
+  logic [$clog2(MUL_SIZE) - 1 - 1 : 0] counter;
   logic calc_finish;
 
   always_ff @( posedge clk or negedge rst_n ) begin : COUNTER
@@ -81,7 +83,7 @@ module booth4_multiplier (
     else counter <= 'b0;
   end
 
-  assign calc_finish = (counter == (`MUL_SIZE / 2 - 1));
+  assign calc_finish = (counter == (MUL_SIZE / 2 - 1));
 
   // In this kind of design, the three kinds of ena signal only one of them will be
   // 1 in each state, that's why we can integrate them into one state_exit_ena.
@@ -117,14 +119,14 @@ module booth4_multiplier (
   // In this kind of design, we use a register to store the multipicand in IDLE state,
   // which make the calculation won't by affected by inputs if they change in the CALC
   // stage.
-  logic [`MUL_SIZE - 1 + 1 : 0] multiplicand_reg;    // {sign, in_op1}
-  logic [`MUL_SIZE - 1 + 1 + 2 : 0] multiplier_reg;  // {sign, sign, in_op2, 1'b0}
+  logic [MUL_SIZE - 1 + 1 : 0] multiplicand_reg;    // {sign, in_op1}
+  logic [MUL_SIZE - 1 + 1 + 2 : 0] multiplier_reg;  // {sign, sign, in_op2, 1'b0}
 
   logic multiplicand_sign;
   logic multiplier_sign;
 
-  assign multiplicand_sign = in_op1_signed ? in_op1[`MUL_SIZE - 1] : 1'b0;
-  assign multiplier_sign   = in_op2_signed ? in_op2[`MUL_SIZE - 1] : 1'b0;
+  assign multiplicand_sign = in_op1_signed ? in_op1[MUL_SIZE - 1] : 1'b0;
+  assign multiplier_sign   = in_op2_signed ? in_op2[MUL_SIZE - 1] : 1'b0;
 
   always_ff @( posedge clk or negedge rst_n ) begin : MULTIPLICAND_REG
     if (!rst_n) multiplicand_reg <= 'b0;
@@ -157,7 +159,7 @@ module booth4_multiplier (
 
   logic [2 : 0] booth_code;
 
-  assign booth_code = multiplier_reg[`MUL_SIZE + 2 : `MUL_SIZE];
+  assign booth_code = multiplier_reg[MUL_SIZE + 2 : MUL_SIZE];
 
   logic booth_nochange;
   logic booth_add1x;
@@ -172,9 +174,9 @@ module booth4_multiplier (
   assign booth_sub2x    = (booth_code == 3'b100);
 
 //------------------------ Adder Operand --------------------------------------------//
-  logic [`ADDER_SIZE - 1 : 0] adder_op1;
-  logic [`ADDER_SIZE - 1 : 0] adder_op2;
-  logic [`ADDER_SIZE - 1 : 0] adder_res;
+  logic [ADDER_SIZE - 1 : 0] adder_op1;
+  logic [ADDER_SIZE - 1 : 0] adder_op2;
+  logic [ADDER_SIZE - 1 : 0] adder_res;
   logic adder_cin;
 
   // Instantiate adder
@@ -186,7 +188,7 @@ module booth4_multiplier (
     .cout     (           )
   );
 
-  logic [`ADDER_SIZE - 1 : 0] res_reg;  // The register to store adder result
+  logic [ADDER_SIZE - 1 : 0] res_reg;  // The register to store adder result
   
   always_ff @( posedge clk or negedge rst_n ) begin : RES
     if (!rst_n) res_reg <= 'b0;
@@ -197,13 +199,13 @@ module booth4_multiplier (
 
   assign adder_op1 = res_reg;
   
-  logic [`ADDER_SIZE - 1 : 0] adder_op2_add1x;
-  logic [`ADDER_SIZE - 1 : 0] adder_op2_add2x;
-  logic [`ADDER_SIZE - 1 : 0] adder_op2_sub1x;
-  logic [`ADDER_SIZE - 1 : 0] adder_op2_sub2x;
+  logic [ADDER_SIZE - 1 : 0] adder_op2_add1x;
+  logic [ADDER_SIZE - 1 : 0] adder_op2_add2x;
+  logic [ADDER_SIZE - 1 : 0] adder_op2_sub1x;
+  logic [ADDER_SIZE - 1 : 0] adder_op2_sub2x;
   
-  assign adder_op2_add1x = {{(`ADDER_SIZE - `MUL_SIZE - 1){multiplicand_reg[`MUL_SIZE]}}, multiplicand_reg};
-  assign adder_op2_add2x = {adder_op2_add1x[`ADDER_SIZE - 1 - 1 : 0], 1'b0};
+  assign adder_op2_add1x = {{(ADDER_SIZE - MUL_SIZE - 1){multiplicand_reg[MUL_SIZE]}}, multiplicand_reg};
+  assign adder_op2_add2x = {adder_op2_add1x[ADDER_SIZE - 1 - 1 : 0], 1'b0};
   assign adder_op2_sub1x = ~ adder_op2_add1x;
   assign adder_op2_sub2x = ~ adder_op2_add2x;
 
@@ -211,10 +213,10 @@ module booth4_multiplier (
                      booth_add2x    ? adder_op2_add2x :
                      booth_sub1x    ? adder_op2_sub1x :
                      booth_sub2x    ? adder_op2_sub2x :
-                     {`ADDER_SIZE{1'b0}};
+                     {ADDER_SIZE{1'b0}};
 
   assign adder_cin = booth_sub1x || booth_sub2x;
 
-  assign out_res = {`ADDER_SIZE{state_is_send}} & adder_res;
+  assign out_res = {ADDER_SIZE{state_is_send}} & adder_res;
 
 endmodule
