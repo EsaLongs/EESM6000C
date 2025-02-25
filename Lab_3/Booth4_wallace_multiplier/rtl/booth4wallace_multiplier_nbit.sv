@@ -3,16 +3,16 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 21.02.2025 20:20:12
-// Design Name: nbit booth4 multiplier
-// Module Name: booth4_multiplier_nbit
+// Design Name: nbit booth4-wallace multiplier
+// Module Name: booth4wallace_multiplier_nbit
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a booth 4 multiplier, you can set the value of MUL_SIZE in
-//              to be 2 ^ n (2, 4, 8, 16, 32, 64, 128 ....).
+// Description: This is a booth4 based wallace multiplier, you can set the value of 
+//              MUL_SIZE in to be 2 ^ n (4, 8, 16, 32, 64, 128 ....).
 // 
-// Dependencies: "Brent_Kung_Adder_nbit" (instant
-//               iate), "gp_unit.sv" (instantiate unit for adder)
+// Dependencies: "Brent_Kung_Adder_nbit", "onebit_adder", 
+//               "gp_unit.sv" (instantiate unit for adder), 
 // 
 // Revision: 0.01
 // 
@@ -26,7 +26,7 @@
 // ation is finished and then enter SEND state. In SEND state, we will keep the result 
 // and won't exit present state until the destination module is ready to get the data.
 
-module booth4_multiplier_nbit #(
+module booth4wallace_multiplier_nbit #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE
 ) (
@@ -52,68 +52,29 @@ module booth4_multiplier_nbit #(
   assign get_hsked  = in_valid  && out_ready;
   assign send_hsked = out_valid && in_ready;
 
-//------------------------ State Machine --------------------------------------------//
-  localparam STATE_IDLE = 2'b00; // Initial stage
-  localparam STATE_CALC = 2'b01; // Calculation stage
-  localparam STATE_SEND = 2'b10; // Ready to send stage
+//------------------------ Stall ----------------------------------------------------//
+  // When in_really is 0 (the destination hasn't received data), the pipeline will
+  // stall and wait.
+  logic stall;
+  assign stall = in_ready;
 
-  logic [1 : 0] state_now;
-  logic [1 : 0] state_nxt;
+//------------------------ Valid Ready Signal ---------------------------------------//
+  // This design has two stages pipeline. The first one is for booth code to generate 
+  // initial operands. The second one is to provide final 2 operands to brent-kung
+  // adder.
+  localparam pipe_num = 2;
 
-  logic state_is_idle;
-  logic state_is_calc;
-  logic state_is_send;
-
-  assign state_is_idle = (state_now == STATE_IDLE);
-  assign state_is_calc = (state_now == STATE_CALC);
-  assign state_is_send = (state_now == STATE_SEND);
-
-  logic state_exit_ena;
-  logic state_idle_exit_ena;
-  logic state_calc_exit_ena;
-  logic state_send_exit_ena;
-
-  // Counter is only used for judging when the calculation is finished
-  logic [$clog2(MUL_SIZE) - 1 - 1 : 0] counter;
-  logic calc_finish;
-
-  always_ff @( posedge clk or negedge rst_n ) begin : COUNTER
-    if (!rst_n) counter <= 'b0;
-    else if (state_is_calc) counter = counter + 1;
-    else counter <= 'b0;
+  // This is a simple shifter. It will shift the input valid signal to output, so
+  // output can know whether present data is valid.
+  logic [pipe_num - 1 : 0] valid_flag;
+  
+  always_ff @( posedge clk or negedge rst_n ) begin : VALID_FLAG
+    if (!rst_n) valid_flag <= {pipe_num{1'b0}};
+    else valid_flag <= {valid_flag[pipe_num - 1 - 1 : 0], in_valid}
   end
 
-  assign calc_finish = (counter == (MUL_SIZE / 2 - 1));
-
-  // In this kind of design, the three kinds of ena signal only one of them will be
-  // 1 in each state, that's why we can integrate them into one state_exit_ena.
-  assign state_exit_ena = state_idle_exit_ena 
-                       || state_calc_exit_ena 
-                       || state_send_exit_ena;
-
-  assign state_idle_exit_ena = state_is_idle && get_hsked;
-  assign state_calc_exit_ena = state_is_calc && calc_finish;
-  assign state_send_exit_ena = state_is_send && send_hsked;
-
-  logic [1 : 0] state_idle_nxt;
-  logic [1 : 0] state_calc_nxt;
-  logic [1 : 0] state_send_nxt;
-  
-  // This design logic here is as same as exit_ena signal
-  assign state_nxt = state_idle_nxt | state_calc_nxt | state_send_nxt;
-  assign state_idle_nxt = {2{state_idle_exit_ena}} & STATE_CALC;
-  assign state_calc_nxt = {2{state_calc_exit_ena}} & STATE_SEND;
-  assign state_send_nxt = {2{state_send_exit_ena}} & STATE_IDLE;
-  
-  always_ff @( posedge clk or negedge rst_n ) begin : STATE
-    if (!rst_n) state_now <= 2'b0;
-    else if (state_exit_ena) state_now <= state_nxt;
-    else state_now <= state_now;
-  end
-
-//------------------------ Valid and Ready ------------------------------------------//
-  assign out_ready = state_is_idle;
-  assign out_valid = state_is_send;
+  assign out_valid = valid_flag[pipe_num - 1];
+  assign out_ready = in_ready;
 
 //------------------------ Temp Register --------------------------------------------//
   // In this kind of design, we use a register to store the multipicand in IDLE state,

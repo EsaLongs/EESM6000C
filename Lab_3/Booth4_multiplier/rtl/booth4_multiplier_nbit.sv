@@ -9,7 +9,7 @@
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
 // Description: This is a booth 4 multiplier, you can set the value of MUL_SIZE in
-//              to be 2 ^ n (2, 4, 8, 16, 32, 64, 128 ....).
+//              to be 2 ^ n (4, 8, 16, 32, 64, 128 ....).
 // 
 // Dependencies: "Brent_Kung_Adder_nbit" (instant
 //               iate), "gp_unit.sv" (instantiate unit for adder)
