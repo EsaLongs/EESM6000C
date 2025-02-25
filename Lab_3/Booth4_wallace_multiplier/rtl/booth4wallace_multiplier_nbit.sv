@@ -46,12 +46,6 @@ module booth4wallace_multiplier_nbit #(
   input  logic clk, rst_n
 );
 
-//------------------------ Handshake ------------------------------------------------//
-  logic get_hsked;   // Handshake signal for state machine to leave the IDLE state
-  logic send_hsked;  // Handshake signal for state machine to end the SEND state
-  assign get_hsked  = in_valid  && out_ready;
-  assign send_hsked = out_valid && in_ready;
-
 //------------------------ Stall ----------------------------------------------------//
   // When in_really is 0 (the destination hasn't received data), the pipeline will
   // stall and wait.
