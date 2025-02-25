@@ -64,7 +64,8 @@ module booth4wallace_multiplier_nbit #(
   
   always_ff @( posedge clk or negedge rst_n ) begin : VALID_FLAG
     if (!rst_n) valid_flag <= {pipe_num{1'b0}};
-    else valid_flag <= {valid_flag[pipe_num - 1 - 1 : 0], in_valid}
+    else if (!stall) valid_flag <= {valid_flag[pipe_num - 1 - 1 : 0], in_valid}
+    else valid_flag <= valid_flag;
   end
 
   assign out_valid = valid_flag[pipe_num - 1];
