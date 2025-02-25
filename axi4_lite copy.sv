@@ -192,6 +192,3 @@ module axi4_lite_slave_bram #(
   assign out_s_bvalid  = state_is_wresp;
 
 endmodule
-
-
-
