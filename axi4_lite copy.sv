@@ -123,10 +123,10 @@ module axi4_lite_slave_bram #(
   logic state_is_wdata;
   logic state_is_wresp;
 
-  assign state_is_idle       = (state_now == STATE_IDLE);
-  assign state_is_rdata      = (state_now == STATE_RDATA);
-  assign state_is_wdata      = (state_now == STATE_WDATA);
-  assign state_is_wresp      = (state_now == STATE_WRESP);
+  assign state_is_idle  = (state_now == STATE_IDLE);
+  assign state_is_rdata = (state_now == STATE_RDATA);
+  assign state_is_wdata = (state_now == STATE_WDATA);
+  assign state_is_wresp = (state_now == STATE_WRESP);
 
   logic state_exit_ena;
   logic state_idle_exit2rdata_ena;
@@ -165,7 +165,7 @@ module axi4_lite_slave_bram #(
                || (in_s_awaddr && {ADDR_WIDTH{state_idle_exit2wdata_ena}});
 
   // EN need to last one more cycle for read because BRAM uses EN to assign Do
-  assign out_EN = state_idle_exit2rdata_ena || state_is_rdata;
+  assign out_EN = state_idle_exit2rdata_ena || state_is_rdata
                || state_idle_exit2wdata_ena;
 
   // Here we assume all the bytes will be valid when writing
