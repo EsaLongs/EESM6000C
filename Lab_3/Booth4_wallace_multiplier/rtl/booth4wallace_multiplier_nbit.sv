@@ -50,129 +50,76 @@ module booth4wallace_multiplier_nbit #(
   // When in_really is 0 (the destination hasn't received data), the pipeline will
   // stall and wait.
   logic stall;
-  assign stall = in_ready;
+  assign stall = !in_ready;
 
 //------------------------ Valid Ready Signal ---------------------------------------//
   // This design has two stages pipeline. The first one is for booth code to generate 
   // initial operands. The second one is to provide final 2 operands to brent-kung
   // adder.
-  localparam pipe_num = 2;
+  localparam FLAG_PIPE_NUM = 2;
 
   // This is a simple shifter. It will shift the input valid signal to output, so
   // output can know whether present data is valid.
-  logic [pipe_num - 1 : 0] valid_flag;
+  logic [FLAG_PIPE_NUM - 1 : 0] valid_flag;
   
   always_ff @( posedge clk or negedge rst_n ) begin : VALID_FLAG
-    if (!rst_n) valid_flag <= {pipe_num{1'b0}};
-    else if (!stall) valid_flag <= {valid_flag[pipe_num - 1 - 1 : 0], in_valid}
-    else valid_flag <= valid_flag;
+    if (!rst_n) valid_flag <= {FLAG_PIPE_NUM{1'b0}};
+    else if (stall) valid_flag <= valid_flag;
+    else valid_flag <= {valid_flag[FLAG_PIPE_NUM - 1 - 1 : 0], in_valid};
   end
 
-  assign out_valid = valid_flag[pipe_num - 1];
+  assign out_valid = valid_flag[FLAG_PIPE_NUM - 1];
   assign out_ready = in_ready;
 
-//------------------------ Temp Register --------------------------------------------//
-  // In this kind of design, we use a register to store the multipicand in IDLE state,
-  // which make the calculation won't by affected by inputs if they change in the CALC
-  // stage.
-  logic [MUL_SIZE - 1 + 1 : 0] multiplicand_reg;    // {sign, in_op1}
-  logic [MUL_SIZE - 1 + 1 + 2 : 0] multiplier_reg;  // {sign, sign, in_op2, 1'b0}
+//------------------------ First Pipeline -------------------------------------------//
+  // All the operands we need will be first store in registers.
+  localparam OP_NUM_PIPE = MUL_SIZE / 2 + 1 + 2;
+  logic [ADDER_SIZE - 1 : 0] op_generate     [OP_NUM_PIPE - 1 : 0];
+  logic [ADDER_SIZE - 1 : 0] op_generate_reg [OP_NUM_PIPE - 1 : 0];
 
-  logic multiplicand_sign;
-  logic multiplier_sign;
-
-  assign multiplicand_sign = in_op1_signed ? in_op1[MUL_SIZE - 1] : 1'b0;
-  assign multiplier_sign   = in_op2_signed ? in_op2[MUL_SIZE - 1] : 1'b0;
-
-  always_ff @( posedge clk or negedge rst_n ) begin : MULTIPLICAND_REG
-    if (!rst_n) multiplicand_reg <= 'b0;
-    else if (state_is_idle) multiplicand_reg <= {multiplicand_sign, in_op1};
-    else multiplicand_reg <= multiplicand_reg;
-  end
-
-  always_ff @( posedge clk or negedge rst_n ) begin : MULTIPLIER_REG
-    if (!rst_n) multiplier_reg <= 'b0;
-    else if (state_is_idle) multiplier_reg <= {{2{multiplier_sign}}, in_op2, 1'b0};
-    else if (state_is_calc) multiplier_reg <= multiplier_reg << 2;
-    else multiplier_reg <= multiplier_reg;
-  end
-
-//------------------------ Booth Code Generate --------------------------------------//
-  /*
-  +===========+===========+=========================+
-  | booth_code| Operation | Description             |
-  +===========+===========+=========================+
-  | 3'b000    | 0         | No operation            |
-  | 3'b001    | +1        | Add multiplier          |
-  | 3'b010    | +1        | Add multiplier          |
-  | 3'b011    | +2        | Add 2x multiplier       |
-  | 3'b100    | -2        | Subtract 2x multiplier  |
-  | 3'b101    | -1        | Subtract multiplier     |
-  | 3'b110    | -1        | Subtract multiplier     |
-  | 3'b111    | -0        | No operation            |
-  +===========+===========+=========================+
-  */
-
-  logic [2 : 0] booth_code;
-
-  assign booth_code = multiplier_reg[MUL_SIZE + 2 : MUL_SIZE];
-
-  logic booth_nochange;
-  logic booth_add1x;
-  logic booth_sub1x;
-  logic booth_add2x;
-  logic booth_sub2x;
-
-  assign booth_nochange = ((booth_code == 3'b000) || (booth_code == 3'b111));
-  assign booth_add1x    = ((booth_code == 3'b001) || (booth_code == 3'b010));
-  assign booth_sub1x    = ((booth_code == 3'b101) || (booth_code == 3'b110));
-  assign booth_add2x    = (booth_code == 3'b011);
-  assign booth_sub2x    = (booth_code == 3'b100);
-
-//------------------------ Adder Operand --------------------------------------------//
-  logic [ADDER_SIZE - 1 : 0] adder_op1;
-  logic [ADDER_SIZE - 1 : 0] adder_op2;
-  logic [ADDER_SIZE - 1 : 0] adder_res;
-  logic adder_cin;
-
-  // Instantiate adder
-  brent_kung_adder_nbit u_brent_kung_adder_nbit (
-    .in_op1   ( adder_op1 ),
-    .in_op2   ( adder_op2 ),
-    .out_res  ( adder_res ),
-    .cin      ( adder_cin ),
-    .cout     (           )
+  booth4_op_generator #(
+    .MUL_SIZE   (MUL_SIZE),
+    .ADDER_SIZE (ADDER_SIZE)
+  ) u_booth4_op_generator (
+    .in_op1        ( in_op1        ),
+    .in_op2        ( in_op2        ),
+    .in_op1_signed ( in_op1_signed ),
+    .in_op2_signed ( in_op2_signed ),
+    .out_op        ( op_generate   )
   );
 
-  logic [ADDER_SIZE - 1 : 0] res_reg;  // The register to store adder result
-  
-  always_ff @( posedge clk or negedge rst_n ) begin : RES
-    if (!rst_n) res_reg <= 'b0;
-    else if (state_is_calc) res_reg <= adder_res << 2;
-    else if (state_is_send) res_reg <= res_reg;
-    else res_reg <= 'b0;
+  always_ff @( posedge clk or negedge rst_n ) begin : OP_GENERATE
+    if (!rst_n) op_generate_reg <= '{default: '0};
+    else if (stall) op_generate_reg <= op_generate_reg;
+    else op_generate_reg <= op_generate;
   end
 
-  assign adder_op1 = res_reg;
+//------------------------ Second Pipeline ------------------------------------------//
+  // After we transfer them into two operands, we will store them into registers.
+  logic [ADDER_SIZE - 1 : 0] op_adder [1 : 0];
+  logic [ADDER_SIZE - 1 : 0] op_adder_reg [1 : 0];
   
-  logic [ADDER_SIZE - 1 : 0] adder_op2_add1x;
-  logic [ADDER_SIZE - 1 : 0] adder_op2_add2x;
-  logic [ADDER_SIZE - 1 : 0] adder_op2_sub1x;
-  logic [ADDER_SIZE - 1 : 0] adder_op2_sub2x;
+  op_n_to_2_nbit #(
+    .OP_NUM   ( OP_NUM_PIPE ),
+    .OP_WIDTH ( ADDER_SIZE  )
+  ) u_op_n_to_2_nbit (
+    .in_op  ( op_generate_reg ),
+    .out_op ( op_adder        )
+  );
+
+  always_ff @( posedge clk or negedge rst_n ) begin : OP_ADDER
+    if (!rst_n) op_adder_reg <= '{default: '0};
+    else if (stall) op_adder_reg <= op_adder_reg;
+    else op_adder_reg <= op_adder;
+  end
+
+//------------------------ Final Add ------------------------------------------------//
+  brent_kung_adder_nbit #(.ADDER_SIZE (ADDER_SIZE)) u_brent_kung_adder_nbit (
+    .in_op1  ( op_adder_reg[0] ),
+    .in_op2  ( op_adder_reg[1] ),
+    .out_res ( out_res         ),
+
+    .cin     ( 1'b0            )
+  );
   
-  assign adder_op2_add1x = {{(ADDER_SIZE - MUL_SIZE - 1){multiplicand_reg[MUL_SIZE]}}, multiplicand_reg};
-  assign adder_op2_add2x = {adder_op2_add1x[ADDER_SIZE - 1 - 1 : 0], 1'b0};
-  assign adder_op2_sub1x = ~ adder_op2_add1x;
-  assign adder_op2_sub2x = ~ adder_op2_add2x;
-
-  assign adder_op2 = booth_add1x    ? adder_op2_add1x :
-                     booth_add2x    ? adder_op2_add2x :
-                     booth_sub1x    ? adder_op2_sub1x :
-                     booth_sub2x    ? adder_op2_sub2x :
-                     {ADDER_SIZE{1'b0}};
-
-  assign adder_cin = booth_sub1x || booth_sub2x;
-
-  assign out_res = {ADDER_SIZE{state_is_send}} & adder_res;
-
 endmodule
