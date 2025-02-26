@@ -118,7 +118,6 @@ module axi4_lite_slave_bram #(
   logic [1 : 0] state_nxt;
 
   logic state_is_idle;
-  logic state_is_rdata_wait;
   logic state_is_rdata;
   logic state_is_wdata;
   logic state_is_wresp;
@@ -148,11 +147,11 @@ module axi4_lite_slave_bram #(
   assign state_wdata_exit_ena      = state_is_wdata && wdata_hsked;
   assign state_wresp_exit_ena      = state_is_wresp && wresp_hsked;
 
-  assign state_nxt = ({2{state_idle_exit2rdata_ena}}  && STATE_RDATA     )
-                  || ({2{state_idle_exit2wdata_ena}}  && STATE_WDATA     )
-                  || ({2{state_rdata_exit_ena}}       && STATE_IDLE      )
-                  || ({2{state_wdata_exit_ena}}       && STATE_WRESP     )
-                  || ({2{state_wresp_exit_ena}}       && STATE_IDLE      );
+  assign state_nxt = ({2{state_idle_exit2rdata_ena}}  & STATE_RDATA     )
+                   | ({2{state_idle_exit2wdata_ena}}  & STATE_WDATA     )
+                   | ({2{state_rdata_exit_ena}}       & STATE_IDLE      )
+                   | ({2{state_wdata_exit_ena}}       & STATE_WRESP     )
+                   | ({2{state_wresp_exit_ena}}       & STATE_IDLE      );
 
   always_ff @( posedge aclk or negedge aresetn ) begin : STATE_MACHINE
     if (!aresetn) state_now <= 2'b0;
@@ -160,19 +159,29 @@ module axi4_lite_slave_bram #(
     else state_now <= state_now;
   end
 
+//------------------------ Address Reg ----------------------------------------------//
+  // Here we need a register to store addr because bram doesn't store the write 
+  logic [ADDR_WIDTH - 1 : 0] addr_wr;
+
+  always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
+    if (!aresetn) addr_wr <= {ADDR_WIDTH{1'b0}};
+    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr;
+    else addr_wr <= addr_wr;
+  end
+
 //------------------------ Bram Interface -------------------------------------------//
-  assign out_A  = (in_s_araddr && {ADDR_WIDTH{state_idle_exit2rdata_ena}})
-               || (in_s_awaddr && {ADDR_WIDTH{state_idle_exit2wdata_ena}});
+  assign out_A  = (in_s_araddr & {ADDR_WIDTH{state_idle_exit2rdata_ena}})
+                | (addr_wr & {ADDR_WIDTH{state_wdata_exit_ena}});
 
   // EN need to last one more cycle for read because BRAM uses EN to assign Do
   assign out_EN = state_idle_exit2rdata_ena || state_is_rdata
-               || state_idle_exit2wdata_ena;
+               || state_wdata_exit_ena;
 
   // Here we assume all the bytes will be valid when writing
   // When state_is_wdata, all bytes will be written in to BRAM.
-  assign out_WE = {(DATA_WIDTH / 8){state_idle_exit2wdata_ena}};
+  assign out_WE = {(DATA_WIDTH / 8){state_wdata_exit_ena}};
 
-  assign out_Di = {DATA_WIDTH{state_idle_exit2wdata_ena}} & in_s_wdata;
+  assign out_Di = {DATA_WIDTH{state_wdata_exit_ena}} & in_s_wdata;
 
 //------------------------ Master Interface -----------------------------------------//
   assign out_s_rdata = {DATA_WIDTH{state_is_rdata}} & in_Do;
