@@ -7,10 +7,10 @@ module booth4_op_generator #(
   input  logic [MUL_SIZE - 1 : 0] in_op2,   // Multiplier
 
   input  logic in_op1_signed,   // Whether the operand 1 is signed, if unsigned, should be 0
-  input  logic in_op2_signed    // Whether the operand 2 is signed, if unsigned, should be 0
+  input  logic in_op2_signed,   // Whether the operand 2 is signed, if unsigned, should be 0
 
   // The another 2 is for dealing with negative booth operation + 1 issue
-  output logic [ADDER_SIZE - 1 : 0] out_op [OP_NUM + 2 - 1: 0],
+  output logic [ADDER_SIZE - 1 : 0] out_op [OP_NUM + 2 - 1: 0]
 );
 
   logic multiplicand_sign;

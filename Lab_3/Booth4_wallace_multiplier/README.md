@@ -1,6 +1,6 @@
 # Booth4 Based Wallace Multiplier
 ## Basic Function
-This is a Booth4 Based Wallace multiplier. It has two stage pipelines inside to increase max frequency. It will generate an output each clk cycle and the output valid signal shows whether the result is valid. The data width of the multiplier has been set as a parameter, and you can modify it to be 8, 16, 32, 64, 128, 256, .... **(2 ^ n)**. Please kindly know that the minimum width is 8 and you should keep the ADDER_SIZE to be 2 * MUL_SIZE also.
+This is a Booth4 Based Wallace multiplier. It has two stage pipelines inside to increase max frequency. It needs 2 cycles to start and will generate an output each clk cycle after that. The output valid signal shows whether the result is valid. The data width of the multiplier has been set as a parameter, and you can modify it to be 8, 16, 32, 64, 128, 256, .... **(2 ^ n)**. Please kindly know that the minimum width is 8 and you should keep the ADDER_SIZE to be 2 * MUL_SIZE also.
 
 ### Essential Files
 "booth4wallace_multiplier_nbit.sv" is the top module.
@@ -12,15 +12,14 @@ This is a Booth4 Based Wallace multiplier. It has two stage pipelines inside to 
 "onebit_adder.sv", "op_3_to_2_nbit", "op_n_to_2_nbit_onestage", and "op_n_to_2_nbit" are for buiding wallace tree. "op_n_to_2_nbit" can turn any number (set as parameter OP_WIDTH) same width bits into two operands. But you should notice that the input width and output width are same, which means it can not deal with overflow. Therefore the parameter OP_WIDTH should be high enough to make sure the output will not have any overflow.
 
 ### Handshake Signal
-This multiplier includes a state machine (IDLE state, CALCULATION state, and SEND state) and uses a handshake signal to control the change of state.
 
-**in_valid:** It comes from the source model. The multiplier won't begin to calculate unless in_valid is 1.
+**in_valid:** It comes from the source model, showing whether the data is valid. However, no matter whether the data is valid, the multiplier will calculate it.
 
-**out_ready:** It is an output of the multiplier. It shows whether the multiplier is ready to get the data. It will be 0 if the multiplier is still calculating or the result hasn't been received by the destination module.
+**out_ready:** It is an output of the multiplier. It shows whether the multiplier is ready to get the data. It will be 0 when the pipeline is stall.
 
-**in_ready:** It comes from the destination module. When the calculation has finished, the multiplier will keep the result unless the destination module has received it. Please kindly note that the multiplier won't begin a new round of calculation unless the destination module has received the result (in_ready is 1).
+**in_ready:** It comes from the destination module. The pipeline will stall unless this signal is 1.
 
-**out_valid:** It is an output of the multiplier. It shows whether the result is valid. It will be set as 1 only when the calculation has finished.
+**out_valid:** It is an output of the multiplier. It shows whether the result is valid. It is just the assigned by the in_valid with 2 cycles delay to synchoronous with results.
 
 ### Signed and Unsigned Calculation
 Please kindly know that the input data should be complementary. You should also set the value of __in_op1_signed__ and __in_op2_signed__ to indicate whether the operand 1 or operand 2 is signed or unsigned. This is important because it will affect the sign bit extension in the code.
@@ -28,17 +27,17 @@ Please kindly know that the input data should be complementary. You should also 
 ## Simulation Result
 **WAVE VIEW**
 
-The simulation tool is Vivado 2023.1. Here we show the process of one round calculation. In this case, we set the __MUL_SIZE__ to be 64 bits, which means it takes 32 clock cycles to calculate.
+The simulation tool is Vivado 2023.1. Here we show the process of one round calculation. In this case, we set the __MUL_SIZE__ to be 32 bit.
 
-![alt text](png/Simulation_result_wave.png)
+![alt text](png/Wave.png)
 
-The red circle indicates the time state machine enters the CALCULATION state from the IDLE state. The blue circle indicates the calculation has finished and the SEND state. The pink circle indicates the result has been received and goes back to the IDLE state.
+Please notice that, because of my bad testbench skill, each 4 results is a test loop, for example, the out_res at 35, 45, 55, and 65 ns are from one loop including unsigned * unsigned, signed * signed, unsigned * signed, and signed * unsigned. Meanwhile, the result are corresponded to tb_res1, tb_res2, tb_res3, and tb_res4 respectively.
 
 **TEST RESULT**
 
 The following figure shows some of the tests used to judge whether the result is correct.
 
-![alt text](png/Simulation_result_test.png)
+![alt text](png/Test.png)
 
 ## Contribution
 Contributions to this project are highly encouraged and appreciated! Whether it's bug fixes, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality of the multiplier.
