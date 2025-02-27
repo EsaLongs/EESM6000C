@@ -1,5 +1,5 @@
 module op_n_to_2_nbit #( 
-  parameter OP_NUM =16, 
+  parameter OP_NUM = 4, 
   parameter OP_WIDTH = 64
 ) (
   input  logic [OP_WIDTH - 1 : 0] in_op [OP_NUM - 1 : 0],
@@ -35,7 +35,7 @@ module op_n_to_2_nbit #(
   // = 2, then out_op[1 : 0] will be assigned by in_op[1 : 0] (after 
   // sign extend). The out_op[OUT_OP_NUM - 1 : 2] will use 3to2 unit.
   typedef int CAL_OP_NUM[STAGE_NUM : 0];
-
+  
   function CAL_OP_NUM OP_NUM_STAGE_RETURN();
     integer i;
     for (i = 0; i < STAGE_NUM + 1; i = i + 1) begin
@@ -50,11 +50,8 @@ module op_n_to_2_nbit #(
 //------------------------ Instantiate ----------------------------------------------//
   // Just used for instantiating.
   genvar i;
-  generate
-    for (i = 0; i < STAGE_NUM; i = i + 1) begin: OP_TEMP
-      logic [OP_WIDTH - 1 : 0] op_temp [OP_NUM_STAGE[i + 1] - 1 : 0];
-    end
-  endgenerate
+  
+  logic [OP_WIDTH - 1 : 0] op_temp [STAGE_NUM - 1 : 0] [OP_NUM - 1 : 0];
   
   generate
     // This part looks complicated. For example, assuming that the OP_NUM = IN_OP_NUM
@@ -69,20 +66,21 @@ module op_n_to_2_nbit #(
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           .in_op  (in_op),
-          .out_op (OP_TEMP[i].op_temp)
+          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
         );
       end else begin
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           // The last stage op_temp
-          .in_op  (OP_TEMP[i - 1].op_temp),
+          .in_op  (op_temp[i][OP_NUM_STAGE[i] - 1 : 0]),
           // This stage op_temp
-          .out_op (OP_TEMP[i].op_temp)
+          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
         );
       end
     end
   endgenerate
   
-  assign out_op = OP_TEMP[STAGE_NUM - 1].op_temp;
+  assign out_op = op_temp[STAGE_NUM - 1][1 : 0];
+
 
  endmodule
