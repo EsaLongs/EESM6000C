@@ -74,7 +74,7 @@ module op_n_to_2_nbit #(
           // The last stage op_temp
           .in_op  (op_temp[i][OP_NUM_STAGE[i] - 1 : 0]),
           // This stage op_temp
-          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
+          .out_op (op_temp[i + 1][OP_NUM_STAGE[i + 1] - 1 : 0])
         );
       end
     end
