@@ -1,6 +1,6 @@
 module op_n_to_2_nbit_onestage #(
-  parameter OP_WIDTH = 64,
-  parameter IN_OP_NUM   = 8,
+  parameter OP_WIDTH  = 64,
+  parameter IN_OP_NUM = 8,
   parameter int OUT_OP_NUM = (IN_OP_NUM % 3) + 2 * (IN_OP_NUM / 3)
 ) (
   input  logic [OP_WIDTH - 1 : 0] in_op [IN_OP_NUM - 1 : 0],
