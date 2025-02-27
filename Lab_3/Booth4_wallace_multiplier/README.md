@@ -40,5 +40,12 @@ The following figure shows some of the tests used to judge whether the result is
 
 ![alt text](png/Test.png)
 
+**SCHEMATIC**
+The follwing figure shows the 8 bit and 32 bit schematic
+
+![alt text](png/schematic_8.png)
+
+![alt text](png/schematic_32.png)
+
 ## Contribution
 Contributions to this project are highly encouraged and appreciated! Whether it's bug fixes, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality of the multiplier.
