@@ -29,7 +29,7 @@ module op_n_to_2_nbit_onestage #(
 
   generate
     for (i = 0; i < IN_OP_NUM % 3; i = i + 1) begin
-      assign out_op[i] = {{in_op[i][OP_WIDTH - 1]}, in_op[i]}; // Sign extend
+      assign out_op[i] = in_op[i]; // Sign extend
     end
   endgenerate
 

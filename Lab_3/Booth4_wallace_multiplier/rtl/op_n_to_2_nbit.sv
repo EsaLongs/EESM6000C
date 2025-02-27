@@ -1,5 +1,5 @@
 module op_n_to_2_nbit #( 
-  parameter OP_NUM = 4, 
+  parameter OP_NUM = 16, 
   parameter OP_WIDTH = 64
 ) (
   input  logic [OP_WIDTH - 1 : 0] in_op [OP_NUM - 1 : 0],
@@ -66,15 +66,15 @@ module op_n_to_2_nbit #(
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           .in_op  (in_op),
-          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
+          .out_op (op_temp[i])
         );
       end else begin
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           // The last stage op_temp
-          .in_op  (op_temp[i - 1][OP_NUM_STAGE[i] - 1 : 0]),
+          .in_op  (op_temp[i - 1]),
           // This stage op_temp
-          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
+          .out_op (op_temp[i])
         );
       end
     end
