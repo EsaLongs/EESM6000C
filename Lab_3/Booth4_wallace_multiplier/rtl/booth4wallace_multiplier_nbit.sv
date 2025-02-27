@@ -9,10 +9,9 @@
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
 // Description: This is a booth4 based wallace multiplier, you can set the value of 
-//              MUL_SIZE in to be 2 ^ n (4, 8, 16, 32, 64, 128 ....).
+//              MUL_SIZE in to be 2 ^ n (8, 16, 32, 64, 128 ....).
 // 
-// Dependencies: "Brent_Kung_Adder_nbit", "onebit_adder", 
-//               "gp_unit.sv" (instantiate unit for adder), 
+// Dependencies: Many.
 // 
 // Revision: 0.01
 // 
