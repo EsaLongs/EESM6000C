@@ -5,8 +5,8 @@ module op_3_to_2_nbit #(
   input  logic [OP_WIDTH - 1 : 0] in_op2,
   input  logic [OP_WIDTH - 1 : 0] in_op3,
 
-  output logic [OP_WIDTH - 1  + 1 : 0] out_op1,
-  output logic [OP_WIDTH - 1  + 1 : 0] out_op2
+  output logic [OP_WIDTH - 1 : 0] out_op1,
+  output logic [OP_WIDTH - 1 : 0] out_op2
 );
 
   logic [OP_WIDTH - 1 : 0] cout;

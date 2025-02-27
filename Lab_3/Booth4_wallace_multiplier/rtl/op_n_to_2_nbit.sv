@@ -26,7 +26,7 @@ module op_n_to_2_nbit #(
     end
   endfunction
 
-  localparam STAGE_NUM = STAGE_NUM_RETURN();
+  localparam int STAGE_NUM = STAGE_NUM_RETURN();
 
   // Calculate how many input operands it has for each stage.
   // For each stage, we will have IN_OP_NUM % 3 operands left and assign
@@ -66,15 +66,21 @@ module op_n_to_2_nbit #(
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           .in_op  (in_op),
-          .out_op (op_temp[i])
+          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
+        );
+      end else if (i == 1) begin 
+        op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
+        ) u_op_n_to_2_nbit_onestage (
+          .in_op  (op_temp[i - 1][OP_NUM_STAGE[i] - 1 : 0]),
+          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
         );
       end else begin
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           // The last stage op_temp
-          .in_op  (op_temp[i - 1]),
+          .in_op  (op_temp[i - 1][OP_NUM_STAGE[i] - 1 : 0]),
           // This stage op_temp
-          .out_op (op_temp[i])
+          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
         );
       end
     end
