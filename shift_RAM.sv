@@ -4,7 +4,7 @@
 // 
 // Create Date: 28.02.2025 17:28:20
 // Design Name: Shifter implemented with BRAM
-// Module Name: shifter_with_bram
+// Module Name: shift_RAM
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
