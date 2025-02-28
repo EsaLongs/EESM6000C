@@ -45,9 +45,9 @@ module axi4_stream_slave_bram #(
   // TUSER
 
 //------------------------ Bram Interface -------------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_Di,   // Write data
-  input  logic [DATA_WIDTH - 1 : 0] in_Do,    // Read data
-  output logic [ADDR_WIDTH - 1 : 0] out_A,    // Address
+  output logic [DATA_WIDTH - 1 : 0] out_Di,           // Write data
+
+  output logic [ADDR_WIDTH_RETURN() - 1 : 0] out_A,   // Address
 
   output logic out_EN,   // Bram enable
   
@@ -56,26 +56,19 @@ module axi4_stream_slave_bram #(
 );
 
 
-  function integer STAGE_NUM_RETURN();
+//------------------------ PARAMETER CALCUTION --------------------------------------//
+  // Calculation ADDR_WIDTH according to DATA_NUM
+  function integer ADDR_WIDTH_RETURN();
     integer i;
-    for (i = 0; i < OP_NUM; i = i + 1) begin
-      if (
-          (
-            (((1 + i) * i / 2) >  (OP_NUM - 3))
-        || (((1 + i) * i / 2) == (OP_NUM - 3)) 
-          )
-      && (
-          (OP_NUM - 3) > (i * (i - 1) / 2)
-          )
-        ) begin
-          STAGE_NUM_RETURN = i + 1;
-          return STAGE_NUM_RETURN;
-      end else STAGE_NUM_RETURN = STAGE_NUM_RETURN;
+    for (i = 0; i < $clog2(DATA_NUM); i = i + 1) begin
+      if ((2 ** i + 1) > DATA_NUM) begin
+        ADDR_WIDTH_RETURN = i;
+        return ADDR_WIDTH_RETURN;
+      end
     end
   endfunction
 
-
-  localparam ADDR_WIDTH = ;
+  localparam int ADDR_WIDTH = ADDR_WIDTH_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic data_hsked;
@@ -85,91 +78,71 @@ module axi4_stream_slave_bram #(
   localparam STATE_IDLE = 1'd0; // IDLE state
   localparam STATE_TRAN = 1'd1; // Transfer_state
   
-
   logic state_now;
   logic state_nxt;
 
   logic state_is_idle;
-  logic state_is_rdata;
-  logic state_is_wdata;
-  logic state_is_wresp;
+  logic state_is_tran;
 
-  assign state_is_idle  = (state_now == STATE_IDLE);
-  assign state_is_rdata = (state_now == STATE_RDATA);
-  assign state_is_wdata = (state_now == STATE_WDATA);
-  assign state_is_wresp = (state_now == STATE_WRESP);
+  assign state_is_idle = (state_now == STATE_IDLE);
+  assign state_is_tran = (state_now == STATE_TRAN);
 
   logic state_exit_ena;
-  logic state_idle_exit2rdata_ena;
-  logic state_idle_exit2wdata_ena;
-  logic state_rdwait_exit_ena;
-  logic state_rdata_exit_ena;
-  logic state_wdata_exit_ena;
-  logic state_wresp_exit_ena;
+  logic state_idle_exit_ena;
+  logic state_tran_exit_ena;
 
-  assign state_exit_ena = state_idle_exit2rdata_ena 
-                       || state_idle_exit2wdata_ena
-                       || state_rdata_exit_ena 
-                       || state_wdata_exit_ena
-                       || state_wresp_exit_ena;
+  assign state_exit_ena = state_idle_exit_ena 
+                       || state_tran_exit_ena;
   
-  assign state_idle_exit2rdata_ena = state_is_idle  && raddr_hsked;
-  assign state_idle_exit2wdata_ena = state_is_idle  && waddr_hsked;
-  assign state_rdata_exit_ena      = state_is_rdata && rdata_hsked;
-  assign state_wdata_exit_ena      = state_is_wdata && wdata_hsked;
-  assign state_wresp_exit_ena      = state_is_wresp && wresp_hsked;
+  assign state_idle_exit_ena = state_is_idle && data_hsked;
+  assign state_tran_exit_ena = state_is_tran && in_s_tlast;
 
-  assign state_nxt = ({2{state_idle_exit2rdata_ena}}  & STATE_RDATA     )
-                   | ({2{state_idle_exit2wdata_ena}}  & STATE_WDATA     )
-                   | ({2{state_rdata_exit_ena}}       & STATE_IDLE      )
-                   | ({2{state_wdata_exit_ena}}       & STATE_WRESP     )
-                   | ({2{state_wresp_exit_ena}}       & STATE_IDLE      );
+  assign state_nxt = (state_idle_exit_ena && STATE_TRAN);
+                  || (state_tran_exit_ena && STATE_IDLE);
 
   always_ff @( posedge aclk or negedge aresetn ) begin : STATE_MACHINE
-    if (!aresetn) state_now <= 2'b0;
+    if (!aresetn) state_now <= 1'b0;
     else if (state_exit_ena) state_now <= state_nxt;
     else state_now <= state_now;
   end
 
-//------------------------ Address Reg ----------------------------------------------//
-  // Here we need a register to store addr because bram doesn't store the write 
-  logic [ADDR_WIDTH - 1 : 0] addr_wr;
+//------------------------ Address Generate -----------------------------------------//
+  // Here we use counter to generate address
+  logic [ADDR_WIDTH - 1 : 0] counter;
+  logic [ADDR_WIDTH - 1 : 0] addr;
 
-  always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
-    if (!aresetn) addr_wr <= {ADDR_WIDTH{1'b0}};
-    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr;
-    else addr_wr <= addr_wr;
+  // We want to transfer the first data just when handshake, so we don't need to wait
+  // another cycle to enter TRAN_STATE. 
+  logic tran_in_advance;
+  assign tran_in_advance = data_hsked;
+
+  logic tran_ena;
+  assign tran_ena = tran_in_advance || state_is_tran;
+
+  always_ff @( posedge aclk or negedge aresetn ) begin : COUNTER
+    if (!aresetn) counter <= {ADDR_WIDTH{1'b0}};
+    else if (tran_ena) counter <= counter + 1;
+    // Here we set counter to be 0 so each write operation will overwrite the last one.
+    // If we set counter <= counter here then it will write from the last position of 
+    // previous write operation.
+    else counter <= {ADDR_WIDTH{1'b0}};
   end
 
+  assign addr = {ADDR_WIDTH{tran_ena}} & counter;
+
 //------------------------ Bram Interface -------------------------------------------//
-  assign out_A  = (in_s_araddr & {ADDR_WIDTH{state_idle_exit2rdata_ena}})
-                | (addr_wr & {ADDR_WIDTH{state_wdata_exit_ena}});
+  assign out_A = addr;
 
-  // EN need to last one more cycle for read because BRAM uses EN to assign Do
-  assign out_EN = state_idle_exit2rdata_ena || state_is_rdata
-               || state_wdata_exit_ena;
+  assign out_EN = tran_ena;
 
-  // Here we assume all the bytes will be valid when writing
-  // When state_is_wdata, all bytes will be written in to BRAM.
-  assign out_WE = {(DATA_WIDTH / 8){state_wdata_exit_ena}};
+  assign out_WE = {(DATA_WIDTH / 8){tran_ena}} & in_s_tkeep;
 
-  assign out_Di = {DATA_WIDTH{state_wdata_exit_ena}} & in_s_wdata;
+  assign out_Di = {DATA_WIDTH{tran_ena}} & in_s_tdata;
 
 //------------------------ Master Interface -----------------------------------------//
-  assign out_s_rdata = {DATA_WIDTH{state_is_rdata}} & in_Do;
-  // We don't consider exclusive or error here because it's the simple BRAM
-  assign out_s_rresp = 2'b00;
-  assign out_s_bresp = 2'b00;
-
   // Handshake signal
-  // Because this slave interface is for a simple BRAM, so the timing is predicted.
-  // They can be generated by the state machine, needn't to get any feedback from BRAM.
-  // However, for other memory device, these part of signals should be designed
-  // carefully.
-  assign out_s_arready = state_is_idle;
-  assign out_s_awready = state_is_idle;
-  assign out_s_rvalid  = state_is_rdata;
-  assign out_s_wready  = state_is_wdata;
-  assign out_s_bvalid  = state_is_wresp;
+  // Orignially this signal should be decided by slave device, but this is just a 
+  // simple BRAM, so we can set it to be 1 simply.
+  assign out_s_tready = 1'b1;
 
 endmodule
