@@ -19,8 +19,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_stream_slave_bram #(
-  parameter DATA_NUM = 600,
-  parameter DATA_WIDTH = 32
+  parameter MAX_DATA_NUM = 600,
+  parameter pDATA_WIDTH = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
   input  logic aclk,      // Global clk
@@ -30,12 +30,12 @@ module axi4_stream_slave_bram #(
   input  logic in_s_tvalid,    // Indicate the data from master is valid
   output logic out_s_tready,   // Indicate slave is ready to get data
   
-  input  logic [DATA_WIDTH - 1 : 0] in_s_tdata,   // Read data
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_tdata,   // Read data
 
 //------------------------ Data Modification ----------------------------------------//
   // Don't consider TSTRB in this design.
   
-  input  logic [DATA_WIDTH / 8 - 1 : 0] in_s_tkeep,
+  input  logic [pDATA_WIDTH / 8 - 1 : 0] in_s_tkeep,
   input  logic in_s_tlast,
 
 //------------------------ Transport Modification -----------------------------------//
@@ -45,29 +45,29 @@ module axi4_stream_slave_bram #(
   // TUSER
 
 //------------------------ Bram Interface -------------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_Di,           // Write data
+  output logic [pDATA_WIDTH - 1 : 0] out_Di,           // Write data
 
-  output logic [ADDR_WIDTH_RETURN() - 1 : 0] out_A,   // Address
+  output logic [pADDR_WIDTH_DATA_RETURN() - 1 : 0] out_A,   // Address
 
   output logic out_EN,   // Bram enable
   
   // Bram write enable (specific to which byte)
-  output logic [DATA_WIDTH / 8 - 1 : 0] out_WE
+  output logic [pDATA_WIDTH / 8 - 1 : 0] out_WE
 );
 
 //------------------------ PARAMETER CALCUTION --------------------------------------//
-  // Calculation ADDR_WIDTH according to DATA_NUM
-  function integer ADDR_WIDTH_RETURN();
+  // Calculation pADDR_WIDTH_DATA according to MAX_DATA_NUM
+  function integer pADDR_WIDTH_DATA_RETURN();
     integer i;
-    for (i = 0; i < $clog2(DATA_NUM); i = i + 1) begin
-      if ((2 ** i + 1) > DATA_NUM) begin
-        ADDR_WIDTH_RETURN = i;
-        return ADDR_WIDTH_RETURN;
+    for (i = 0; i < $clog2(MAX_DATA_NUM); i = i + 1) begin
+      if (((2 ** i) > MAX_DATA_NUM) || ((2 ** i) == MAX_DATA_NUM)) begin
+        pADDR_WIDTH_DATA_RETURN = i;
+        return pADDR_WIDTH_DATA_RETURN;
       end
     end
   endfunction
 
-  localparam int ADDR_WIDTH = ADDR_WIDTH_RETURN();
+  localparam int pADDR_WIDTH_DATA = pADDR_WIDTH_DATA_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic data_hsked;
@@ -107,8 +107,8 @@ module axi4_stream_slave_bram #(
 
 //------------------------ Address Generate -----------------------------------------//
   // Here we use counter to generate address
-  logic [ADDR_WIDTH - 1 : 0] counter;
-  logic [ADDR_WIDTH - 1 : 0] addr;
+  logic [pADDR_WIDTH_DATA - 1 : 0] counter;
+  logic [pADDR_WIDTH_DATA - 1 : 0] addr;
 
   // We want to transfer the first data just when handshake, so we don't need to wait
   // another cycle to enter TRAN_STATE. 
@@ -119,24 +119,24 @@ module axi4_stream_slave_bram #(
   assign tran_ena = tran_in_advance || state_is_tran;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : COUNTER
-    if (!aresetn) counter <= {ADDR_WIDTH{1'b0}};
+    if (!aresetn) counter <= {pADDR_WIDTH_DATA{1'b0}};
     else if (tran_ena) counter <= counter + 1;
     // Here we set counter to be 0 so each write operation will overwrite the last one.
     // If we set counter <= counter here then it will write from the last position of 
     // previous write operation.
-    else counter <= {ADDR_WIDTH{1'b0}};
+    else counter <= {pADDR_WIDTH_DATA{1'b0}};
   end
 
-  assign addr = {ADDR_WIDTH{tran_ena}} & counter;
+  assign addr = {pADDR_WIDTH_DATA{tran_ena}} & counter;
 
 //------------------------ Bram Interface -------------------------------------------//
   assign out_A = addr;
 
   assign out_EN = tran_ena;
 
-  assign out_WE = {(DATA_WIDTH / 8){tran_ena}} & in_s_tkeep;
+  assign out_WE = {(pDATA_WIDTH / 8){tran_ena}} & in_s_tkeep;
 
-  assign out_Di = {DATA_WIDTH{tran_ena}} & in_s_tdata;
+  assign out_Di = {pDATA_WIDTH{tran_ena}} & in_s_tdata;
 
 //------------------------ Master Interface -----------------------------------------//
   // Handshake signal

@@ -19,16 +19,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave_bram #(
-  parameter ADDR_WIDTH = 12,
+  parameter pADDR_WIDTH_TAP = 12,
   parameter MAX_TAP_NUM  = 11,
-  parameter DATA_WIDTH = 32
+  parameter pDATA_WIDTH = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
   input  logic aclk,      // Global clk
   input  logic aresetn,   // Global rst_n
 
 //------------------------ Read Address Channel -------------------------------------//
-  input  logic [ADDR_WIDTH - 1 : 0] in_s_araddr,   // Read address
+  input  logic [pADDR_WIDTH_TAP - 1 : 0] in_s_araddr,   // Read address
   
   // Ignore ARCACHE and ARPROT as a slave.
   // input  logic [3 : 0] in_s_arcache,
@@ -38,7 +38,7 @@ module axi4_lite_slave_bram #(
   output logic out_s_arready,   // Indicate slave is ready to get read address
   
 //------------------------ Read Data Channel ----------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
+  output logic [pDATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
   
   output logic [1 : 0] out_s_rresp,   // Read response, indicating status of data transfer
   
@@ -46,7 +46,7 @@ module axi4_lite_slave_bram #(
   input  logic in_s_rready,    // Indicate master is ready to receive the data
 
 //------------------------ Write Address Channel ------------------------------------//
-  input  logic [ADDR_WIDTH - 1 : 0] in_s_awaddr,   // Write address
+  input  logic [pADDR_WIDTH_TAP - 1 : 0] in_s_awaddr,   // Write address
   
   // Ignore AWCACHE and AWPROT as a slave.
   // input  logic [3 : 0] in_s_awcache,
@@ -56,7 +56,7 @@ module axi4_lite_slave_bram #(
   output logic out_s_awready,   // Indicate slave is ready to get write address
 
 //------------------------ Write Data Channel ---------------------------------------//
-  input  logic [DATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
   
   input  logic in_s_wvalid,    // Indicate the write data from master is valid
   output logic out_s_wready,   // Indicate slave is ready to get data
@@ -68,14 +68,14 @@ module axi4_lite_slave_bram #(
   input  logic in_s_bready,    // Indicate the master is ready to receive response
 
 //------------------------ Bram Interface -------------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_Di,   // Write data
-  input  logic [DATA_WIDTH - 1 : 0] in_Do,    // Read data
-  output logic [ADDR_WIDTH - 1 : 0] out_A,    // Address
+  output logic [pDATA_WIDTH - 1 : 0] out_Di,   // Write data
+  input  logic [pDATA_WIDTH - 1 : 0] in_Do,    // Read data
+  output logic [pADDR_WIDTH_TAP - 1 : 0] out_A,    // Address
 
   output logic out_EN,   // Bram enable
   
   // Bram write enable (specific to which byte)
-  output logic [DATA_WIDTH / 8 - 1 : 0] out_WE
+  output logic [pDATA_WIDTH / 8 - 1 : 0] out_WE
 );
 
   // +===========================================================================+
@@ -95,18 +95,18 @@ module axi4_lite_slave_bram #(
 
 
 //------------------------ Parameter Calculation ------------------------------------//
-  // Calculate BRAM_ADDR_WIDTH according to MAX_TAP_NUM
-  function integer BRAM_ADDR_WIDTH_RETURN();
+  // Calculate BRAM_pADDR_WIDTH_TAP according to MAX_TAP_NUM
+  function integer BRAM_pADDR_WIDTH_TAP_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        BRAM_ADDR_WIDTH_RETURN = i;
-        return BRAM_ADDR_WIDTH_RETURN;
+        BRAM_pADDR_WIDTH_TAP_RETURN = i;
+        return BRAM_pADDR_WIDTH_TAP_RETURN;
       end
     end
   endfunction
 
-  localparam int BRAM_ADDR_WIDTH = BRAM_ADDR_WIDTH_RETURN();
+  localparam int BRAM_pADDR_WIDTH_TAP = BRAM_pADDR_WIDTH_TAP_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic raddr_hsked;
@@ -177,17 +177,17 @@ module axi4_lite_slave_bram #(
 
 //------------------------ Address Reg ----------------------------------------------//
   // Here we need a register to store addr because bram doesn't store the write 
-  logic [BRAM_ADDR_WIDTH - 1 : 0] addr_wr;
+  logic [BRAM_pADDR_WIDTH_TAP - 1 : 0] addr_wr;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
-    if (!aresetn) addr_wr <= {BRAM_ADDR_WIDTH{1'b0}};
-    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr[BRAM_ADDR_WIDTH - 1 : 0];
+    if (!aresetn) addr_wr <= {BRAM_pADDR_WIDTH_TAP{1'b0}};
+    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr[BRAM_pADDR_WIDTH_TAP - 1 : 0];
     else addr_wr <= addr_wr;
   end
 
 //------------------------ Bram Interface -------------------------------------------//
-  assign out_A  = (in_s_araddr[BRAM_ADDR_WIDTH - 1 : 0] & {BRAM_ADDR_WIDTH{state_idle_exit2rdata_ena}})
-                | (addr_wr & {BRAM_ADDR_WIDTH{state_wdata_exit_ena}});
+  assign out_A  = (in_s_araddr[BRAM_pADDR_WIDTH_TAP - 1 : 0] & {BRAM_pADDR_WIDTH_TAP{state_idle_exit2rdata_ena}})
+                | (addr_wr & {BRAM_pADDR_WIDTH_TAP{state_wdata_exit_ena}});
 
   // EN need to last one more cycle for read because BRAM uses EN to assign Do
   assign out_EN = state_idle_exit2rdata_ena || state_is_rdata
@@ -195,12 +195,12 @@ module axi4_lite_slave_bram #(
 
   // Here we assume all the bytes will be valid when writing
   // When state_is_wdata, all bytes will be written in to BRAM.
-  assign out_WE = {(DATA_WIDTH / 8){state_wdata_exit_ena}};
+  assign out_WE = {(pDATA_WIDTH / 8){state_wdata_exit_ena}};
 
-  assign out_Di = {DATA_WIDTH{state_wdata_exit_ena}} & in_s_wdata;
+  assign out_Di = {pDATA_WIDTH{state_wdata_exit_ena}} & in_s_wdata;
 
 //------------------------ Master Interface -----------------------------------------//
-  assign out_s_rdata = {DATA_WIDTH{state_is_rdata}} & in_Do;
+  assign out_s_rdata = {pDATA_WIDTH{state_is_rdata}} & in_Do;
   // We don't consider exclusive or error here because it's the simple BRAM
   assign out_s_rresp = 2'b00;
   assign out_s_bresp = 2'b00;

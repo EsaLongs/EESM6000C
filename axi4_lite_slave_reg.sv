@@ -19,7 +19,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave_reg #(
-  parameter DATA_WIDTH = 32
+  parameter pDATA_WIDTH = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
   input  logic aclk,      // Global clk
@@ -34,7 +34,7 @@ module axi4_lite_slave_reg #(
   output logic out_s_arready,   // Indicate slave is ready to get read address
   
 //------------------------ Read Data Channel ----------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
+  output logic [pDATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
   
   output logic out_s_rvalid,   // Indicate the output read data is valid
   input  logic in_s_rready,    // Indicate master is ready to receive the data
@@ -48,14 +48,14 @@ module axi4_lite_slave_reg #(
   output logic out_s_awready,   // Indicate slave is ready to get write address
 
 //------------------------ Write Data Channel ---------------------------------------//
-  input  logic [DATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
   
   input  logic in_s_wvalid,    // Indicate the write data from master is valid
   output logic out_s_wready,   // Indicate slave is ready to get data
 
 //------------------------ System Interface -----------------------------------------//
   input  logic in_ap_done,
-  output logic [DATA_WIDTH - 1 : 0] out_reg_data
+  output logic [pDATA_WIDTH - 1 : 0] out_reg_data
 );
 
 //------------------------ Handshake Signal -----------------------------------------//
@@ -114,7 +114,7 @@ module axi4_lite_slave_reg #(
 
 //------------------------ Write ----------------------------------------------------//
   // Master write request
-  logic [DATA_WIDTH - 1 : 2] conf_reg;
+  logic [pDATA_WIDTH - 1 : 2] conf_reg;
   // Hardware (system) and master write request
   logic [2 : 0] conf_reg_sys;
   logic ap_start;
@@ -124,8 +124,8 @@ module axi4_lite_slave_reg #(
 
   // When system is calculation, conf_reg can not be writen
   always_ff @( posedge aclk or negedge aresetn) begin
-    if (!aresetn) conf_reg <= {(DATA_WIDTH - 3){1'b0}};
-    else if (state_wdata_exit_ena && idle) conf_reg <= in_s_wdata[DATA_WIDTH - 1 : 2];
+    if (!aresetn) conf_reg <= {(pDATA_WIDTH - 3){1'b0}};
+    else if (state_wdata_exit_ena && idle) conf_reg <= in_s_wdata[pDATA_WIDTH - 1 : 2];
     else conf_reg <= conf_reg;
   end
 
@@ -139,7 +139,7 @@ module axi4_lite_slave_reg #(
   assign ap_done = in_ap_done;
 
 //------------------------ Master Interface -----------------------------------------//
-  assign out_s_rdata  = {DATA_WIDTH{state_is_rdata}} & {conf_reg, conf_reg_sys};
+  assign out_s_rdata  = {pDATA_WIDTH{state_is_rdata}} & {conf_reg, conf_reg_sys};
   assign out_reg_data = out_s_rdata;
 
   // Handshake signal

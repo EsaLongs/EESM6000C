@@ -19,16 +19,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave #(
-  parameter ADDR_WIDTH  = 12,
+  parameter pADDR_WIDTH_TAP  = 12,
   parameter MAX_TAP_NUM = 11,
-  parameter DATA_WIDTH  = 32
+  parameter pDATA_WIDTH  = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
   input  logic aclk,      // Global clk
   input  logic aresetn,   // Global rst_n
 
 //------------------------ Read Address Channel -------------------------------------//
-  input  logic [ADDR_WIDTH - 1 : 0] in_s_araddr,   // Read address
+  input  logic [pADDR_WIDTH_TAP - 1 : 0] in_s_araddr,   // Read address
   
   // Ignore ARCACHE and ARPROT as a slave.
   // input  logic [3 : 0] in_s_arcache,
@@ -38,7 +38,7 @@ module axi4_lite_slave #(
   output logic out_s_arready,   // Indicate slave is ready to get read address
   
 //------------------------ Read Data Channel ----------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
+  output logic [pDATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
   
   output logic [1 : 0] out_s_rresp,   // Read response, indicating status of data transfer
   
@@ -46,7 +46,7 @@ module axi4_lite_slave #(
   input  logic in_s_rready,    // Indicate master is ready to receive the data
 
 //------------------------ Write Address Channel ------------------------------------//
-  input  logic [ADDR_WIDTH - 1 : 0] in_s_awaddr,   // Write address
+  input  logic [pADDR_WIDTH_TAP - 1 : 0] in_s_awaddr,   // Write address
   
   // Ignore AWCACHE and AWPROT as a slave.
   // input  logic [3 : 0] in_s_awcache,
@@ -56,7 +56,7 @@ module axi4_lite_slave #(
   output logic out_s_awready,   // Indicate slave is ready to get write address
 
 //------------------------ Write Data Channel ---------------------------------------//
-  input  logic [DATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
   
   input  logic in_s_wvalid,    // Indicate the write data from master is valid
   output logic out_s_wready,   // Indicate slave is ready to get data
@@ -68,33 +68,33 @@ module axi4_lite_slave #(
   input  logic in_s_bready,    // Indicate the master is ready to receive response
 
 //------------------------ Bram Interface -------------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_Di,   // Write data
-  input  logic [DATA_WIDTH - 1 : 0] in_Do,    // Read data
-  output logic [ADDR_WIDTH - 1 : 0] out_A,    // Address
+  output logic [pDATA_WIDTH - 1 : 0] out_Di,   // Write data
+  input  logic [pDATA_WIDTH - 1 : 0] in_Do,    // Read data
+  output logic [pADDR_WIDTH_TAP - 1 : 0] out_A,    // Address
 
   output logic out_EN,   // Bram enable
   
   // Bram write enable (specific to which byte)
-  output logic [DATA_WIDTH / 8 - 1 : 0] out_WE,
+  output logic [pDATA_WIDTH / 8 - 1 : 0] out_WE,
 
 //------------------------ System Interface -----------------------------------------//
   input  logic in_ap_done,
-  output logic [DATA_WIDTH - 1 : 0] out_reg_data  
+  output logic [pDATA_WIDTH - 1 : 0] out_reg_data  
 );
 
 //------------------------ Parameter Calculation ------------------------------------//
-  // Calculate BRAM_ADDR_WIDTH according to MAX_TAP_NUM
-  function integer BRAM_ADDR_WIDTH_RETURN();
+  // Calculate BRAM_pADDR_WIDTH_TAP according to MAX_TAP_NUM
+  function integer BRAM_pADDR_WIDTH_TAP_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        BRAM_ADDR_WIDTH_RETURN = i;
-        return BRAM_ADDR_WIDTH_RETURN;
+        BRAM_pADDR_WIDTH_TAP_RETURN = i;
+        return BRAM_pADDR_WIDTH_TAP_RETURN;
       end
     end
   endfunction
 
-  localparam int BRAM_ADDR_WIDTH = BRAM_ADDR_WIDTH_RETURN();
+  localparam int BRAM_pADDR_WIDTH_TAP = BRAM_pADDR_WIDTH_TAP_RETURN();
 
 //------------------------ Module Instaniate ----------------------------------------//
   //------------------------ BRAM Slave ---------------------------------------------//
@@ -102,27 +102,27 @@ module axi4_lite_slave #(
   
   logic bram_aclk;
   logic bram_aresetn;
-  logic [ADDR_WIDTH - 1 : 0] bram_in_s_araddr;
+  logic [pADDR_WIDTH_TAP - 1 : 0] bram_in_s_araddr;
   logic bram_in_s_arvalid;
   logic bram_out_s_arready;
-  logic [DATA_WIDTH - 1 : 0] bram_out_s_rdata;
+  logic [pDATA_WIDTH - 1 : 0] bram_out_s_rdata;
   logic [1 : 0]              bram_out_s_rresp;
   logic bram_out_s_rvalid;
   logic bram_in_s_rready;
-  logic [ADDR_WIDTH - 1 : 0] bram_in_s_awaddr;
+  logic [pADDR_WIDTH_TAP - 1 : 0] bram_in_s_awaddr;
   logic bram_in_s_awvalid;
   logic bram_out_s_awready;
-  logic [DATA_WIDTH - 1 : 0] bram_in_s_wdata;
+  logic [pDATA_WIDTH - 1 : 0] bram_in_s_wdata;
   logic bram_in_s_wvalid;
   logic bram_out_s_wready;
   logic [1 : 0] bram_out_s_bresp;
   logic bram_out_s_bvalid;
   logic bram_in_s_bready;
-  logic [DATA_WIDTH - 1 : 0] bram_out_Di;
-  logic [DATA_WIDTH - 1 : 0] bram_in_Do;
-  logic [ADDR_WIDTH - 1 : 0] bram_out_A;
+  logic [pDATA_WIDTH - 1 : 0] bram_out_Di;
+  logic [pDATA_WIDTH - 1 : 0] bram_in_Do;
+  logic [pADDR_WIDTH_TAP - 1 : 0] bram_out_A;
   logic bram_out_EN;
-  logic [DATA_WIDTH / 8 - 1 : 0] bram_out_WE;
+  logic [pDATA_WIDTH / 8 - 1 : 0] bram_out_WE;
   
   assign bram_req = (in_s_araddr == 12'h20);
 
@@ -142,9 +142,9 @@ module axi4_lite_slave #(
   assign bram_in_Do        = in_Do;
 
   axi4_lite_slave_bram #(
-      .ADDR_WIDTH ( ADDR_WIDTH ),
+      .pADDR_WIDTH_TAP ( pADDR_WIDTH_TAP ),
       .MAX_TAP_NUM  ( MAX_TAP_NUM  ),
-      .DATA_WIDTH ( DATA_WIDTH )
+      .pDATA_WIDTH ( pDATA_WIDTH )
   ) u_axi4_lite_slave_bram (
       //------------------------ Global Signals -------------------------------------//
       .aclk          ( bram_aclk          ),
@@ -191,16 +191,16 @@ module axi4_lite_slave #(
   logic reg_aresetn;
   logic reg_in_s_arvalid;
   logic reg_out_s_arready;
-  logic [DATA_WIDTH - 1 : 0] reg_out_s_rdata;
+  logic [pDATA_WIDTH - 1 : 0] reg_out_s_rdata;
   logic reg_out_s_rvalid;
   logic reg_in_s_rready;
   logic reg_in_s_awvalid;
   logic reg_out_s_awready;
-  logic [DATA_WIDTH - 1 : 0] reg_in_s_wdata;
+  logic [pDATA_WIDTH - 1 : 0] reg_in_s_wdata;
   logic reg_in_s_wvalid;
   logic reg_out_s_wready;
   logic reg_ap_done;
-  logic [DATA_WIDTH - 1 : 0] reg_data;
+  logic [pDATA_WIDTH - 1 : 0] reg_data;
 
   assign reg_req = (in_s_araddr == 12'h00);
 
@@ -217,7 +217,7 @@ module axi4_lite_slave #(
   assign reg_ap_done      = in_ap_done;
 
   axi4_lite_slave_reg #(
-    .DATA_WIDTH ( DATA_WIDTH )
+    .pDATA_WIDTH ( pDATA_WIDTH )
   ) u_axi4_lite_slave_reg (
     .aclk          ( reg_aclk          ),
     .aresetn       ( reg_aresetn       ),
@@ -262,8 +262,8 @@ module axi4_lite_slave #(
   assign out_s_arready = (!flag_bram) && (!flag_reg);
   
   //------------------------ Read Data Channel --------------------------------------//
-  assign out_s_rdata  = ({DATA_WIDTH{flag_bram}} & bram_out_s_rdata) 
-                     || ({DATA_WIDTH{flag_reg }} & reg_out_s_rdata );
+  assign out_s_rdata  = ({pDATA_WIDTH{flag_bram}} & bram_out_s_rdata) 
+                     || ({pDATA_WIDTH{flag_reg }} & reg_out_s_rdata );
   assign out_s_rresp  = 2'b00;  
   assign out_s_rvalid = (flag_bram && bram_out_s_rvalid)
                      || (flag_reg  && reg_out_s_rvalid );

@@ -19,7 +19,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module fir_main #(
-  parameter DATA_WIDTH   = 32,
+  parameter pDATA_WIDTH  = 32,
   // This two parameter will determine the limitation of calculation, so please make 
   // sure it is large enough when synthesis.
   // This two parameters will determine the counter width, which means the max counter
@@ -28,7 +28,6 @@ module fir_main #(
   parameter MAX_TAP_NUM  = 32,
   parameter MAX_DATA_NUM = 1024
   ) (
-
   input  logic clk,
   input  logic rst_n,
 
@@ -36,40 +35,55 @@ module fir_main #(
   input  logic in_ap_start,
   output logic out_ap_done,
 
-  input  logic [ : 0] tap_num,
-  input  logic [9 : 0] data_num,
+  input  logic [TAP_COUNTER_WIDTH_RETURN() - 1 : 0] tap_num,
+  input  logic [p_ADDR_WIDTH_DATA() - 1 : 0] data_num,
 
+//------------------------ Tap Ram Interface ----------------------------------------//
+  input  logic [pADDR_WIDTH - 1 : 0] in_Do_tap,
+  output logic [pADDR_WIDTH - 1 : 0] out_A_tap,
+  output logic out_EN_tap,
+
+//------------------------ Data Ram Interface ---------------------------------------//
+  input  logic [pADDR_WIDTH - 1 : 0] in_Do_data,
+  output logic [pADDR_WIDTH - 1 : 0] out_A_data,
+  output logic out_EN_data,
+
+//------------------------ AXI4 Stream Interface ------------------------------------//
+  input  logic in_sm_tready,
+  output logic in_sm_tvalid,
+  output logic in_sm_tvalid,
+  output logic in_sm_tvalid,
 
 
 );
 
 
 //------------------------ PARAMETER CALCUTION --------------------------------------//
-  // Calculating
+  // Calculate the width of tap_counter
   function integer TAP_COUNTER_WIDTH_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
         TAP_COUNTER_WIDTH_RETURN = i;
-        return ADDR_WIDTH_RETURN;
+        return TAP_COUNTER_WIDTH_RETURN;
       end
     end
   endfunction
 
-  localparam int ADDR_WIDTH = ADDR_WIDTH_RETURN();
+  localparam int TAP_COUNTER_WIDTH = TAP_COUNTER_WIDTH_RETURN();
 
-  // Calculation ADDR_WIDTH according to DATA_NUM
-  function integer ADDR_WIDTH_RETURN();
+  // Calculate the width of data_counter
+  function integer p_ADDR_WIDTH_DATA_RETURN();
     integer i;
-    for (i = 0; i < $clog2(DATA_NUM); i = i + 1) begin
-      if ((2 ** i + 1) > DATA_NUM) begin
-        ADDR_WIDTH_RETURN = i;
-        return ADDR_WIDTH_RETURN;
+    for (i = 0; i < $clog2(MAX_DATA_NUM); i = i + 1) begin
+      if (((2 ** i) > MAX_DATA_NUM) || ((2 ** i) == MAX_DATA_NUM)) begin
+        p_ADDR_WIDTH_DATA_RETURN = i;
+        return p_ADDR_WIDTH_DATA_RETURN;
       end
     end
   endfunction
 
-  localparam int ADDR_WIDTH = ADDR_WIDTH_RETURN();
+  localparam int p_ADDR_WIDTH_DATA = p_ADDR_WIDTH_DATA_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic data_hsked;
