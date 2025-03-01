@@ -3,8 +3,8 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 28.02.2025 17:28:20
-// Design Name: Shifter implemented with BRAM
-// Module Name: Fir
+// Design Name: Main part of fir
+// Module Name: fir_main
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
@@ -18,45 +18,46 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-module shifter_with_bram #(
-  parameter DATA_NUM = 10,
-  parameter DATA_WIDTH = 32
+module fir_main #(
+  parameter DATA_WIDTH   = 32,
+  // This two parameter will determine the limitation of calculation, so please make 
+  // sure it is large enough when synthesis.
+  // This two parameters will determine the counter width, which means the max counter
+  // number. For example, if set MAX_TAP_NUM to be 32, then the width of counter will
+  // be 5, you can only program configure register to have a TAP_NUM smaller than 32.
+  parameter MAX_TAP_NUM  = 32,
+  parameter MAX_DATA_NUM = 1024
   ) (
 
   input  logic clk,
   input  logic rst_n,
-  
-//------------------------ Data Channel ---------------------------------------------//
-  input  logic in_s_tvalid,    // Indicate the data from master is valid
-  output logic out_s_tready,   // Indicate slave is ready to get data
-  
-  input  logic [DATA_WIDTH - 1 : 0] in_s_tdata,   // Read data
 
-//------------------------ Data Modification ----------------------------------------//
-  // Don't consider TSTRB in this design.
-  
-  input  logic [DATA_WIDTH / 8 - 1 : 0] in_s_tkeep,
-  input  logic in_s_tlast,
+//------------------------ Configure Register ---------------------------------------//
+  input  logic in_ap_start,
+  output logic out_ap_done,
 
-//------------------------ Transport Modification -----------------------------------//
-  // We don't consider this part in this design.
-  // TID
-  // TDEST
-  // TUSER
+  input  logic [ : 0] tap_num,
+  input  logic [9 : 0] data_num,
 
-//------------------------ Bram Interface -------------------------------------------//
-  output logic [DATA_WIDTH - 1 : 0] out_Di,           // Write data
 
-  output logic [ADDR_WIDTH_RETURN() - 1 : 0] out_A,   // Address
 
-  output logic out_EN,   // Bram enable
-  
-  // Bram write enable (specific to which byte)
-  output logic [DATA_WIDTH / 8 - 1 : 0] out_WE
 );
 
 
 //------------------------ PARAMETER CALCUTION --------------------------------------//
+  // Calculating
+  function integer TAP_COUNTER_WIDTH_RETURN();
+    integer i;
+    for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
+      if ((2 ** i + 1) > DATA_NUM) begin
+        TAP_COUNTER_WIDTH_RETURN = i;
+        return ADDR_WIDTH_RETURN;
+      end
+    end
+  endfunction
+
+  localparam int ADDR_WIDTH = ADDR_WIDTH_RETURN();
+
   // Calculation ADDR_WIDTH according to DATA_NUM
   function integer ADDR_WIDTH_RETURN();
     integer i;

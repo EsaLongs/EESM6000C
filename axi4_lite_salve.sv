@@ -19,9 +19,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave #(
-  parameter ADDR_WIDTH = 12,
-  parameter BRAM_SIZE  = 11,
-  parameter DATA_WIDTH = 32
+  parameter ADDR_WIDTH  = 12,
+  parameter MAX_TAP_NUM = 11,
+  parameter DATA_WIDTH  = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
   input  logic aclk,      // Global clk
@@ -83,11 +83,11 @@ module axi4_lite_slave #(
 );
 
 //------------------------ Parameter Calculation ------------------------------------//
-  // Calculation BRAM_ADDR_WIDTH according to BRAM_SIZE
+  // Calculate BRAM_ADDR_WIDTH according to MAX_TAP_NUM
   function integer BRAM_ADDR_WIDTH_RETURN();
     integer i;
-    for (i = 0; i < $clog2(BRAM_SIZE); i = i + 1) begin
-      if ((2 ** i + 1) > BRAM_SIZE) begin
+    for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
+      if ((2 ** i + 1) > MAX_TAP_NUM) begin
         BRAM_ADDR_WIDTH_RETURN = i;
         return BRAM_ADDR_WIDTH_RETURN;
       end
@@ -143,7 +143,7 @@ module axi4_lite_slave #(
 
   axi4_lite_slave_bram #(
       .ADDR_WIDTH ( ADDR_WIDTH ),
-      .BRAM_SIZE  ( BRAM_SIZE  ),
+      .MAX_TAP_NUM  ( MAX_TAP_NUM  ),
       .DATA_WIDTH ( DATA_WIDTH )
   ) u_axi4_lite_slave_bram (
       //------------------------ Global Signals -------------------------------------//
