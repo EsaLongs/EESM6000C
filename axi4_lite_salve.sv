@@ -75,7 +75,11 @@ module axi4_lite_slave #(
   output logic out_EN,   // Bram enable
   
   // Bram write enable (specific to which byte)
-  output logic [DATA_WIDTH / 8 - 1 : 0] out_WE
+  output logic [DATA_WIDTH / 8 - 1 : 0] out_WE,
+
+//------------------------ System Interface -----------------------------------------//
+  input  logic in_ap_done,
+  output logic [DATA_WIDTH - 1 : 0] out_reg_data  
 );
 
 //------------------------ Parameter Calculation ------------------------------------//
@@ -141,7 +145,7 @@ module axi4_lite_slave #(
       .ADDR_WIDTH ( ADDR_WIDTH ),
       .BRAM_SIZE  ( BRAM_SIZE  ),
       .DATA_WIDTH ( DATA_WIDTH )
-  ) uut (
+  ) u_axi4_lite_slave_bram (
       //------------------------ Global Signals -------------------------------------//
       .aclk          ( bram_aclk          ),
       .aresetn       ( bram_aresetn       ),
@@ -181,6 +185,8 @@ module axi4_lite_slave #(
   );
 
   //------------------------ Reg Slave ----------------------------------------------//
+  logic reg_req;
+  
   logic reg_aclk;
   logic reg_aresetn;
   logic reg_in_s_arvalid;
@@ -193,11 +199,26 @@ module axi4_lite_slave #(
   logic [DATA_WIDTH - 1 : 0] reg_in_s_wdata;
   logic reg_in_s_wvalid;
   logic reg_out_s_wready;
+  logic reg_ap_done;
+  logic [DATA_WIDTH - 1 : 0] reg_data;
 
-  // 例化 axi4_lite_slave_reg 模块
+  assign reg_req = (in_s_araddr == 12'h00);
+
+  assign reg_aclk = aclk;
+  assign reg_aclk = aresetn;
+
+  // This signal will decide whether axi4_lite_slave_reg can start state machine.
+  assign reg_in_s_arvalid = reg_req;
+
+  assign reg_in_s_rready  = in_s_rready;
+  assign reg_in_s_awvalid = in_s_awvalid;
+  assign reg_in_s_wdata   = in_s_wdata;
+  assign reg_in_s_wvalid  = in_s_wvalid;
+  assign reg_ap_done      = in_ap_done;
+
   axi4_lite_slave_reg #(
     .DATA_WIDTH ( DATA_WIDTH )
-  ) uut (
+  ) u_axi4_lite_slave_reg (
     .aclk          ( reg_aclk          ),
     .aresetn       ( reg_aresetn       ),
     .in_s_arvalid  ( reg_in_s_arvalid  ),
@@ -209,7 +230,59 @@ module axi4_lite_slave #(
     .out_s_awready ( reg_out_s_awready ),
     .in_s_wdata    ( reg_in_s_wdata    ),
     .in_s_wvalid   ( reg_in_s_wvalid   ),
-    .out_s_wready  ( reg_out_s_wready  )
+    .out_s_wready  ( reg_out_s_wready  ),
+    .in_ap_done    ( reg_ap_done       ),
+    .out_reg_data  ( reg_data          )
   );
+
+//------------------------ Flag -----------------------------------------------------//
+  logic flag_bram;
+  logic flag_reg;
+
+  // Showing whether it is accessing BRAM
+  always_ff @( posedge aclk or negedge aresetn ) begin : FLAG_BRAM
+    if (!aresetn) flag_bram <= 1'b0;
+    else if (bram_req) flag_bram <= 1'b1;
+    // The next cycle will return IDLE
+    else if (bram_out_s_bvalid || bram_out_s_rvalid) flag_bram <= 1'b0;
+    else flag_bram <= flag_bram;
+  end
+
+  // Showing whether it is accessing reg
+  always_ff @( posedge aclk or negedge aresetn ) begin : FLAG_REG
+    if (!aresetn) flag_reg <= 1'b0;
+    else if (reg_req) flag_reg <= 1'b1;
+    // The next cycle will return IDLE
+    else if (reg_out_s_wready || out_s_rvalid) flag_reg <= 1'b0;
+    else flag_reg <= flag_reg;
+  end
+
+//------------------------ Master Interface -----------------------------------------//
+  //------------------------ Read Address Channel -----------------------------------//
+  assign out_s_arready = (!flag_bram) && (!flag_reg);
+  
+  //------------------------ Read Data Channel --------------------------------------//
+  assign out_s_rdata  = ({DATA_WIDTH{flag_bram}} & bram_out_s_rdata) 
+                     || ({DATA_WIDTH{flag_reg }} & reg_out_s_rdata );
+  assign out_s_rresp  = 2'b00;  
+  assign out_s_rvalid = (flag_bram && bram_out_s_rvalid)
+                     || (flag_reg  && reg_out_s_rvalid );
+
+  //------------------------ Write Address Channel ----------------------------------//
+  assign out_s_awready = (flag_bram && bram_out_s_awready)
+                      || (flag_reg  && reg_out_s_awready ); 
+  
+  assign out_s_bresp   = 2'b00;
+  // Only BRAM slave has response.
+  assign out_s_bvalid  = bram_out_s_bvalid;
+
+//------------------------ BRAM Interface ------------------------------------------//
+  assign out_Di = bram_out_Di;
+  assign out_A  = bram_out_A;
+  assign out_EN = bram_out_EN;
+  assign out_WE = bram_out_WE;
+
+//------------------------ System Interface ----------------------------------------//
+  assign out_reg_data = reg_data;
 
 endmodule

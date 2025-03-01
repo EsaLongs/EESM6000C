@@ -52,6 +52,10 @@ module axi4_lite_slave_reg #(
   
   input  logic in_s_wvalid,    // Indicate the write data from master is valid
   output logic out_s_wready,   // Indicate slave is ready to get data
+
+//------------------------ System Interface -----------------------------------------//
+  input  logic in_ap_done,
+  output logic [DATA_WIDTH - 1 : 0] out_reg_data
 );
 
 //------------------------ Handshake Signal -----------------------------------------//
@@ -90,7 +94,7 @@ module axi4_lite_slave_reg #(
   assign state_exit_ena = state_idle_exit2rdata_ena 
                        || state_idle_exit2wdata_ena
                        || state_rdata_exit_ena 
-                       || state_wdata_exit_ena
+                       || state_wdata_exit_ena;
   
   assign state_idle_exit2rdata_ena = state_is_idle  && raddr_hsked;
   assign state_idle_exit2wdata_ena = state_is_idle  && waddr_hsked;
@@ -109,15 +113,34 @@ module axi4_lite_slave_reg #(
   end
 
 //------------------------ Write ----------------------------------------------------//
-  logic [DATA_WIDTH - 1 : 0] conf_reg;
+  // Master write request
+  logic [DATA_WIDTH - 1 : 2] conf_reg;
+  // Hardware (system) and master write request
+  logic [2 : 0] conf_reg_sys;
+  logic ap_start;
+  logic ap_idle;
+  logic ap_done;
+  assign conf_reg_sys = {ap_done, ap_idle, ap_start};
 
-  always_ff @( posedge aclk or negedge rst_n) begin : blockName
-    if (state_wdata_exit_ena) conf_reg <= in_s_wdata;
+  // When system is calculation, conf_reg can not be writen
+  always_ff @( posedge aclk or negedge aresetn) begin
+    if (!aresetn) conf_reg <= {(DATA_WIDTH - 3){1'b0}};
+    else if (state_wdata_exit_ena && idle) conf_reg <= in_s_wdata[DATA_WIDTH - 1 : 2];
     else conf_reg <= conf_reg;
   end
 
+  always_ff @( posedge aclk or negedge aresetn) begin
+    if (!aresetn) ap_start <= 1'b0;
+    else if (state_wdata_exit_ena && ap_idle) ap_start <= in_s_wdata[0];
+    else ap_start <= 1'b0;
+  end
+
+  assign ap_idle = !ap_done;
+  assign ap_done = in_ap_done;
+
 //------------------------ Master Interface -----------------------------------------//
-  assign out_s_rdata = {DATA_WIDTH{state_is_rdata}} & conf_reg;
+  assign out_s_rdata  = {DATA_WIDTH{state_is_rdata}} & {conf_reg, conf_reg_sys};
+  assign out_reg_data = out_s_rdata;
 
   // Handshake signal
   // Because this slave interface is for a simple BRAM, so the timing is predicted.
