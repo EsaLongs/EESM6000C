@@ -55,7 +55,6 @@ module axi4_stream_slave_bram #(
   output logic [DATA_WIDTH / 8 - 1 : 0] out_WE
 );
 
-
 //------------------------ PARAMETER CALCUTION --------------------------------------//
   // Calculation ADDR_WIDTH according to DATA_NUM
   function integer ADDR_WIDTH_RETURN();

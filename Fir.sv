@@ -49,7 +49,7 @@ module fir_main #(
   function integer TAP_COUNTER_WIDTH_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
-      if ((2 ** i + 1) > DATA_NUM) begin
+      if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
         TAP_COUNTER_WIDTH_RETURN = i;
         return ADDR_WIDTH_RETURN;
       end

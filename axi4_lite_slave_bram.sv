@@ -99,7 +99,7 @@ module axi4_lite_slave_bram #(
   function integer BRAM_ADDR_WIDTH_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
-      if ((2 ** i + 1) > MAX_TAP_NUM) begin
+      if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
         BRAM_ADDR_WIDTH_RETURN = i;
         return BRAM_ADDR_WIDTH_RETURN;
       end
