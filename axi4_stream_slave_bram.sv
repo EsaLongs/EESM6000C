@@ -19,7 +19,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_stream_slave_bram #(
-  parameter DATA_NUM = 11,
+  parameter DATA_NUM = 600,
   parameter DATA_WIDTH = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//

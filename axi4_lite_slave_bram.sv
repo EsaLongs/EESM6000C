@@ -8,7 +8,7 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a AXI4 Lite interface for slave
+// Description: This is a AXI4 Lite interface for slave BRAM.
 // 
 // Dependencies:
 // 
@@ -19,7 +19,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave_bram #(
-  parameter ADDR_WIDTH = 5,
+  parameter ADDR_WIDTH = 12,
+  parameter BRAM_SIZE  = 11,
   parameter DATA_WIDTH = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
@@ -92,6 +93,21 @@ module axi4_lite_slave_bram #(
   // This module only generates 00 response because it is connected to a simple BRAM 
   // and no error conditions are considered.
 
+
+//------------------------ Parameter Calculation ------------------------------------//
+  // Calculation BRAM_ADDR_WIDTH according to BRAM_SIZE
+  function integer BRAM_ADDR_WIDTH_RETURN();
+    integer i;
+    for (i = 0; i < $clog2(BRAM_SIZE); i = i + 1) begin
+      if ((2 ** i + 1) > BRAM_SIZE) begin
+        BRAM_ADDR_WIDTH_RETURN = i;
+        return BRAM_ADDR_WIDTH_RETURN;
+      end
+    end
+  endfunction
+
+  localparam int BRAM_ADDR_WIDTH = BRAM_ADDR_WIDTH_RETURN();
+
 //------------------------ Handshake Signal -----------------------------------------//
   logic raddr_hsked;
   logic waddr_hsked;
@@ -161,17 +177,17 @@ module axi4_lite_slave_bram #(
 
 //------------------------ Address Reg ----------------------------------------------//
   // Here we need a register to store addr because bram doesn't store the write 
-  logic [ADDR_WIDTH - 1 : 0] addr_wr;
+  logic [BRAM_ADDR_WIDTH - 1 : 0] addr_wr;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
-    if (!aresetn) addr_wr <= {ADDR_WIDTH{1'b0}};
-    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr;
+    if (!aresetn) addr_wr <= {BRAM_ADDR_WIDTH{1'b0}};
+    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr[BRAM_ADDR_WIDTH - 1 : 0];
     else addr_wr <= addr_wr;
   end
 
 //------------------------ Bram Interface -------------------------------------------//
-  assign out_A  = (in_s_araddr & {ADDR_WIDTH{state_idle_exit2rdata_ena}})
-                | (addr_wr & {ADDR_WIDTH{state_wdata_exit_ena}});
+  assign out_A  = (in_s_araddr[BRAM_ADDR_WIDTH - 1 : 0] & {BRAM_ADDR_WIDTH{state_idle_exit2rdata_ena}})
+                | (addr_wr & {BRAM_ADDR_WIDTH{state_wdata_exit_ena}});
 
   // EN need to last one more cycle for read because BRAM uses EN to assign Do
   assign out_EN = state_idle_exit2rdata_ena || state_is_rdata
