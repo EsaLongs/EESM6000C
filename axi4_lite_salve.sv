@@ -93,14 +93,16 @@ module axi4_lite_slave #(
   localparam int BRAM_ADDR_WIDTH = BRAM_ADDR_WIDTH_RETURN();
 
 //------------------------ Module Instaniate ----------------------------------------//
-  // axi4_lite_slave_bram interface
+  //------------------------ BRAM Slave ---------------------------------------------//
+  logic bram_req;
+  
   logic bram_aclk;
   logic bram_aresetn;
   logic [ADDR_WIDTH - 1 : 0] bram_in_s_araddr;
   logic bram_in_s_arvalid;
   logic bram_out_s_arready;
   logic [DATA_WIDTH - 1 : 0] bram_out_s_rdata;
-  logic [1 : 0] bram_out_s_rresp;
+  logic [1 : 0]              bram_out_s_rresp;
   logic bram_out_s_rvalid;
   logic bram_in_s_rready;
   logic [ADDR_WIDTH - 1 : 0] bram_in_s_awaddr;
@@ -117,37 +119,97 @@ module axi4_lite_slave #(
   logic [ADDR_WIDTH - 1 : 0] bram_out_A;
   logic bram_out_EN;
   logic [DATA_WIDTH / 8 - 1 : 0] bram_out_WE;
+  
+  assign bram_req = (in_s_araddr == 12'h20);
 
+  assign bram_aclk        = aclk;
+  assign bram_aresetn     = aresetn;
+  assign bram_in_s_araddr = in_s_araddr;
+  
+  // This signal will decide whether axi4_lite_slave_bram can start state machine.
+  assign bram_in_s_arvalid = bram_req;
+  
+  assign bram_in_s_rready  = in_s_rready;
+  assign bram_in_s_awaddr  = in_s_awaddr;
+  assign bram_in_s_awvalid = in_s_awvalid;
+  assign bram_in_s_wdata   = in_s_wdata;
+  assign bram_in_s_wvalid  = in_s_wvalid;
+  assign bram_in_s_bready  = in_s_bready;
+  assign bram_in_Do        = in_Do;
 
   axi4_lite_slave_bram #(
-      .ADDR_WIDTH(ADDR_WIDTH),
-      .BRAM_SIZE(BRAM_SIZE),
-      .DATA_WIDTH(DATA_WIDTH)
+      .ADDR_WIDTH ( ADDR_WIDTH ),
+      .BRAM_SIZE  ( BRAM_SIZE  ),
+      .DATA_WIDTH ( DATA_WIDTH )
   ) uut (
-  .aclk          ( bram_aclk          ),
-  .aresetn       ( bram_aresetn       ),
-  .in_s_araddr   ( bram_in_s_araddr   ),
-  .in_s_arvalid  ( bram_in_s_arvalid  ),
-  .out_s_arready ( bram_out_s_arready ),
-  .out_s_rdata   ( bram_out_s_rdata   ),
-  .out_s_rresp   ( bram_out_s_rresp   ),
-  .out_s_rvalid  ( bram_out_s_rvalid  ),
-  .in_s_rready   ( bram_in_s_rready   ),
-  .in_s_awaddr   ( bram_in_s_awaddr   ),
-  .in_s_awvalid  ( bram_in_s_awvalid  ),
-  .out_s_awready ( bram_out_s_awready ),
-  .in_s_wdata    ( bram_in_s_wdata    ),
-  .in_s_wvalid   ( bram_in_s_wvalid   ),
-  .out_s_wready  ( bram_out_s_wready  ),
-  .out_s_bresp   ( bram_out_s_bresp   ),
-  .out_s_bvalid  ( bram_out_s_bvalid  ),
-  .in_s_bready   ( bram_in_s_bready   ),
-  .out_Di        ( bram_out_Di        ),
-  .in_Do         ( bram_in_Do         ),
-  .out_A         ( bram_out_A         ),
-  .out_EN        ( bram_out_EN         ),
-  .out_WE        ( bram_out_WE        )
+      //------------------------ Global Signals -------------------------------------//
+      .aclk          ( bram_aclk          ),
+      .aresetn       ( bram_aresetn       ),
+      
+      //------------------------ Read Address Channel -------------------------------//
+      .in_s_araddr   ( bram_in_s_araddr   ),
+      .in_s_arvalid  ( bram_in_s_arvalid  ),
+      .out_s_arready ( bram_out_s_arready ),
+
+      //------------------------ Read Data Channel ----------------------------------//
+      .out_s_rdata   ( bram_out_s_rdata   ),
+      .out_s_rresp   ( bram_out_s_rresp   ),
+      .out_s_rvalid  ( bram_out_s_rvalid  ),
+      .in_s_rready   ( bram_in_s_rready   ),
+      
+      //------------------------ Write Address Channel ------------------------------//
+      .in_s_awaddr   ( bram_in_s_awaddr   ),
+      .in_s_awvalid  ( bram_in_s_awvalid  ),
+      .out_s_awready ( bram_out_s_awready ),
+      
+      //------------------------ Write Data Channel ---------------------------------//
+      .in_s_wdata    ( bram_in_s_wdata    ),
+      .in_s_wvalid   ( bram_in_s_wvalid   ),
+      .out_s_wready  ( bram_out_s_wready  ),
+      
+      //------------------------ Write Response Channel -----------------------------//
+      .out_s_bresp   ( bram_out_s_bresp   ),
+      .out_s_bvalid  ( bram_out_s_bvalid  ),
+      .in_s_bready   ( bram_in_s_bready   ),
+      
+      //------------------------ Bram Interface -------------------------------------//
+      .out_Di        ( bram_out_Di        ),
+      .in_Do         ( bram_in_Do         ),
+      .out_A         ( bram_out_A         ),
+      .out_EN        ( bram_out_EN        ),
+      .out_WE        ( bram_out_WE        )
   );
 
+  //------------------------ Reg Slave ----------------------------------------------//
+  logic reg_aclk;
+  logic reg_aresetn;
+  logic reg_in_s_arvalid;
+  logic reg_out_s_arready;
+  logic [DATA_WIDTH - 1 : 0] reg_out_s_rdata;
+  logic reg_out_s_rvalid;
+  logic reg_in_s_rready;
+  logic reg_in_s_awvalid;
+  logic reg_out_s_awready;
+  logic [DATA_WIDTH - 1 : 0] reg_in_s_wdata;
+  logic reg_in_s_wvalid;
+  logic reg_out_s_wready;
+
+  // 例化 axi4_lite_slave_reg 模块
+  axi4_lite_slave_reg #(
+    .DATA_WIDTH ( DATA_WIDTH )
+  ) uut (
+    .aclk          ( reg_aclk          ),
+    .aresetn       ( reg_aresetn       ),
+    .in_s_arvalid  ( reg_in_s_arvalid  ),
+    .out_s_arready ( reg_out_s_arready ),
+    .out_s_rdata   ( reg_out_s_rdata   ),
+    .out_s_rvalid  ( reg_out_s_rvalid  ),
+    .in_s_rready   ( reg_in_s_rready   ),
+    .in_s_awvalid  ( reg_in_s_awvalid  ),
+    .out_s_awready ( reg_out_s_awready ),
+    .in_s_wdata    ( reg_in_s_wdata    ),
+    .in_s_wvalid   ( reg_in_s_wvalid   ),
+    .out_s_wready  ( reg_out_s_wready  )
+  );
 
 endmodule
