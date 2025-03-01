@@ -19,12 +19,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module shifter_with_bram #(
-  parameter DATA_NUM = 11,
+  parameter DATA_NUM = 10,
   parameter DATA_WIDTH = 32
   ) (
-//------------------------ Global Signals -------------------------------------------//
-  input  logic aclk,      // Global clk
-  input  logic aresetn,   // Global rst_n
+
+  input  logic clk,
+  input  logic rst_n,
   
 //------------------------ Data Channel ---------------------------------------------//
   input  logic in_s_tvalid,    // Indicate the data from master is valid

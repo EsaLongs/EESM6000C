@@ -8,9 +8,9 @@ This is a Booth4-based Wallace multiplier. It has two-stage pipelines inside to 
 
 **"Brent_Kung_Adder_nbit.sv"** and **"pg_unit.sv"** are adder dependencies.
 
-**"booth4_op_generator"** is for generating operands according to Booth code.
+**"booth4_op_generator.sv"** is for generating operands according to Booth code.
 
-**"onebit_adder.sv"**, **"op_3_to_2_nbit"**, **"op_n_to_2_nbit_onestage"**, and **"op_n_to_2_nbit"** are for building Wallace tree. **"op_n_to_2_nbit"** can turn any number (set as a parameter OP_WIDTH) of the same width bits into two operands. But you should notice that the input width and output width are the same, which means it cannot deal with overflow. Therefore, the parameter OP_WIDTH should be high enough to make sure the output will not have any overflow.
+**"onebit_adder.sv"**, **"op_3_to_2_nbit.sv"**, **"op_n_to_2_nbit_onestage.sv"**, and **"op_n_to_2_nbit.sv"** are for building Wallace tree. **"op_n_to_2_nbit.sv"** can turn any number (set as a parameter OP_WIDTH) of the same width bits into two operands. But you should notice that the input width and output width are the same, which means it cannot deal with overflow. Therefore, the parameter OP_WIDTH should be high enough to make sure the output will not have any overflow.
 
 ### Handshake Signal
 
