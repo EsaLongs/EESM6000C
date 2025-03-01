@@ -83,18 +83,18 @@ module axi4_lite_slave #(
 );
 
 //------------------------ Parameter Calculation ------------------------------------//
-  // Calculate BRAM_pADDR_WIDTH_TAP according to MAX_TAP_NUM
-  function integer BRAM_pADDR_WIDTH_TAP_RETURN();
+  // Calculate pADDR_WIDTH_TAP according to MAX_TAP_NUM
+  function integer pADDR_WIDTH_TAP_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        BRAM_pADDR_WIDTH_TAP_RETURN = i;
-        return BRAM_pADDR_WIDTH_TAP_RETURN;
+        pADDR_WIDTH_TAP_RETURN = i;
+        return pADDR_WIDTH_TAP_RETURN;
       end
     end
   endfunction
 
-  localparam int BRAM_pADDR_WIDTH_TAP = BRAM_pADDR_WIDTH_TAP_RETURN();
+  localparam int pADDR_WIDTH_TAP = pADDR_WIDTH_TAP_RETURN();
 
 //------------------------ Module Instaniate ----------------------------------------//
   //------------------------ BRAM Slave ---------------------------------------------//

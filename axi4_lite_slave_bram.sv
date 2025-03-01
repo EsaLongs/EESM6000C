@@ -95,18 +95,18 @@ module axi4_lite_slave_bram #(
 
 
 //------------------------ Parameter Calculation ------------------------------------//
-  // Calculate BRAM_pADDR_WIDTH_TAP according to MAX_TAP_NUM
-  function integer BRAM_pADDR_WIDTH_TAP_RETURN();
+  // Calculate pADDR_WIDTH_TAP according to MAX_TAP_NUM
+  function integer pADDR_WIDTH_TAP_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        BRAM_pADDR_WIDTH_TAP_RETURN = i;
-        return BRAM_pADDR_WIDTH_TAP_RETURN;
+        pADDR_WIDTH_TAP_RETURN = i;
+        return pADDR_WIDTH_TAP_RETURN;
       end
     end
   endfunction
 
-  localparam int BRAM_pADDR_WIDTH_TAP = BRAM_pADDR_WIDTH_TAP_RETURN();
+  localparam int pADDR_WIDTH_TAP = pADDR_WIDTH_TAP_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic raddr_hsked;
@@ -177,17 +177,17 @@ module axi4_lite_slave_bram #(
 
 //------------------------ Address Reg ----------------------------------------------//
   // Here we need a register to store addr because bram doesn't store the write 
-  logic [BRAM_pADDR_WIDTH_TAP - 1 : 0] addr_wr;
+  logic [pADDR_WIDTH_TAP - 1 : 0] addr_wr;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
-    if (!aresetn) addr_wr <= {BRAM_pADDR_WIDTH_TAP{1'b0}};
-    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr[BRAM_pADDR_WIDTH_TAP - 1 : 0];
+    if (!aresetn) addr_wr <= {pADDR_WIDTH_TAP{1'b0}};
+    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr[pADDR_WIDTH_TAP - 1 : 0];
     else addr_wr <= addr_wr;
   end
 
 //------------------------ Bram Interface -------------------------------------------//
-  assign out_A  = (in_s_araddr[BRAM_pADDR_WIDTH_TAP - 1 : 0] & {BRAM_pADDR_WIDTH_TAP{state_idle_exit2rdata_ena}})
-                | (addr_wr & {BRAM_pADDR_WIDTH_TAP{state_wdata_exit_ena}});
+  assign out_A  = (in_s_araddr[pADDR_WIDTH_TAP - 1 : 0] & {pADDR_WIDTH_TAP{state_idle_exit2rdata_ena}})
+                | (addr_wr & {pADDR_WIDTH_TAP{state_wdata_exit_ena}});
 
   // EN need to last one more cycle for read because BRAM uses EN to assign Do
   assign out_EN = state_idle_exit2rdata_ena || state_is_rdata

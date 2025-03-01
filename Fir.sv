@@ -35,8 +35,8 @@ module fir_main #(
   input  logic in_ap_start,
   output logic out_ap_done,
 
-  input  logic [TAP_COUNTER_WIDTH_RETURN() - 1 : 0] tap_num,
-  input  logic [p_ADDR_WIDTH_DATA() - 1 : 0] data_num,
+  input  logic [pADDR_WIDTH_TAP_RETURN() - 1 : 0] in_tap_num,
+  input  logic [pADDR_WIDTH_DATA_RETURN() - 1 : 0] in_data_num,
 
 //------------------------ Tap Ram Interface ----------------------------------------//
   input  logic [pADDR_WIDTH - 1 : 0] in_Do_tap,
@@ -51,113 +51,121 @@ module fir_main #(
 //------------------------ AXI4 Stream Interface ------------------------------------//
   input  logic in_sm_tready,
   output logic in_sm_tvalid,
-  output logic in_sm_tvalid,
-  output logic in_sm_tvalid,
-
-
+  output logic [pDATA_WIDTH - 1 : 0] sm_tdata, 
+  output logic sm_tlast, 
 );
 
 
 //------------------------ PARAMETER CALCUTION --------------------------------------//
   // Calculate the width of tap_counter
-  function integer TAP_COUNTER_WIDTH_RETURN();
+  function integer pADDR_WIDTH_TAP_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        TAP_COUNTER_WIDTH_RETURN = i;
-        return TAP_COUNTER_WIDTH_RETURN;
+        pADDR_WIDTH_TAP_RETURN = i;
+        return pADDR_WIDTH_TAP_RETURN;
       end
     end
   endfunction
 
-  localparam int TAP_COUNTER_WIDTH = TAP_COUNTER_WIDTH_RETURN();
+  localparam int pADDR_WIDTH_TAP = pADDR_WIDTH_TAP_RETURN();
 
   // Calculate the width of data_counter
-  function integer p_ADDR_WIDTH_DATA_RETURN();
+  function integer pADDR_WIDTH_DATA_RETURN();
     integer i;
     for (i = 0; i < $clog2(MAX_DATA_NUM); i = i + 1) begin
       if (((2 ** i) > MAX_DATA_NUM) || ((2 ** i) == MAX_DATA_NUM)) begin
-        p_ADDR_WIDTH_DATA_RETURN = i;
-        return p_ADDR_WIDTH_DATA_RETURN;
+        pADDR_WIDTH_DATA_RETURN = i;
+        return pADDR_WIDTH_DATA_RETURN;
       end
     end
   endfunction
 
-  localparam int p_ADDR_WIDTH_DATA = p_ADDR_WIDTH_DATA_RETURN();
+  localparam int pADDR_WIDTH_DATA = pADDR_WIDTH_DATA_RETURN();
 
-//------------------------ Handshake Signal -----------------------------------------//
-  logic data_hsked;
-  assign data_hsked = in_s_tvalid && out_s_tready;
+//------------------------ Counter --------------------------------------------------//
+  logic [pADDR_WIDTH_TAP - 1 : 0] counter_tap;
+  logic [pADDR_WIDTH_DATA - 1 : 0] counter_data;
 
-//------------------------ State Machine --------------------------------------------//
-  localparam STATE_IDLE = 1'd0; // IDLE state
-  localparam STATE_TRAN = 1'd1; // Transfer_state
-  
-  logic state_now;
-  logic state_nxt;
+  logic one_round_finish;
+  logic all_round_finish;
+  assign one_round_finish = (counter_tap == in_tap_num);
+  // When all data have been calculated, we will clear all registers after the data has
+  // been accepted ( handshake ), so that it can start new calcalation correctly.
+  assign all_round_finish = (counter_data == in_data_num);
+  logic delay_clr;
+  assign delay_clr = all_round_finish && data_hsked;
 
-  logic state_is_idle;
-  logic state_is_tran;
 
-  assign state_is_idle = (state_now == STATE_IDLE);
-  assign state_is_tran = (state_now == STATE_TRAN);
-
-  logic state_exit_ena;
-  logic state_idle_exit_ena;
-  logic state_tran_exit_ena;
-
-  assign state_exit_ena = state_idle_exit_ena 
-                       || state_tran_exit_ena;
-  
-  assign state_idle_exit_ena = state_is_idle && data_hsked;
-  assign state_tran_exit_ena = state_is_tran && in_s_tlast;
-
-  assign state_nxt = (state_idle_exit_ena && STATE_TRAN);
-                  || (state_tran_exit_ena && STATE_IDLE);
-
-  always_ff @( posedge aclk or negedge aresetn ) begin : STATE_MACHINE
-    if (!aresetn) state_now <= 1'b0;
-    else if (state_exit_ena) state_now <= state_nxt;
-    else state_now <= state_now;
+  always_ff @( posedge clk or negedge rst_n ) begin : COUNTER_TAP
+    if (!rst_n) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
+    else if (stall) counter_tap <= counter_tap;
+    // Here we use all_round_finish instead of delay_clr because when all_round_finish
+    // is 1, we already finish sending data to calculate, we are just waiting it to
+    // come out.
+    else if (one_round_finish || all_round_finish) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
+    else counter_tap = counter_tap + 1;
   end
 
-//------------------------ Address Generate -----------------------------------------//
-  // Here we use counter to generate address
-  logic [ADDR_WIDTH - 1 : 0] counter;
-  logic [ADDR_WIDTH - 1 : 0] addr;
-
-  // We want to transfer the first data just when handshake, so we don't need to wait
-  // another cycle to enter TRAN_STATE. 
-  logic tran_in_advance;
-  assign tran_in_advance = data_hsked;
-
-  logic tran_ena;
-  assign tran_ena = tran_in_advance || state_is_tran;
-
-  always_ff @( posedge aclk or negedge aresetn ) begin : COUNTER
-    if (!aresetn) counter <= {ADDR_WIDTH{1'b0}};
-    else if (tran_ena) counter <= counter + 1;
-    // Here we set counter to be 0 so each write operation will overwrite the last one.
-    // If we set counter <= counter here then it will write from the last position of 
-    // previous write operation.
-    else counter <= {ADDR_WIDTH{1'b0}};
+  always_ff @( posedge clk or negedge rst_n ) begin : COUNTER_DATA
+    if (!rst_n) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
+    else if (stall) counter_data <= counter_data;
+    else if (delay_clr) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
+    else if (one_round_finish) counter_tap <= counter_tap + 1;
+    else counter_tap <= counter_tap;
   end
 
-  assign addr = {ADDR_WIDTH{tran_ena}} & counter;
+//------------------------ Shifter --------------------------------------------//
 
-//------------------------ Bram Interface -------------------------------------------//
-  assign out_A = addr;
 
-  assign out_EN = tran_ena;
 
-  assign out_WE = {(DATA_WIDTH / 8){tran_ena}} & in_s_tkeep;
+//------------------------ Pipeline -------------------------------------------//
+  // These two are the data will be sent to calculate
+  logic [pDATA_WIDTH - 1 : 0] tap;
+  logic [pDATA_WIDTH - 1 : 0] data;
+  
+  // Then we use a temp register to store the data waiting to be calculated
+  logic [pDATA_WIDTH - 1 : 0] temp_reg_tap;
+  logic [pDATA_WIDTH - 1 : 0] temp_reg_data;
 
-  assign out_Di = {DATA_WIDTH{tran_ena}} & in_s_tdata;
+  // Because we we don't need the final address which address == in_tap_num,
+  // we set temp_reg_tap to be 0 so it will not influence later result.
+  logic temp_set_0;
+  assign temp_set_0 = one_round_finish;
 
-//------------------------ Master Interface -----------------------------------------//
-  // Handshake signal
-  // Orignially this signal should be decided by slave device, but this is just a 
-  // simple BRAM, so we can set it to be 1 simply.
-  assign out_s_tready = 1'b1;
+  always_ff @( posedge clk or negedge rst_n ) begin : TEMP_REG
+    if (!rst_n) begin
+      temp_reg_tap  <= {pDATA_WIDTH{1'b0}};
+      temp_reg_data <= {pDATA_WIDTH{1'b0}};
+    end else if (stall) begin
+      temp_reg_tap  <= temp_reg_tap;
+      temp_reg_data <= temp_reg_data;
+    end else if (temp_set_0 || all_round_finish) begin
+      temp_reg_tap <= {pDATA_WIDTH{1'b0}};
+      temp_reg_data <= {pDATA_WIDTH{1'b0}};
+    end else begin
+      temp_reg_tap <= tap;
+      temp_reg_data <= data;
+    end
+  end
+
+  // We will generate a data_valid signal, and it will pass through some shifter
+  // to make sure it reaches the output will the valid data at the same time.
+  logic data_valid;
+  assign data_valid = one_round_finish;
+
+  // The last bit will be assigned to out_sm_tvalid. The reason we choose 4 bit
+  // shifter here is that data first need to get across temp_reg (1st pipeline),
+  // then get across multiplier (has 2 pipelines), then get accross another temp_reg
+  // just before enter adder (4th pipeline). Finally, the adder result is the output.
+  // In this case we can make sure the MSB of shifter reaches output with valid data
+  // at the same time.
+  logic [3 : 0] valid_shifter
+  always_ff @( posedge clk or negedge rst_n ) begin
+    if (!rst_n) valid_shifter <= 4'b0;
+    else if (stall) valid_shifter <= valid_shifter;
+    else if (delay_clr) valid_shifter <= 4'b0;
+    else valid_shifter <= {valid_shifter[2 : 0], data_valid};
+  end
 
 endmodule
