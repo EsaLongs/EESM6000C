@@ -145,7 +145,7 @@ module axi4_lite_slave #(
   .out_Di        ( bram_out_Di        ),
   .in_Do         ( bram_in_Do         ),
   .out_A         ( bram_out_A         ),
-  .out_EN        ( bram_out_EN        ),
+  .out_EN        ( bram_out_EN         ),
   .out_WE        ( bram_out_WE        )
   );
 
