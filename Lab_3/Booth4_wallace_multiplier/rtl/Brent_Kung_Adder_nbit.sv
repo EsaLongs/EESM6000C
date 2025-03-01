@@ -43,12 +43,12 @@ module brent_kung_adder_nbit #(parameter ADDER_SIZE = 128) (
       for (j = 0; j < ADDER_SIZE; j = j + 1) begin
         if (((j + 1) % (2 ** i)) == 0) begin
           gp_unit stage_gp  (
-            .in_g1  ( G[i - 1][j - 2 ** (i - 1)]),
-            .in_g2  ( G[i - 1][j]          ),
+            .in_g1  ( G[i - 1][j - 2 ** (i - 1)] ),
+            .in_g2  ( G[i - 1][j]                ),
             .in_p1  ( P[i - 1][j - 2 ** (i - 1)] ),
-            .in_p2  ( P[i - 1][j]          ),
-            .out_g  ( G[i][j]              ),
-            .out_p  ( P[i][j]              )
+            .in_p2  ( P[i - 1][j]                ),
+            .out_g  ( G[i][j]                    ),
+            .out_p  ( P[i][j]                    )
           );
         end else begin
           assign G[i][j] = G[i - 1][j];
@@ -83,11 +83,11 @@ module brent_kung_adder_nbit #(parameter ADDER_SIZE = 128) (
            ) begin
           gp_unit stage_gp (
             .in_g1  ( G[i - 1][j - ((ADDER_SIZE / (2 ** (i - b))) / 2)] ),
-            .in_g2  ( G[i - 1][j]           ),
+            .in_g2  ( G[i - 1][j]                                       ),
             .in_p1  ( P[i - 1][j - ((ADDER_SIZE / (2 ** (i - b))) / 2)] ),
-            .in_p2  ( P[i - 1][j]           ),
-            .out_g  ( G[i][j]               ),
-            .out_p  ( P[i][j]               )
+            .in_p2  ( P[i - 1][j]                                       ),
+            .out_g  ( G[i][j]                                           ),
+            .out_p  ( P[i][j]                                           )
         );
         end else begin
           assign G[i][j] = G[i - 1][j];

@@ -93,7 +93,61 @@ module axi4_lite_slave #(
   localparam int BRAM_ADDR_WIDTH = BRAM_ADDR_WIDTH_RETURN();
 
 //------------------------ Module Instaniate ----------------------------------------//
-  
+  // axi4_lite_slave_bram interface
+  logic bram_aclk;
+  logic bram_aresetn;
+  logic [ADDR_WIDTH - 1 : 0] bram_in_s_araddr;
+  logic bram_in_s_arvalid;
+  logic bram_out_s_arready;
+  logic [DATA_WIDTH - 1 : 0] bram_out_s_rdata;
+  logic [1 : 0] bram_out_s_rresp;
+  logic bram_out_s_rvalid;
+  logic bram_in_s_rready;
+  logic [ADDR_WIDTH - 1 : 0] bram_in_s_awaddr;
+  logic bram_in_s_awvalid;
+  logic bram_out_s_awready;
+  logic [DATA_WIDTH - 1 : 0] bram_in_s_wdata;
+  logic bram_in_s_wvalid;
+  logic bram_out_s_wready;
+  logic [1 : 0] bram_out_s_bresp;
+  logic bram_out_s_bvalid;
+  logic bram_in_s_bready;
+  logic [DATA_WIDTH - 1 : 0] bram_out_Di;
+  logic [DATA_WIDTH - 1 : 0] bram_in_Do;
+  logic [ADDR_WIDTH - 1 : 0] bram_out_A;
+  logic bram_out_EN;
+  logic [DATA_WIDTH / 8 - 1 : 0] bram_out_WE;
+
+
+  axi4_lite_slave_bram #(
+      .ADDR_WIDTH(ADDR_WIDTH),
+      .BRAM_SIZE(BRAM_SIZE),
+      .DATA_WIDTH(DATA_WIDTH)
+  ) uut (
+  .aclk          ( bram_aclk          ),
+  .aresetn       ( bram_aresetn       ),
+  .in_s_araddr   ( bram_in_s_araddr   ),
+  .in_s_arvalid  ( bram_in_s_arvalid  ),
+  .out_s_arready ( bram_out_s_arready ),
+  .out_s_rdata   ( bram_out_s_rdata   ),
+  .out_s_rresp   ( bram_out_s_rresp   ),
+  .out_s_rvalid  ( bram_out_s_rvalid  ),
+  .in_s_rready   ( bram_in_s_rready   ),
+  .in_s_awaddr   ( bram_in_s_awaddr   ),
+  .in_s_awvalid  ( bram_in_s_awvalid  ),
+  .out_s_awready ( bram_out_s_awready ),
+  .in_s_wdata    ( bram_in_s_wdata    ),
+  .in_s_wvalid   ( bram_in_s_wvalid   ),
+  .out_s_wready  ( bram_out_s_wready  ),
+  .out_s_bresp   ( bram_out_s_bresp   ),
+  .out_s_bvalid  ( bram_out_s_bvalid  ),
+  .in_s_bready   ( bram_in_s_bready   ),
+  .out_Di        ( bram_out_Di        ),
+  .in_Do         ( bram_in_Do         ),
+  .out_A         ( bram_out_A         ),
+  .out_EN        ( bram_out_EN        ),
+  .out_WE        ( bram_out_WE        )
+  );
 
 
 endmodule
