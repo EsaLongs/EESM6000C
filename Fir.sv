@@ -294,7 +294,7 @@ module fir_main #(
 
 //------------------------ Instantite -----------------------------------------//
   // If TAP_NUM == 2 ** n, which means pADDR_WIDTH_TAP = n, then actually we need DATA_WIDTH * 2 + n bit to make
-  // sure there is no carry out loss. However, here we use 64 + 16 bits. If you
+  // sure there is no carry out loss. Here we use 64 + 16 bits. If you
   // need very large number of TAP, then you can use higher one.
   localparam int ADDER_SIZE_1ST = 2 * pDATA_WIDTH;
   localparam int ADDER_SIZE_2NT = pADDR_WIDTH_TAP;
