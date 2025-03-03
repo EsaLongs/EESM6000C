@@ -18,7 +18,7 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-module fir_main #(
+module fir_core #(
   parameter pDATA_WIDTH  = 32,
   // This two parameter will determine the limitation of calculation, so please make 
   // sure it is large enough when synthesis.
@@ -102,8 +102,8 @@ module fir_main #(
   // **** When state_is_idle && in_ap_start, enter clr state.
   // **** When state_is_clr  && clr_finish enter calc state.
   // **** When state_is_calc && delay_finish which means that having finished all 
-  //      calculation, and the last data has been recieved, then we can return 
-  //      IDLE state.
+  //      calculation, and the last data has been recieved, then we can return IDLE
+  //      state.
   assign state_idle_exit_en = state_is_idle && in_ap_start;
   assign state_clr_exit_en  = state_is_clr  && clr_finish;
   assign state_calc_exit_en = state_is_calc && delay_finish;
@@ -126,7 +126,7 @@ module fir_main #(
     else state_now <= state_now;
   end
 
-//------------------------ Counter --------------------------------------------------//
+//------------------------ Counter --------------------------------------------------//  
   // **** We will use this state_is_not_calc signal frequently.
   logic state_is_not_calc;
   assign state_is_not_calc = state_is_idle || state_is_clr;
@@ -152,6 +152,23 @@ module fir_main #(
 
   logic one_round_finish;
   logic all_round_finish;
+  // **** We will wait another 2 cycles to make the data be written in shifter.
+  logic shif_wait_1;
+  logic shif_wait_2;
+  logic shif_wait;
+  assign shif_wait = shif_wait_1 || shif_wait_2;
+  
+  always_ff @( posedge clk or negedge rst_n ) begin
+    if (!rst_n) shif_wait_1 <= 1'b0;
+    else if (one_round_finish) shif_wait_1 <= 1'b1;
+    else shif_wait_1 <= 1'b0;
+  end
+
+  always_ff @( posedge clk or negedge rst_n ) begin
+    if (!rst_n) shif_wait_2 <= 1'b0;
+    else if (shif_wait_1) shif_wait_2 <= 1'b1;
+    else shif_wait_2 <= 1'b0;
+  end
 
   assign one_round_finish = (counter_tap  == in_tap_num );
   assign all_round_finish = (counter_data == in_data_num);
@@ -170,7 +187,7 @@ module fir_main #(
     else if (
              one_round_finish || all_round_finish || state_is_not_calc
             ) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
-    else if (stall) counter_tap <= counter_tap;
+    else if (stall || shif_wait) counter_tap <= counter_tap;
     else counter_tap <= counter_tap + 1;
   end
 
@@ -195,15 +212,13 @@ module fir_main #(
 
   // **** We need to make the shifter shift when one_round_finish, to get new data
   //      from data BRAM.
-  // **** We need to write the first data into shifter when enter calc state, mainly
-  //      for reducing time.
   // **** We need to clear the shifter during clr_state, and we will keep writing 0 
   //      to shifter address 'b0;
   // **** The address during clr_state is 'b0.
   assign shif_addr   = counter_tap;
   assign shif_clk    = clk;
-  assign shif_clk_en = one_round_finish || state_idle_exit_en || state_is_clr;
-  assign shif_din    = state_is_calc ? in_Do_data : {pDATA_WIDTH{1'b0}};
+  assign shif_clk_en = shif_wait_2 || state_is_clr;
+  assign shif_din    = (state_is_calc || state_clr_exit_en) ? in_Do_data : {pDATA_WIDTH{1'b0}};
 
   // **** Because we just has 11 TAP here, you should use larger shifter with larger 
   //      TAP.
@@ -226,6 +241,7 @@ module fir_main #(
 
   logic [pDATA_WIDTH - 1 : 0] temp_reg_tap;
   logic [pDATA_WIDTH - 1 : 0] temp_reg_data;
+  logic [pDATA_WIDTH - 1 : 0] temp_reg_data_delay;
 
   // **** We don't need the final address which address == in_tap_num, for example,
   //      assume we have a in_tap_num == 11, then the counter will return 0 when
@@ -244,7 +260,7 @@ module fir_main #(
     //      data anymore.
     // **** When state_is_idle || state_is_clr, we haven't started calculation so 
     //      temp_reg should be 0.
-    end else if (temp_set_0 || all_round_finish || state_is_not_calc) begin
+    end else if (temp_set_0 || shif_wait || all_round_finish || state_is_not_calc) begin
       temp_reg_tap  <= {pDATA_WIDTH{1'b0}};
       temp_reg_data <= {pDATA_WIDTH{1'b0}};
     end else if (stall) begin
@@ -254,6 +270,11 @@ module fir_main #(
       temp_reg_tap  <= tap;
       temp_reg_data <= data;
     end
+  end
+
+  always_ff @( posedge clk or negedge rst_n) begin
+    if (!rst_n) temp_reg_data_delay <= {pDATA_WIDTH{1'b0}};
+    else temp_reg_data_delay <= temp_reg_data;
   end
 
   // **** We will generate a data_valid signal, and it will pass through pipeline 
@@ -272,19 +293,15 @@ module fir_main #(
   logic valid_shifter_final;
 
   always_ff @( posedge clk or negedge rst_n ) begin
-    if (!rst_n) begin
-      valid_shifter_first <= 1'b0;
-      valid_shifter_final <= 1'b0;
-    end else if (delay_finish || state_is_not_calc) begin
-      valid_shifter_first <= 1'b0;
-      valid_shifter_final <= 1'b0;      
-    end else if (stall) begin
-      valid_shifter_first <= valid_shifter_first;
-      valid_shifter_final <= valid_shifter_final;
-    end else begin
-      valid_shifter_first <= data_valid;
-      valid_shifter_final <= valid_shifter_middle;
-    end
+    if (!rst_n) valid_shifter_first <= 1'b0;
+    else if (delay_finish || state_is_not_calc) valid_shifter_first <= 1'b0;   
+    else if (stall) valid_shifter_first <= valid_shifter_first;
+    else valid_shifter_first <= data_valid;
+  end 
+
+  always_ff @( posedge clk or negedge rst_n ) begin
+    if (!rst_n) valid_shifter_final <= 1'b0;
+    else valid_shifter_final <= valid_shifter_middle;
   end
 
 //------------------------ Instantite -----------------------------------------------//
@@ -300,7 +317,7 @@ module fir_main #(
   logic mul_rstn;
 
   assign mul_op1 = temp_reg_tap;
-  assign mul_op2 = temp_reg_data;
+  assign mul_op2 = temp_reg_data_delay;
   // **** This part can also be programed in configure register.
   assign mul_op1_signed = 1'b1;
   assign mul_op2_signed = 1'b1;
@@ -335,6 +352,13 @@ module fir_main #(
 
   assign valid_shifter_middle = mul_out_valid;
 
+  logic [2 * pDATA_WIDTH - 1 : 0] mul_res_reg;
+  always_ff @( posedge clk or negedge rst_n ) begin
+    if (!rst_n) mul_res_reg <= 'b0;
+    else if (stall) mul_res_reg <= mul_res_reg;
+    else mul_res_reg <= mul_res;
+  end
+
 //------------------------ Instantite -----------------------------------------------//
   // **** If TAP_NUM == 2 ** n, which means pADDR_WIDTH_TAP = n, then actually we need 
   //      DATA_WIDTH * 2 + n bit to make sure there is no carry out loss.
@@ -357,7 +381,7 @@ module fir_main #(
   logic [ADDER_SIZE - 1 : 0] add_res;
   logic [ADDER_SIZE - 1 : 0] add_temp;
 
-  assign add_op1_1st = mul_res;
+  assign add_op1_1st = mul_res_reg;
   assign add_op2_1st = add_temp[ADDER_SIZE_1ST - 1 : 0];
   assign add_cin_1st = 1'b0;
 
@@ -366,11 +390,11 @@ module fir_main #(
   assign add_op2_2nd = add_temp[ADDER_SIZE - 1 : ADDER_SIZE_1ST];
   assign add_cin_2nd = add_cout_1st;
 
-  assign add_res = {add_res_1st, add_res_2nd};
+  assign add_res = {add_res_2nd, add_res_1st};
 
   always_ff @( posedge clk or negedge rst_n ) begin : ACCUMULATOR
     if (!rst_n) add_temp <= {ADDER_SIZE{1'b0}};
-    else if (state_is_idle) add_temp <= {ADDER_SIZE{1'b0}};
+    else if (state_is_idle || data_hsked) add_temp <= {ADDER_SIZE{1'b0}};
     else if (stall) add_temp <= add_temp;
     else add_temp <= add_res;
   end
@@ -403,11 +427,11 @@ module fir_main #(
   // **** sm signals are used for axi4 stream interface.
   assign out_ap_done   = delay_finish;
   assign out_A_tap     = counter_tap;
-  assign out_EN_tap    = 1'b1;
+  assign out_EN_tap    = state_is_calc || state_is_clr;
   assign out_A_data    = counter_data;
   assign out_EN_data   = 1'b1;
   assign out_sm_tvalid = valid_shifter_final;
   assign out_sm_tdata  = add_res;
-  assign out_sm_tlast  = delay_finish;
+  assign out_sm_tlast  = out_sm_tvalid && all_round_finish;
 
 endmodule
