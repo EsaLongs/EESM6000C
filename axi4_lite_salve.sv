@@ -20,7 +20,6 @@
 
 module axi4_lite_slave #(
   parameter pADDR_WIDTH_TAP  = 12,
-  parameter MAX_TAP_NUM = 11,
   parameter pDATA_WIDTH  = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
@@ -82,20 +81,6 @@ module axi4_lite_slave #(
   output logic [pDATA_WIDTH - 1 : 0] out_reg_data  
 );
 
-//------------------------ Parameter Calculation ------------------------------------//
-  // Calculate pADDR_WIDTH_TAP according to MAX_TAP_NUM
-  function integer pADDR_WIDTH_TAP_RETURN();
-    integer i;
-    for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
-      if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        pADDR_WIDTH_TAP_RETURN = i;
-        return pADDR_WIDTH_TAP_RETURN;
-      end
-    end
-  endfunction
-
-  localparam int pADDR_WIDTH_TAP = pADDR_WIDTH_TAP_RETURN();
-
 //------------------------ Module Instaniate ----------------------------------------//
   //------------------------ BRAM Slave ---------------------------------------------//
   logic bram_req;
@@ -143,7 +128,6 @@ module axi4_lite_slave #(
 
   axi4_lite_slave_bram #(
       .pADDR_WIDTH_TAP ( pADDR_WIDTH_TAP ),
-      .MAX_TAP_NUM  ( MAX_TAP_NUM  ),
       .pDATA_WIDTH ( pDATA_WIDTH )
   ) u_axi4_lite_slave_bram (
       //------------------------ Global Signals -------------------------------------//

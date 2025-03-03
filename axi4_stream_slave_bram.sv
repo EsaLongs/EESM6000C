@@ -19,8 +19,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_stream_slave_bram #(
-  parameter MAX_DATA_NUM = 600,
-  parameter pDATA_WIDTH = 32
+  parameter pDATA_WIDTH = 32,
+  parameter pADDR_WIDTH_DATA = 5
   ) (
 //------------------------ Global Signals -------------------------------------------//
   input  logic aclk,      // Global clk
@@ -47,27 +47,13 @@ module axi4_stream_slave_bram #(
 //------------------------ Bram Interface -------------------------------------------//
   output logic [pDATA_WIDTH - 1 : 0] out_Di,           // Write data
 
-  output logic [pADDR_WIDTH_DATA_RETURN() - 1 : 0] out_A,   // Address
+  output logic [pADDR_WIDTH_DATA - 1 : 0] out_A,   // Address
 
   output logic out_EN,   // Bram enable
   
   // Bram write enable (specific to which byte)
   output logic [pDATA_WIDTH / 8 - 1 : 0] out_WE
 );
-
-//------------------------ PARAMETER CALCUTION --------------------------------------//
-  // Calculation pADDR_WIDTH_DATA according to MAX_DATA_NUM
-  function integer pADDR_WIDTH_DATA_RETURN();
-    integer i;
-    for (i = 0; i < $clog2(MAX_DATA_NUM); i = i + 1) begin
-      if (((2 ** i) > MAX_DATA_NUM) || ((2 ** i) == MAX_DATA_NUM)) begin
-        pADDR_WIDTH_DATA_RETURN = i;
-        return pADDR_WIDTH_DATA_RETURN;
-      end
-    end
-  endfunction
-
-  localparam int pADDR_WIDTH_DATA = pADDR_WIDTH_DATA_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic data_hsked;
@@ -96,7 +82,7 @@ module axi4_stream_slave_bram #(
   assign state_idle_exit_ena = state_is_idle && data_hsked;
   assign state_tran_exit_ena = state_is_tran && in_s_tlast;
 
-  assign state_nxt = (state_idle_exit_ena && STATE_TRAN);
+  assign state_nxt = (state_idle_exit_ena && STATE_TRAN)
                   || (state_tran_exit_ena && STATE_IDLE);
 
   always_ff @( posedge aclk or negedge aresetn ) begin : STATE_MACHINE
@@ -110,17 +96,15 @@ module axi4_stream_slave_bram #(
   logic [pADDR_WIDTH_DATA - 1 : 0] counter;
   logic [pADDR_WIDTH_DATA - 1 : 0] addr;
 
-  // We want to transfer the first data just when handshake, so we don't need to wait
-  // another cycle to enter TRAN_STATE. 
-  logic tran_in_advance;
-  assign tran_in_advance = data_hsked;
-
   logic tran_ena;
-  assign tran_ena = tran_in_advance || state_is_tran;
+  assign tran_ena = data_hsked;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : COUNTER
     if (!aresetn) counter <= {pADDR_WIDTH_DATA{1'b0}};
     else if (tran_ena) counter <= counter + 1;
+    // When !tran_ena && state_is_tran, we will keep the address and wait for the next
+    // data
+    else if (state_is_tran) counter <= counter;
     // Here we set counter to be 0 so each write operation will overwrite the last one.
     // If we set counter <= counter here then it will write from the last position of 
     // previous write operation.

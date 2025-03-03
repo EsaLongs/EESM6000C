@@ -20,7 +20,6 @@
 
 module axi4_lite_slave_bram #(
   parameter pADDR_WIDTH_TAP = 12,
-  parameter MAX_TAP_NUM  = 11,
   parameter pDATA_WIDTH = 32
   ) (
 //------------------------ Global Signals -------------------------------------------//
@@ -92,21 +91,6 @@ module axi4_lite_slave_bram #(
 
   // This module only generates 00 response because it is connected to a simple BRAM 
   // and no error conditions are considered.
-
-
-//------------------------ Parameter Calculation ------------------------------------//
-  // Calculate pADDR_WIDTH_TAP according to MAX_TAP_NUM
-  function integer pADDR_WIDTH_TAP_RETURN();
-    integer i;
-    for (i = 0; i < $clog2(MAX_TAP_NUM); i = i + 1) begin
-      if (((2 ** i) > MAX_TAP_NUM) || ((2 ** i) == MAX_TAP_NUM)) begin
-        pADDR_WIDTH_TAP_RETURN = i;
-        return pADDR_WIDTH_TAP_RETURN;
-      end
-    end
-  endfunction
-
-  localparam int pADDR_WIDTH_TAP = pADDR_WIDTH_TAP_RETURN();
 
 //------------------------ Handshake Signal -----------------------------------------//
   logic raddr_hsked;
