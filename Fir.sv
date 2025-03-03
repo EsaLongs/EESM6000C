@@ -51,7 +51,7 @@ module fir_main #(
 //------------------------ AXI4 Stream Interface ------------------------------------//
   input  logic in_sm_tready,
   output logic out_sm_tvalid,
-  // Here needs to be modified
+  // **** This output size is the minimum size that make sure no carry loss.
   output logic [2 * pDATA_WIDTH - 1 + pADDR_WIDTH_TAP : 0] out_sm_tdata, 
   output logic out_sm_tlast
 );
@@ -60,13 +60,21 @@ module fir_main #(
   logic stall;
 
   assign data_hsked = in_sm_tready && out_sm_tvalid;
+  
+  // **** Stall signal will stall most of the pipeline.
   assign stall = !in_sm_tready;
+
 //------------------------ State Machine --------------------------------------------//
-  // Used to clear shifter
+  // **** The shifter we used is achieved by vivado bram shifter IP, in order to clear
+  //      the shifter, here we design a clr state to write 0 continuously.
+  // **** clr_finish is used to show whether bram based shifter has been cleared.
+  // **** delay_finish Used to show whether the last data has been recieved.
   logic clr_finish;
   logic delay_finish;
 
-  // There are only two states in this system.
+  // **** The CLR state is used for clearing the remained data from last calculation 
+  //      in shifter.
+  // **** The CALC state means calculation state.
   localparam STATE_IDLE = 2'b00;
   localparam STATE_CLR  = 2'b01;
   localparam STATE_CALC = 2'b10;
@@ -91,10 +99,11 @@ module fir_main #(
                       || state_clr_exit_en 
                       || state_calc_exit_en;
   
-  // When state_is_idle && in_ap_start, enter clr state
-  // When state_is_clr  && clr_finish, enter clr state
-  // When state_is_calc && delay_finish, which means that having finished all 
-  // calculation, then we can enter IDLE state.
+  // **** When state_is_idle && in_ap_start, enter clr state.
+  // **** When state_is_clr  && clr_finish enter calc state.
+  // **** When state_is_calc && delay_finish which means that having finished all 
+  //      calculation, and the last data has been recieved, then we can return 
+  //      IDLE state.
   assign state_idle_exit_en = state_is_idle && in_ap_start;
   assign state_clr_exit_en  = state_is_clr  && clr_finish;
   assign state_calc_exit_en = state_is_calc && delay_finish;
@@ -118,8 +127,11 @@ module fir_main #(
   end
 
 //------------------------ Counter --------------------------------------------------//
+  // **** This counter is used to show whether shifter has been cleared.
   logic [pADDR_WIDTH_TAP - 1 : 0] counter_clr;
   
+  // **** For this counter, we don't use stall signal because we we haven't begun
+  //      calculation.
   always_ff @( posedge clk or negedge rst_n ) begin
     if (!rst_n) counter_clr <= {pADDR_WIDTH_TAP{1'b0}};
     else if (state_is_clr) counter_clr = counter_clr + 1;
@@ -128,23 +140,29 @@ module fir_main #(
 
   assign clr_finish = (counter_clr == {pADDR_WIDTH_TAP{1'b1}});
 
+  // **** This counter is used to generate tap BRAM address.
   logic [pADDR_WIDTH_TAP - 1 : 0] counter_tap;
+  // **** This counter is used to generate shifter address, the data in shifter comes
+  //      from data BRAM.
   logic [pADDR_WIDTH_DATA - 1 : 0] counter_data;
 
   logic one_round_finish;
   logic all_round_finish;
-  assign one_round_finish = (counter_tap == in_tap_num);
-  // When all_round_finish is 1, we still need to wait a few cycles to make sure the
-  // last data has been recieved.
-  assign all_round_finish = (counter_data == in_data_num);
 
+  assign one_round_finish = (counter_tap  == in_tap_num );
+  assign all_round_finish = (counter_data == in_data_num);
+  // **** When all_round_finish is 1, we still need to wait a few cycles to make 
+  //      sure the last data has been recieved.
   assign delay_finish = all_round_finish && data_hsked;
 
   always_ff @( posedge clk or negedge rst_n ) begin : COUNTER_TAP
     if (!rst_n) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
-    // Here we use all_round_finish instead of delay_finish because when all_round_finish
-    // is 1, we already finish sending data to calculate, we are just waiting it to
-    // come out, then we hope it to be all 0 to reduce dynamic power.
+    // **** When one_round_finish means having finished one round calculation, we 
+    //      need to set address to 0 to begin a new round.
+    // **** When all_round_finish, we don't need to any new round so we can just 
+    //      set it to 0 (or remain unchanged) to reduce dynamic power consumpation.
+    // **** When state_is_idle, we don't need to generate address and we hope the
+    //      initial address to be 0, then we set the counter to be 0.
     else if (one_round_finish || all_round_finish || state_is_idle) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
     else if (stall) counter_tap <= counter_tap;
     else counter_tap <= counter_tap + 1;
@@ -152,27 +170,37 @@ module fir_main #(
 
   always_ff @( posedge clk or negedge rst_n ) begin : COUNTER_DATA
     if (!rst_n) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
+    // **** When delay_finish, means the last data has been recieved, then we can
+    //      clear this counter.
+    // **** When state_is_idle, we don't need to generate address and we hope the
+    //      initial address to be 0, then we set the counter to be 0.
     else if (delay_finish || state_is_idle) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
     else if (stall) counter_data <= counter_data;
     else if (one_round_finish) counter_data <= counter_data + 1;
     else counter_data <= counter_data;
   end
 
-//------------------------ Shifter --------------------------------------------//
+//------------------------ Shifter --------------------------------------------------//
   logic [pADDR_WIDTH_TAP - 1 : 0] shif_addr;
   logic shif_clk;
   logic shif_clk_en;
   logic [pDATA_WIDTH - 1 : 0] shif_din;
   logic [pDATA_WIDTH - 1 : 0] shif_dout;
 
+  // **** We need to make the shifter shift when one_round_finish, to get new data
+  //      from data BRAM.
+  // **** We need to write the first data into shifter when enter calc state, mainly
+  //      for reducing time.
+  // **** We need to clear the shifter during clr_state, and we will keep writing 0 
+  //      to shifter address 'b0;
+  // **** The address during clr_state is 'b0.
   assign shif_addr   = counter_tap;
   assign shif_clk    = clk;
-  // We need to write the first data into shifter when enter calc state
-  // We need to clear the shifter during clr_stage
   assign shif_clk_en = one_round_finish || state_idle_exit_en || state_is_clr;
   assign shif_din    = state_is_calc ? in_Do_data : {pDATA_WIDTH{1'b0}};
 
-  // Because we just has 11 TAP here, you should use larger shifter with larger TAP
+  // **** Because we just has 11 TAP here, you should use larger shifter with larger 
+  //      TAP.
   shifter_11 u_shifter_11 (
     .ADDR   ( shif_addr   ),
     .CLK    ( shif_clk    ),
@@ -181,20 +209,23 @@ module fir_main #(
     .DOUT   ( shif_dout   )
   );
 
-//------------------------ Pipeline -------------------------------------------//
-  // These two are the data will be sent to calculate
+//------------------------ Pipeline -------------------------------------------------//
+  // **** The variable tap and data are the data will be sent to calculate
+  // **** Then we use two temp registers to store the data waiting to be calculated
   logic [pDATA_WIDTH - 1 : 0] tap;
   logic [pDATA_WIDTH - 1 : 0] data;
   
   assign tap  = in_Do_tap;
   assign data = shif_dout;
 
-  // Then we use a temp register to store the data waiting to be calculated
   logic [pDATA_WIDTH - 1 : 0] temp_reg_tap;
   logic [pDATA_WIDTH - 1 : 0] temp_reg_data;
 
-  // Because we we don't need the final address which address == in_tap_num,
-  // we set temp_reg_tap to be 0 so it will not influence later result.
+  // **** We don't need the final address which address == in_tap_num, for example,
+  //      assume we have a in_tap_num == 11, then the counter will return 0 when
+  //      counter == 11. However, the address we need are from 0 to 10. Therefore,
+  //      we will store 0 to temp_reg at this moment so they will not affect the 
+  //      result.
   logic temp_set_0;
   assign temp_set_0 = one_round_finish;
 
@@ -202,6 +233,7 @@ module fir_main #(
     if (!rst_n) begin
       temp_reg_tap  <= {pDATA_WIDTH{1'b0}};
       temp_reg_data <= {pDATA_WIDTH{1'b0}};
+    // **** When 
     end else if (temp_set_0 || all_round_finish || state_is_idle || state_is_clr) begin
       temp_reg_tap  <= {pDATA_WIDTH{1'b0}};
       temp_reg_data <= {pDATA_WIDTH{1'b0}};
@@ -244,7 +276,7 @@ module fir_main #(
     end
   end
 
-//------------------------ Instantite -----------------------------------------//
+//------------------------ Instantite -----------------------------------------------//
   logic [pDATA_WIDTH - 1 : 0] mul_op1;
   logic [pDATA_WIDTH - 1 : 0] mul_op2;
   logic [2 * pDATA_WIDTH - 1 : 0] mul_res;
@@ -292,7 +324,7 @@ module fir_main #(
 
   assign valid_shifter_3rd = mul_out_valid;
 
-//------------------------ Instantite -----------------------------------------//
+//------------------------ Instantite -----------------------------------------------//
   // If TAP_NUM == 2 ** n, which means pADDR_WIDTH_TAP = n, then actually we need DATA_WIDTH * 2 + n bit to make
   // sure there is no carry out loss. Here we use 64 + 16 bits. If you
   // need very large number of TAP, then you can use higher one.
@@ -354,7 +386,7 @@ module fir_main #(
     .cout    (             )
   );
 
-//------------------------ Output ---------------------------------------------//
+//------------------------ Output ---------------------------------------------------//
   assign out_ap_done   = delay_finish;
   assign out_A_tap     = counter_tap;
   assign out_EN_tap    = 1'b1;
