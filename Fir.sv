@@ -127,6 +127,10 @@ module fir_main #(
   end
 
 //------------------------ Counter --------------------------------------------------//
+  // **** We will use this state_is_not_calc signal frequently.
+  logic state_is_not_calc;
+  assign state_is_not_calc = state_is_idle || state_is_clr;
+  
   // **** This counter is used to show whether shifter has been cleared.
   logic [pADDR_WIDTH_TAP - 1 : 0] counter_clr;
   
@@ -161,9 +165,11 @@ module fir_main #(
     //      need to set address to 0 to begin a new round.
     // **** When all_round_finish, we don't need to any new round so we can just 
     //      set it to 0 (or remain unchanged) to reduce dynamic power consumpation.
-    // **** When state_is_idle, we don't need to generate address and we hope the
-    //      initial address to be 0, then we set the counter to be 0.
-    else if (one_round_finish || all_round_finish || state_is_idle) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
+    // **** When state is not calc, we don't need to generate address and we hope 
+    //      the initial address to be 0, then we set the counter to be 0.
+    else if (
+             one_round_finish || all_round_finish || state_is_not_calc
+            ) counter_tap <= {pADDR_WIDTH_TAP{1'b0}};
     else if (stall) counter_tap <= counter_tap;
     else counter_tap <= counter_tap + 1;
   end
@@ -172,9 +178,9 @@ module fir_main #(
     if (!rst_n) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
     // **** When delay_finish, means the last data has been recieved, then we can
     //      clear this counter.
-    // **** When state_is_idle, we don't need to generate address and we hope the
-    //      initial address to be 0, then we set the counter to be 0.
-    else if (delay_finish || state_is_idle) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
+    // **** When state is not calc, we don't need to generate address and we hope 
+    //      the initial address to be 0, then we set the counter to be 0.
+    else if (delay_finish || state_is_not_calc) counter_data <= {pADDR_WIDTH_DATA{1'b0}};
     else if (stall) counter_data <= counter_data;
     else if (one_round_finish) counter_data <= counter_data + 1;
     else counter_data <= counter_data;
@@ -233,8 +239,12 @@ module fir_main #(
     if (!rst_n) begin
       temp_reg_tap  <= {pDATA_WIDTH{1'b0}};
       temp_reg_data <= {pDATA_WIDTH{1'b0}};
-    // **** When 
-    end else if (temp_set_0 || all_round_finish || state_is_idle || state_is_clr) begin
+    // **** When temp_set_0, temp_reg should be 0.
+    // **** When all_round_finish, temp_reg should be 0, because we don't need new
+    //      data anymore.
+    // **** When state_is_idle || state_is_clr, we haven't started calculation so 
+    //      temp_reg should be 0.
+    end else if (temp_set_0 || all_round_finish || state_is_not_calc) begin
       temp_reg_tap  <= {pDATA_WIDTH{1'b0}};
       temp_reg_data <= {pDATA_WIDTH{1'b0}};
     end else if (stall) begin
@@ -246,33 +256,34 @@ module fir_main #(
     end
   end
 
-  // We will generate a data_valid signal, and it will pass through some shifter
-  // to make sure it reaches the output will the valid data at the same time.
+  // **** We will generate a data_valid signal, and it will pass through pipeline 
+  //      to make sure it reaches the output will the valid data at the same time.
+  // **** We just add two simple ff before and after multiplier, they are 
+  //      valid_shifter_first and valid_shifter_final. (This just use ff instead bram)
+  //      The multiplier also have input valid and output valid, and it has some
+  //      pipelines inside, therefore we use valid_shifter_middle just connect to the
+  //      output valid of multiplier. In this case we can make sure the valid signal 
+  //      reaches the output with the valid data at the same time.
   logic data_valid;
   assign data_valid = one_round_finish;
 
-  // The last bit will be assigned to out_sm_tvalid. Data first need to get across temp_reg (1st pipeline),
-  // then get across multiplier (has 2 pipelines), then get accross another temp_reg
-  // just before enter adder (4th pipeline). Finally, the adder result is the output.
-  // In this case we can make sure the MSB of shifter reaches output with valid data
-  // at the same time.
-  logic valid_shifter_1st;
-  logic valid_shifter_3rd;  // The valid signal from multiplier
-  logic valid_shifter_4th;
+  logic valid_shifter_first;
+  logic valid_shifter_middle;  // The output valid signal from multiplier
+  logic valid_shifter_final;
 
   always_ff @( posedge clk or negedge rst_n ) begin
     if (!rst_n) begin
-      valid_shifter_1st <= 1'b0;
-      valid_shifter_4th <= 1'b0;
-    end else if (delay_finish || state_is_idle) begin
-      valid_shifter_1st <= 1'b0;
-      valid_shifter_4th <= 1'b0;      
+      valid_shifter_first <= 1'b0;
+      valid_shifter_final <= 1'b0;
+    end else if (delay_finish || state_is_not_calc) begin
+      valid_shifter_first <= 1'b0;
+      valid_shifter_final <= 1'b0;      
     end else if (stall) begin
-      valid_shifter_1st <= valid_shifter_1st;
-      valid_shifter_4th <= valid_shifter_4th;
+      valid_shifter_first <= valid_shifter_first;
+      valid_shifter_final <= valid_shifter_final;
     end else begin
-      valid_shifter_1st <= data_valid;
-      valid_shifter_4th <= valid_shifter_3rd;
+      valid_shifter_first <= data_valid;
+      valid_shifter_final <= valid_shifter_middle;
     end
   end
 
@@ -290,15 +301,16 @@ module fir_main #(
 
   assign mul_op1 = temp_reg_tap;
   assign mul_op2 = temp_reg_data;
-  // This part can also be programed.
+  // **** This part can also be programed in configure register.
   assign mul_op1_signed = 1'b1;
   assign mul_op2_signed = 1'b1;
 
-  assign mul_in_valid = valid_shifter_1st;
-  // This multiplier use !in_ready as stall signal inside.
+  // **** This multiplier also use !in_ready as stall signal inside. It can stall
+  //      pipelines inside.
+  // **** When the last data has been recieved, clear multiplier.
+  assign mul_in_valid = valid_shifter_first;
   assign mul_in_ready = in_sm_tready;
   assign mul_clk = clk;
-  // When the last data has been recieved, clear multiplier
   assign mul_rstn = !((delay_finish) || (!rst_n));
 
   booth4wallace_multiplier_nbit #(
@@ -308,7 +320,6 @@ module fir_main #(
     .in_op2        ( mul_op2           ),
     .out_res       ( mul_res           ),
 
-    // This part can also be programed.
     .in_op1_signed ( mul_op1_signed    ),
     .in_op2_signed ( mul_op2_signed    ),
 
@@ -322,16 +333,16 @@ module fir_main #(
     .rst_n         ( mul_rstn          )
   );
 
-  assign valid_shifter_3rd = mul_out_valid;
+  assign valid_shifter_middle = mul_out_valid;
 
 //------------------------ Instantite -----------------------------------------------//
-  // If TAP_NUM == 2 ** n, which means pADDR_WIDTH_TAP = n, then actually we need DATA_WIDTH * 2 + n bit to make
-  // sure there is no carry out loss. Here we use 64 + 16 bits. If you
-  // need very large number of TAP, then you can use higher one.
+  // **** If TAP_NUM == 2 ** n, which means pADDR_WIDTH_TAP = n, then actually we need 
+  //      DATA_WIDTH * 2 + n bit to make sure there is no carry out loss.
   localparam int ADDER_SIZE_1ST = 2 * pDATA_WIDTH;
   localparam int ADDER_SIZE_2NT = pADDR_WIDTH_TAP;
   localparam int ADDER_SIZE     = ADDER_SIZE_1ST + ADDER_SIZE_2NT;
 
+  // **** Following part we just connect two adder together.
   logic [ADDER_SIZE_1ST - 1 : 0] add_op1_1st;
   logic [ADDER_SIZE_1ST - 1 : 0] add_op2_1st;
   logic [ADDER_SIZE_1ST - 1 : 0] add_res_1st;
@@ -350,7 +361,7 @@ module fir_main #(
   assign add_op2_1st = add_temp[ADDER_SIZE_1ST - 1 : 0];
   assign add_cin_1st = 1'b0;
 
-  // Sign extend
+  // **** Sign extend the input.
   assign add_op1_2nd = {ADDER_SIZE_2NT{add_op1_1st[ADDER_SIZE_1ST - 1]}};
   assign add_op2_2nd = add_temp[ADDER_SIZE - 1 : ADDER_SIZE_1ST];
   assign add_cin_2nd = add_cout_1st;
@@ -387,12 +398,15 @@ module fir_main #(
   );
 
 //------------------------ Output ---------------------------------------------------//
+  // **** out_ap_done is used to write configure register.
+  // **** A, EN signals are used to read two BRAMs.
+  // **** sm signals are used for axi4 stream interface.
   assign out_ap_done   = delay_finish;
   assign out_A_tap     = counter_tap;
   assign out_EN_tap    = 1'b1;
   assign out_A_data    = counter_data;
   assign out_EN_data   = 1'b1;
-  assign out_sm_tvalid = valid_shifter_4th;
+  assign out_sm_tvalid = valid_shifter_final;
   assign out_sm_tdata  = add_res;
   assign out_sm_tlast  = delay_finish;
 
