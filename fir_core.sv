@@ -192,11 +192,8 @@ module fir_core #(
 //------------------------ Pipeline -------------------------------------------------//
   // **** The variable tap and data are the data will be sent to calculate
   // **** Then we use two temp registers to store the data waiting to be calculated
-  logic [pDATA_WIDTH - 1 : 0] tap_ram;
-  logic [pDATA_WIDTH - 1 : 0] data_ram;
-  
-  assign tap_ram  = in_tap_Do;
-  assign data_ram = in_data_Do;
+  logic [pDATA_WIDTH - 1 : 0] in_tap_Do;
+  logic [pDATA_WIDTH - 1 : 0] in_data_Do;
 
   logic [pDATA_WIDTH - 1 : 0] temp_tap;
   logic [pDATA_WIDTH - 1 : 0] temp_data;
@@ -222,11 +219,11 @@ module fir_core #(
     end else if (stall) begin
       temp_data <= temp_data;
     end else begin
-      temp_data <= data_ram;
+      temp_data <= in_data_Do;
     end
   end
 
-  assign temp_tap = temp_set_0 ? {DATA_NUM_WIDTH{1'b0}} : tap_ram;
+  assign temp_tap = temp_set_0 ? {DATA_NUM_WIDTH{1'b0}} : in_tap_Do;
 
   // **** We will generate a data_valid signal, and it will pass through pipeline 
   //      to make sure it reaches the output will the valid data at the same time.
