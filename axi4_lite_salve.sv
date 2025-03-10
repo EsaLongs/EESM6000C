@@ -19,254 +19,229 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave #(
-  parameter pADDR_WIDTH_TAP  = 12,
-  parameter pDATA_WIDTH  = 32
+  parameter CTRL_WIDTH     = 3,
+  parameter pDATA_WIDTH    = 32,
+  parameter TAP_NUM_WIDTH  = 10,
+  parameter DATA_NUM_WIDTH = 10
   ) (
 //------------------------ Global Signals -------------------------------------------//
-  input  logic aclk,      // Global clk
-  input  logic aresetn,   // Global rst_n
+  input  logic aclk,
+  input  logic aresetn,
 
 //------------------------ Read Address Channel -------------------------------------//
-  input  logic [pADDR_WIDTH_TAP - 1 : 0] in_s_araddr,   // Read address
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_araddr,
+  input  logic                       in_s_arvalid,
+  output logic                       out_s_arready,
   
-  // Ignore ARCACHE and ARPROT as a slave.
-  // input  logic [3 : 0] in_s_arcache,
-  // input  logic [2 : 0] in_s_arprot,
-
-  input  logic in_s_arvalid,    // Indicate read address from master is valid
-  output logic out_s_arready,   // Indicate slave is ready to get read address
-  
-//------------------------ Read Data Channel ----------------------------------------//
-  output logic [pDATA_WIDTH - 1 : 0] out_s_rdata,   // Read data
-  
-  output logic [1 : 0] out_s_rresp,   // Read response, indicating status of data transfer
-  
-  output logic out_s_rvalid,   // Indicate the output read data is valid
-  input  logic in_s_rready,    // Indicate master is ready to receive the data
-
 //------------------------ Write Address Channel ------------------------------------//
-  input  logic [pADDR_WIDTH_TAP - 1 : 0] in_s_awaddr,   // Write address
-  
-  // Ignore AWCACHE and AWPROT as a slave.
-  // input  logic [3 : 0] in_s_awcache,
-  // input  logic [2 : 0] in_s_awprot,
-  
-  input  logic in_s_awvalid,    // Indicate write address from master is valid
-  output logic out_s_awready,   // Indicate slave is ready to get write address
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_awaddr,
+  input  logic                       in_s_awvalid,
+  output logic                       out_s_awready,
+
+//------------------------ Read Data Channel ----------------------------------------//
+  output logic [pDATA_WIDTH - 1 : 0] out_s_rdata,
+  output logic                       out_s_rvalid,
+  input  logic                       in_s_rready,
 
 //------------------------ Write Data Channel ---------------------------------------//
-  input  logic [pDATA_WIDTH - 1 : 0] in_s_wdata,   // Write data
-  
-  input  logic in_s_wvalid,    // Indicate the write data from master is valid
-  output logic out_s_wready,   // Indicate slave is ready to get data
-
-//------------------------ Write Response Channel -----------------------------------//
-  output logic [1 : 0] out_s_bresp,   // Indicate status of write data transfer
-
-  output logic out_s_bvalid,   // Indicate the response from slave is valid
-  input  logic in_s_bready,    // Indicate the master is ready to receive response
+  input  logic [pDATA_WIDTH - 1 : 0] in_s_wdata,
+  input  logic                       in_s_wvalid,
+  output logic                       out_s_wready,
 
 //------------------------ Bram Interface -------------------------------------------//
-  output logic [pDATA_WIDTH - 1 : 0] out_Di,   // Write data
-  input  logic [pDATA_WIDTH - 1 : 0] in_Do,    // Read data
-  output logic [pADDR_WIDTH_TAP - 1 : 0] out_A,    // Address
+  output logic [pDATA_WIDTH     - 1 : 0] out_tap_Di,
+  input  logic [pDATA_WIDTH     - 1 : 0] in_tap_Do,
+  output logic [pDATA_WIDTH / 8 - 1 : 0] out_tap_WE,
 
-  output logic out_EN,   // Bram enable
-  
-  // Bram write enable (specific to which byte)
-  output logic [pDATA_WIDTH / 8 - 1 : 0] out_WE,
+//------------------------ Arbiter Channel ------------------------------------//
+  input  logic                         in_arbit_arready,
+  input  logic                         in_arbit_rvalid,
+  input  logic                         in_arbit_awready,
+  input  logic                         in_arbit_wready,
+  output logic                         out_tap_EN,
+  output logic [TAP_NUM_WIDTH - 1 : 0] out_tap_A,
 
-//------------------------ System Interface -----------------------------------------//
-  input  logic in_ap_done,
-  output logic [pDATA_WIDTH - 1 : 0] out_reg_data  
+//------------------------ Core Interface -------------------------------------------//
+  input  logic                          in_ap_done,
+  output logic [CTRL_WIDTH     - 1 : 0] out_conf_ctrl,
+  output logic [TAP_NUM_WIDTH  - 1 : 0] out_conf_tap,
+  output logic [DATA_NUM_WIDTH - 1 : 0] out_conf_data
 );
 
-//------------------------ Module Instaniate ----------------------------------------//
-  //------------------------ BRAM Slave ---------------------------------------------//
-  logic bram_req;
-  
-  logic bram_aclk;
-  logic bram_aresetn;
-  logic [pADDR_WIDTH_TAP - 1 : 0] bram_in_s_araddr;
-  logic bram_in_s_arvalid;
-  logic bram_out_s_arready;
-  logic [pDATA_WIDTH - 1 : 0] bram_out_s_rdata;
-  logic [1 : 0]              bram_out_s_rresp;
-  logic bram_out_s_rvalid;
-  logic bram_in_s_rready;
-  logic [pADDR_WIDTH_TAP - 1 : 0] bram_in_s_awaddr;
-  logic bram_in_s_awvalid;
-  logic bram_out_s_awready;
-  logic [pDATA_WIDTH - 1 : 0] bram_in_s_wdata;
-  logic bram_in_s_wvalid;
-  logic bram_out_s_wready;
-  logic [1 : 0] bram_out_s_bresp;
-  logic bram_out_s_bvalid;
-  logic bram_in_s_bready;
-  logic [pDATA_WIDTH - 1 : 0] bram_out_Di;
-  logic [pDATA_WIDTH - 1 : 0] bram_in_Do;
-  logic [pADDR_WIDTH_TAP - 1 : 0] bram_out_A;
-  logic bram_out_EN;
-  logic [pDATA_WIDTH / 8 - 1 : 0] bram_out_WE;
-  
-  assign bram_req = (in_s_araddr == 12'h20);
+//------------------------ Address Map ----------------------------------------------//
+// +======================+====================+
+// | in_s_araddr[31 : 28] | Access Destination |
+// +----------------------+--------------------+
+// |      4'b0000         |    Ctrl Conf Reg   |
+// +----------------------+--------------------+
+// |      4'b0001         |   Tap Num Conf Reg |
+// +----------------------+--------------------+
+// |      4'b0010         |  Data Num Conf Reg |
+// +----------------------+--------------------+
+// |      4'b0011         |      Tap BRAM      |
+// +======================+====================+
 
-  assign bram_aclk        = aclk;
-  assign bram_aresetn     = aresetn;
-  assign bram_in_s_araddr = in_s_araddr;
-  
-  // This signal will decide whether axi4_lite_slave_bram can start state machine.
-  assign bram_in_s_arvalid = bram_req;
-  
-  assign bram_in_s_rready  = in_s_rready;
-  assign bram_in_s_awaddr  = in_s_awaddr;
-  assign bram_in_s_awvalid = in_s_awvalid;
-  assign bram_in_s_wdata   = in_s_wdata;
-  assign bram_in_s_wvalid  = in_s_wvalid;
-  assign bram_in_s_bready  = in_s_bready;
-  assign bram_in_Do        = in_Do;
+//------------------------ Module Instaniate ----------------------------------------//
+  //------------------------ BRAM Slave ---------------------------------------------//  
+  logic                           bram_s_arvalid;
+  logic                           bram_s_awvalid;
+  logic                           bram_s_arready;
+  logic                           bram_s_awready;
+  logic [pDATA_WIDTH     - 1 : 0] bram_s_rdata;
+  logic                           bram_s_rvalid;
+  logic                           bram_s_wready;
+  logic [pDATA_WIDTH     - 1 : 0] bram_Di;
+  logic [TAP_NUM_WIDTH   - 1 : 0] bram_A;
+  logic [pDATA_WIDTH / 8 - 1 : 0] bram_WE;
+  logic                           bram_EN;
+  logic                           bram_req;
+
+  // **** These two signals will decide whether the FSM in BRAM slave will start.
+  assign bram_s_arvalid = (in_s_araddr[31 : 28] == 4'b0011) && in_s_arvalid;
+  assign bram_s_awvalid = (in_s_awaddr[31 : 28] == 4'b0011) && in_s_awvalid;
+  assign bram_req       = bram_s_arvalid || bram_s_awvalid;
 
   axi4_lite_slave_bram #(
-      .pADDR_WIDTH_TAP ( pADDR_WIDTH_TAP ),
-      .pDATA_WIDTH ( pDATA_WIDTH )
+      .TAP_NUM_WIDTH ( TAP_NUM_WIDTH ),
+      .pDATA_WIDTH   ( pDATA_WIDTH   )
   ) u_axi4_lite_slave_bram (
-      //------------------------ Global Signals -------------------------------------//
-      .aclk          ( bram_aclk          ),
-      .aresetn       ( bram_aresetn       ),
-      
-      //------------------------ Read Address Channel -------------------------------//
-      .in_s_araddr   ( bram_in_s_araddr   ),
-      .in_s_arvalid  ( bram_in_s_arvalid  ),
-      .out_s_arready ( bram_out_s_arready ),
+    //------------------------ Global Signals ---------------------------------------//
+    .aclk             ( aclk             ),
+    .aresetn          ( aresetn          ),
+    
+    //------------------------ Read Address Channel ---------------------------------//
+    .in_s_araddr      ( in_s_araddr      ),
+    .in_s_arvalid     ( bram_s_arvalid   ),
+    .out_s_arready    ( bram_s_arready   ),
 
-      //------------------------ Read Data Channel ----------------------------------//
-      .out_s_rdata   ( bram_out_s_rdata   ),
-      .out_s_rresp   ( bram_out_s_rresp   ),
-      .out_s_rvalid  ( bram_out_s_rvalid  ),
-      .in_s_rready   ( bram_in_s_rready   ),
-      
-      //------------------------ Write Address Channel ------------------------------//
-      .in_s_awaddr   ( bram_in_s_awaddr   ),
-      .in_s_awvalid  ( bram_in_s_awvalid  ),
-      .out_s_awready ( bram_out_s_awready ),
-      
-      //------------------------ Write Data Channel ---------------------------------//
-      .in_s_wdata    ( bram_in_s_wdata    ),
-      .in_s_wvalid   ( bram_in_s_wvalid   ),
-      .out_s_wready  ( bram_out_s_wready  ),
-      
-      //------------------------ Write Response Channel -----------------------------//
-      .out_s_bresp   ( bram_out_s_bresp   ),
-      .out_s_bvalid  ( bram_out_s_bvalid  ),
-      .in_s_bready   ( bram_in_s_bready   ),
-      
-      //------------------------ Bram Interface -------------------------------------//
-      .out_Di        ( bram_out_Di        ),
-      .in_Do         ( bram_in_Do         ),
-      .out_A         ( bram_out_A         ),
-      .out_EN        ( bram_out_EN        ),
-      .out_WE        ( bram_out_WE        )
+    //------------------------ Write Address Channel --------------------------------//
+    .in_s_awaddr      ( in_s_awaddr      ),
+    .in_s_awvalid     ( bram_s_awvalid   ),
+    .out_s_awready    ( bram_s_awready   ),
+
+    //------------------------ Read Data Channel ------------------------------------//
+    .in_s_rready      ( in_s_rready      ),
+    .out_s_rdata      ( bram_s_rdata     ),
+    .out_s_rvalid     ( bram_s_rvalid    ),
+    
+    //------------------------ Write Data Channel -----------------------------------//
+    .in_s_wdata       ( in_s_wdata       ),
+    .in_s_wvalid      ( in_s_wvalid      ),
+    .out_s_wready     ( bram_s_wready    ),
+    
+    //------------------------ Bram Interface ---------------------------------------//
+    .in_Do            ( in_tap_Do        ),
+    .out_Di           ( bram_Di          ),
+    .out_A            ( bram_A           ),
+    .out_WE           ( bram_WE          ),
+
+    //------------------------ Arbiter Channel --------------------------------------//
+    .in_arbit_arready ( in_arbit_arready ),
+    .in_arbit_rvalid  ( in_arbit_rvalid  ),
+    .in_arbit_awready ( in_arbit_awready ),
+    .in_arbit_wready  ( in_arbit_wready  ),
+    .out_EN           ( bram_EN          )
   );
 
-  //------------------------ Reg Slave ----------------------------------------------//
-  logic reg_req;
+  //------------------------ Conf Slave ---------------------------------------------//
+  logic                          conf_s_arvalid;
+  logic                          conf_s_arready;
+  logic                          conf_s_awvalid;
+  logic                          conf_s_awready;
+  logic                          access_ctrl;
+  logic                          access_tap;
+  logic                          access_data;
+  logic [pDATA_WIDTH    - 1 : 0] conf_s_rdata;
+  logic                          conf_s_rvalid;
+  logic                          conf_s_wready;
+  logic [CTRL_WIDTH     - 1 : 0] conf_ctrl;
+  logic [TAP_NUM_WIDTH  - 1 : 0] conf_tap;
+  logic [DATA_NUM_WIDTH - 1 : 0] conf_data;
+
+  assign conf_s_arvalid = conf_req && in_s_arvalid;
+  assign conf_s_awvalid = conf_req && in_s_awvalid;
   
-  logic reg_aclk;
-  logic reg_aresetn;
-  logic reg_in_s_arvalid;
-  logic reg_out_s_arready;
-  logic [pDATA_WIDTH - 1 : 0] reg_out_s_rdata;
-  logic reg_out_s_rvalid;
-  logic reg_in_s_rready;
-  logic reg_in_s_awvalid;
-  logic reg_out_s_awready;
-  logic [pDATA_WIDTH - 1 : 0] reg_in_s_wdata;
-  logic reg_in_s_wvalid;
-  logic reg_out_s_wready;
-  logic reg_ap_done;
-  logic [pDATA_WIDTH - 1 : 0] reg_data;
+  assign access_ctrl = (in_s_awaddr[31 : 28] == 4'b0000)
+                    || (in_s_araddr[31 : 28] == 4'b0000);
 
-  assign reg_req = (in_s_araddr == 12'h00);
+  assign access_tap  = (in_s_awaddr[31 : 28] == 4'b0001)
+                    || (in_s_araddr[31 : 28] == 4'b0001);
 
-  assign reg_aclk = aclk;
-  assign reg_aclk = aresetn;
+  assign access_data = (in_s_awaddr[31 : 28] == 4'b0010)
+                    || (in_s_araddr[31 : 28] == 4'b0010);
 
-  // This signal will decide whether axi4_lite_slave_reg can start state machine.
-  assign reg_in_s_arvalid = reg_req;
+  assign conf_req    =  access_ctrl
+                     || access_tap
+                     || access_data;
 
-  assign reg_in_s_rready  = in_s_rready;
-  assign reg_in_s_awvalid = in_s_awvalid;
-  assign reg_in_s_wdata   = in_s_wdata;
-  assign reg_in_s_wvalid  = in_s_wvalid;
-  assign reg_ap_done      = in_ap_done;
+  axi4_lite_slave_conf #(
+    .pDATA_WIDTH    ( pDATA_WIDTH    ),
+    .CTRL_WIDTH     ( CTRL_WIDTH     ),
+    .TAP_NUM_WIDTH  ( TAP_NUM_WIDTH  ),
+    .DATA_NUM_WIDTH ( DATA_NUM_WIDTH )
+  ) u_axi4_lite_slave_conf (
+    //------------------------ Global Signals ---------------------------------------//
+    .aclk             ( aclk            ),
+    .aresetn          ( aresetn         ),
 
-  axi4_lite_slave_reg #(
-    .pDATA_WIDTH ( pDATA_WIDTH )
-  ) u_axi4_lite_slave_reg (
-    .aclk          ( reg_aclk          ),
-    .aresetn       ( reg_aresetn       ),
-    .in_s_arvalid  ( reg_in_s_arvalid  ),
-    .out_s_arready ( reg_out_s_arready ),
-    .out_s_rdata   ( reg_out_s_rdata   ),
-    .out_s_rvalid  ( reg_out_s_rvalid  ),
-    .in_s_rready   ( reg_in_s_rready   ),
-    .in_s_awvalid  ( reg_in_s_awvalid  ),
-    .out_s_awready ( reg_out_s_awready ),
-    .in_s_wdata    ( reg_in_s_wdata    ),
-    .in_s_wvalid   ( reg_in_s_wvalid   ),
-    .out_s_wready  ( reg_out_s_wready  ),
-    .in_ap_done    ( reg_ap_done       ),
-    .out_reg_data  ( reg_data          )
+    //------------------------ Read Address Channel ---------------------------------//
+    .in_s_arvalid     ( conf_s_arvalid  ),
+    .out_s_arready    ( conf_s_arready  ),
+
+    //------------------------ Write Address Channel --------------------------------//
+    .in_s_awvalid     ( conf_s_awvalid  ),
+    .out_s_awready    ( conf_s_awready  ),
+
+    //------------------------ Addr Map ---------------------------------------------//
+    .in_access_ctrl   ( access_ctrl     ),
+    .in_access_tap    ( access_tap      ),
+    .in_access_data   ( access_data     ),
+
+    //------------------------ Read Data Channel ------------------------------------//
+    .in_s_rready      ( in_s_rready     ),
+    .out_s_rdata      ( conf_s_rdata    ),
+    .out_s_rvalid     ( conf_s_rvalid   ),
+
+    //------------------------ Write Data Channel -----------------------------------//
+    .in_s_wdata       ( in_s_wdata      ),
+    .in_s_wvalid      ( in_s_wvalid     ),
+    .out_s_wready     ( conf_s_wready   ),
+
+    //------------------------ Core Interface -------------------------------------------//
+    .in_ap_done       ( in_ap_done      ),
+    .out_ctrl         ( conf_ctrl       ),
+    .out_tap          ( conf_tap        ),
+    .out_data         ( conf_data       )
   );
-
-//------------------------ Flag -----------------------------------------------------//
-  logic flag_bram;
-  logic flag_reg;
-
-  // Showing whether it is accessing BRAM
-  always_ff @( posedge aclk or negedge aresetn ) begin : FLAG_BRAM
-    if (!aresetn) flag_bram <= 1'b0;
-    else if (bram_req) flag_bram <= 1'b1;
-    // The next cycle will return IDLE
-    else if (bram_out_s_bvalid || bram_out_s_rvalid) flag_bram <= 1'b0;
-    else flag_bram <= flag_bram;
-  end
-
-  // Showing whether it is accessing reg
-  always_ff @( posedge aclk or negedge aresetn ) begin : FLAG_REG
-    if (!aresetn) flag_reg <= 1'b0;
-    else if (reg_req) flag_reg <= 1'b1;
-    // The next cycle will return IDLE
-    else if (reg_out_s_wready || out_s_rvalid) flag_reg <= 1'b0;
-    else flag_reg <= flag_reg;
-  end
 
 //------------------------ Master Interface -----------------------------------------//
   //------------------------ Read Address Channel -----------------------------------//
-  assign out_s_arready = (!flag_bram) && (!flag_reg);
-  
+  assign out_s_arready = bram_s_arready && conf_s_arready;
+
   //------------------------ Read Data Channel --------------------------------------//
-  assign out_s_rdata  = ({pDATA_WIDTH{flag_bram}} & bram_out_s_rdata) 
-                     || ({pDATA_WIDTH{flag_reg }} & reg_out_s_rdata );
-  assign out_s_rresp  = 2'b00;  
-  assign out_s_rvalid = (flag_bram && bram_out_s_rvalid)
-                     || (flag_reg  && reg_out_s_rvalid );
+  assign out_s_rdata  = ({pDATA_WIDTH{bram_s_rvalid}} & bram_s_rdata) 
+                      | ({pDATA_WIDTH{conf_s_rvalid}} & conf_s_rdata);
+
+  assign out_s_rvalid = bram_s_rvalid || conf_s_rvalid;
 
   //------------------------ Write Address Channel ----------------------------------//
-  assign out_s_awready = (flag_bram && bram_out_s_awready)
-                      || (flag_reg  && reg_out_s_awready ); 
-  
-  assign out_s_bresp   = 2'b00;
-  // Only BRAM slave has response.
-  assign out_s_bvalid  = bram_out_s_bvalid;
+  assign out_s_awready = (bram_s_awready && bram_req)
+                      || (conf_s_awready && conf_req);
 
-//------------------------ BRAM Interface ------------------------------------------//
-  assign out_Di = bram_out_Di;
-  assign out_A  = bram_out_A;
-  assign out_EN = bram_out_EN;
-  assign out_WE = bram_out_WE;
+  //------------------------ Write Data Channel -------------------------------------//
+  assign out_s_wready = bram_s_wready || conf_s_wready;
 
-//------------------------ System Interface ----------------------------------------//
-  assign out_reg_data = reg_data;
+//------------------------ Tap BRAM Interface ---------------------------------------//
+  assign out_tap_Di = bram_Di;
+  assign out_tap_WE = bram_WE;
+
+//------------------------ Arbiter Channel ------------------------------------------//
+  assign out_tap_A  = bram_A;
+  assign out_tap_EN = bram_EN;
+
+//------------------------ Core Interface -------------------------------------------//
+  assign out_conf_ctrl = conf_ctrl;
+  assign out_conf_tap  = conf_tap;
+  assign out_conf_data = conf_data;
 
 endmodule

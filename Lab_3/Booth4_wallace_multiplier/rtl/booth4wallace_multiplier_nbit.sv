@@ -113,12 +113,14 @@ module booth4wallace_multiplier_nbit #(
   end
 
 //------------------------ Final Add ------------------------------------------------//
+  logic cout;
   brent_kung_adder_nbit #(.ADDER_SIZE (ADDER_SIZE)) u_brent_kung_adder_nbit (
     .in_op1  ( op_adder_reg[0] ),
     .in_op2  ( op_adder_reg[1] ),
     .out_res ( out_res         ),
 
-    .cin     ( 1'b0            )
+    .cin     ( 1'b0            ),
+    .cout    ( cout            )
   );
   
 endmodule

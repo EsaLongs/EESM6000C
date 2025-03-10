@@ -178,14 +178,15 @@ module booth4_multiplier_nbit #(
   logic [ADDER_SIZE - 1 : 0] adder_op2;
   logic [ADDER_SIZE - 1 : 0] adder_res;
   logic adder_cin;
+  logic adder_cout;
 
   // Instantiate adder
   brent_kung_adder_nbit u_brent_kung_adder_nbit (
-    .in_op1   ( adder_op1 ),
-    .in_op2   ( adder_op2 ),
-    .out_res  ( adder_res ),
-    .cin      ( adder_cin ),
-    .cout     (           )
+    .in_op1   ( adder_op1  ),
+    .in_op2   ( adder_op2  ),
+    .out_res  ( adder_res  ),
+    .cin      ( adder_cin  ),
+    .cout     ( adder_cout )
   );
 
   logic [ADDER_SIZE - 1 : 0] res_reg;  // The register to store adder result
