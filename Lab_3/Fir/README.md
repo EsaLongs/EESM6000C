@@ -96,4 +96,4 @@ This project is still working, the basic function is correct but I will keep ver
 Actually the results have considered about the carry, but here we just use the lower 32 bits as the output. You can modify the code in "fir_top.sv" to get the value of higher bits.
 
 About scalability, idealy you can change the parameter and get different size's FIR.
-The "pDATA_WIDTH" can be set as "8, 16, 32, 64, 128 ...." (2 ^ n, n >= 3), and the "TAP_NUM_WIDTH" and "DATA_NUM_WIDTH" can be set as any value as long as they matched the depth of RAM you used. (again, please notice that the depth of two BRAM should be same, and should be larger that the number of tap you want to calculate). However, I haven't verified this, I will finish this job later.
+The "pDATA_WIDTH" can be set as "8, 16, 32, 64, 128 ...." (2 ^ n, n >= 3), and the "TAP_NUM_WIDTH" and "DATA_NUM_WIDTH" can be set as any value as long as they matched the depth of RAM you used. (again, please notice that the depth of two RAM should be same, and should be larger that the number of tap you want to calculate). However, I haven't verified this, I will finish this job later.
