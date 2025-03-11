@@ -91,6 +91,8 @@ The "Tap RAM" is just basic BRAM, but the "Data RAM" is actually use "ram_based_
 </div>
 
 ## Simulation Result
+In this verification, we use a data set with total 600 data.
+
 ![Simulation Result](Pass.png)
 
 ## Others
