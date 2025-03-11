@@ -79,16 +79,23 @@ The core module, which is responsible for the calculation. It uses booth4 based 
 #### "axi4_lite_slave.sv"
 The AXI4-lite interface moudle. It has submodule of "axi4_lite_slave.sv", which is used for accessing "Tap RAM", and submodule of "axi4_lite_slave.sv", which is used for accessing  "Configure Register".
 
-**"bram_access_arbiter.sv":** 
+#### "bram_access_arbiter.sv":** 
 Used for avoiding access conflicting.
 
 ## About IP
+The "Tap RAM" is just basic BRAM, but the "Data RAM" is actually use "ram_based_shifter". Both has no output register with a depth of 1024.
+
+![alt text](tap_ram.png)
+
+![alt text](data_ram.png)
 
 ## Simulation Result
 ![alt text](Pass.png)
 
 ## Others
-Actually the results have considered about the carry, but here we just use the lower 32 bits as the output.
+This project is still working, the basic function is correct but I will keep verify some details. I will also upload a diagram later.
+
+Actually the results have considered about the carry, but here we just use the lower 32 bits as the output. You can modify the code in "fir_top.sv" to get the value of higher bits.
 
 About scalability, idealy you can change the parameter and get different size's FIR.
 The "pDATA_WIDTH" can be set as "8, 16, 32, 64, 128 ...." (2 ^ n, n >= 3), and the "TAP_NUM_WIDTH" and "DATA_NUM_WIDTH" can be set as any value as long as they matched the depth of RAM you used. (again, please notice that the depth of two same should be same, and should be larger that the number of tap you want to calculate). However, I haven't verified this, I will finish this job later.
