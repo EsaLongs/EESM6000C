@@ -34,7 +34,7 @@ You can only write to "Data RAM". The FIR will need new data through AXI4-stream
 ## About Files
 All files in this directory are needed. Here I will show you what they are used for.
 
-The relationship looks like this.
+The hierarchy looks like this.
 
     fir_top.sv
 
