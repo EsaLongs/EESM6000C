@@ -28,7 +28,6 @@ module axi4_stream_slave_bram #(
   input  logic                       in_ss_tvalid,
   output logic                       out_ss_tready,
   input  logic [pDATA_WIDTH - 1 : 0] in_ss_tdata,
-  input  logic                       in_ss_tlast,
 
 //------------------------ Arbiter Interface ----------------------------------------//
   input  logic                       in_arbit_tready,

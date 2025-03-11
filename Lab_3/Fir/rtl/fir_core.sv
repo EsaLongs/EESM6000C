@@ -24,6 +24,8 @@ module fir_core #(
   //      we use 1k depth tap RAM and data RAM, then the addr width should be 10.
   parameter TAP_NUM_WIDTH = 10,
   // **** The "DATA_NUM_WIDTH" decides the max data num this design can calculate.
+  //      The maximum number it can represent is 2 ** DATA_NUM_WIDTH - 1, therefore
+  //      the "in_data_num" you set should be less than this value.
   parameter DATA_NUM_WIDTH = 10
   ) (
   input  logic clk,
@@ -58,11 +60,23 @@ module fir_core #(
 );
 //------------------------ Handshake ------------------------------------------------//
   logic data_hsked;
-  logic stall;
-
   assign data_hsked = in_sm_tready && out_sm_tvalid;
-  // **** Stall signal will stall most of the pipeline.
-  assign stall = !(in_sm_tready && in_ss_tvalid);
+
+//------------------------ Stall ----------------------------------------------------//
+  logic stall;
+  logic one_round_finish;
+  logic all_round_finish;
+
+  // **** Stall signal will stall the pipeline.
+  // **** Consider about a situation, when the master send the last data, and the 
+  //      "in_ss_tvalid" deasserted. However, we still need a few cycles to transmit
+  //      the output, so we don't want the pipeline stall here. Therefore, we can
+  //      use a "all_round_finish" signal to keep the pipeline working during this
+  //      period of time.
+  assign stall = (!in_sm_tready   ) ? 1'b1 :
+                 (all_round_finish) ? 1'b0 :
+                 (in_ss_tvalid    ) ? 1'b0 :
+                 1'b1;
 
 //------------------------ State Machine --------------------------------------------//
   // **** The shifter we used is achieved by vivado bram shifter IP. Meanwhile, we also
@@ -152,9 +166,6 @@ module fir_core #(
   // **** This counter is used to generate shifter address, the data in shifter comes
   //      from data BRAM.
   logic [DATA_NUM_WIDTH - 1 : 0] counter_data;
-
-  logic one_round_finish;
-  logic all_round_finish;
 
   assign one_round_finish = state_is_calc && (counter_tap  == in_tap_num );
   assign all_round_finish = state_is_calc && (counter_data == in_data_num);

@@ -31,7 +31,11 @@ module fir_top #(
 
 //------------------------ Axi4 Stream ----------------------------------------------//
   input  logic                       in_ss_tvalid, 
-  input  logic [pDATA_WIDTH - 1 : 0] in_ss_tdata, 
+  input  logic [pDATA_WIDTH - 1 : 0] in_ss_tdata,
+  
+  // **** The "in_ss_tlast" will not be used in this design. The ending of the calcul-
+  //      ation depends on the data_num written in the configure register instead of
+  //      the axi4 stream interface.
   input  logic                       in_ss_tlast, 
   output logic                       out_ss_tready, 
 
@@ -135,7 +139,6 @@ module fir_top #(
     .in_ss_tvalid    ( in_ss_tvalid   ),
     .out_ss_tready   ( out_ss_tready  ),
     .in_ss_tdata     ( in_ss_tdata    ),
-    .in_ss_tlast     ( in_ss_tlast    ),
 
     //------------------------ Arbiter Channel --------------------------------------//
     .in_arbit_tready ( arbit_tready   ),
