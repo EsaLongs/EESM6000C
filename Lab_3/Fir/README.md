@@ -36,39 +36,39 @@ All files in this directory are needed. Here I will show you what they are used 
 
 The relationship looks like this.
 
-fir_top.sv
+    fir_top.sv
 
-  fir_core.sv
+    fir_core.sv
 
-    booth4wallace_multiplier_nbit.sv
+        booth4wallace_multiplier_nbit.sv
 
-      booth4_op_generator.sv
+        booth4_op_generator.sv
 
-        op_n_to_2_nbit.sv
+            op_n_to_2_nbit.sv
 
-          op_n_to_2_nbit_onestage.sv
+            op_n_to_2_nbit_onestage.sv
 
-            op_3_to_2_nbit.sv
+                op_3_to_2_nbit.sv
 
-              onebit_adder.sv
+                onebit_adder.sv
 
-      brent_kung_adder_nbit.sv
+        brent_kung_adder_nbit.sv
+            
+            pg_unit.sv
+
+        brent_kung_adder_nbit.sv
         
         pg_unit.sv
 
-    brent_kung_adder_nbit.sv
-      
-      pg_unit.sv
+    axi4_lite_slave.sv
 
-  axi4_lite_slave.sv
+        axi4_lite_slave_bram.sv
 
-    axi4_lite_slave_bram.sv
+        axi4_lite_slave_conf.sv
 
-    axi4_lite_slave_conf.sv
+    axi4_stream_slave_bram.sv
 
-  axi4_stream_slave_bram.sv
-
-  bram_access_arbiter.sv
+    bram_access_arbiter.sv
 
 ### "fir_top.sv"
 The top module, has AXI4-lite and AXI4-stream (slave and master) interface. It also has two RAM interface.
