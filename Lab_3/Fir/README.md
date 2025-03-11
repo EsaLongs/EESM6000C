@@ -79,6 +79,9 @@ The core module, which is responsible for the calculation. It uses booth4 based 
 #### "axi4_lite_slave.sv"
 The AXI4-lite interface moudle. It has submodule of "axi4_lite_slave.sv", which is used for accessing "Tap RAM", and submodule of "axi4_lite_slave.sv", which is used for accessing  "Configure Register".
 
+#### "axi4_stream_slave_bram.sv"
+The AXI4-stream interface moudle, which will be used to write "Data RAM"
+
 #### "bram_access_arbiter.sv":
 
 Used for avoiding access conflicting.
