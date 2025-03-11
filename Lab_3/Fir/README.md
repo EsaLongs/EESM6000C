@@ -90,14 +90,14 @@ Used for avoiding access conflicting.
 The "Tap RAM" is just basic BRAM, but the "Data RAM" actually is "ram_based_shifter". Both has no output register with a depth of 1024.
 
 <div style="display: flex; gap: 10px; width: 100%;">
-  <img src="tap_ram.png" style="flex: 1; height: 200px; object-fit: cover;">
-  <img src="data_ram.png" style="flex: 1; height: 200px; object-fit: cover;">
+  <img src="/png/tap_ram.png" style="flex: 1; height: 200px; object-fit: cover;">
+  <img src="/png/data_ram.png" style="flex: 1; height: 200px; object-fit: cover;">
 </div>
 
 ## Simulation Result
 In this verification, we use a data set with total 600 data. The last two check (2 and 4) are checking ctrl register with mask. The rdata is 3'b110 but with mask it will be 3'b010 and 3'b100, so the verification get passed.
 
-![Simulation Result](Pass.png)
+![Simulation Result](/png/Pass.png)
 
 ## Others
 This project is still working, the basic function is correct but I will keep verify some details. I will also upload a diagram later.
