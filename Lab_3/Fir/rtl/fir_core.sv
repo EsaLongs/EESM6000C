@@ -201,11 +201,7 @@ module fir_core #(
   end
 
 //------------------------ Pipeline -------------------------------------------------//
-  // **** The variable tap and data are the data will be sent to calculate
-  // **** Then we use two temp registers to store the data waiting to be calculated
-  logic [pDATA_WIDTH - 1 : 0] in_tap_Do;
-  logic [pDATA_WIDTH - 1 : 0] in_data_Do;
-
+  // **** We use two temp registers to store the data waiting to be calculated
   logic [pDATA_WIDTH - 1 : 0] temp_tap;
   logic [pDATA_WIDTH - 1 : 0] temp_data;
 
