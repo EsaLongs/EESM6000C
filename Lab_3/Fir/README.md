@@ -85,9 +85,25 @@ Used for avoiding access conflicting.
 ## About IP
 The "Tap RAM" is just basic BRAM, but the "Data RAM" is actually use "ram_based_shifter". Both has no output register with a depth of 1024.
 
-<img src="tap_ram.png" width="100px">
+<div class="image-container">
+  <img src="tap_ram.png" class="responsive-img">
+  <img src="data_ram.png" class="responsive-img">
+</div>
 
-![Data Ram](data_ram.png)
+<style>
+.image-container {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  height: auto;
+}
+
+.responsive-img {
+  flex: 1 1 0%;
+  height: 200px;
+  object-fit: cover;
+}
+</style>
 
 ## Simulation Result
 ![Simulation Result](Pass.png)
