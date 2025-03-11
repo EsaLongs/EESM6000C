@@ -1,7 +1,7 @@
 # Fir
 ## How It Works
-### Basic Steps
-Here will explain the basic idea of how it runs. The details will be showed in following part.
+### Basic Using Steps
+Here will simply explain the basic idea about how it runs. However, the details will be showed in following parts. A diagram will be uploaded in future update.
 
 In this design, you can access three places: **Tap RAM**, **Data RAM**, and **Configrue Register**.
 
@@ -79,7 +79,8 @@ The core module, which is responsible for the calculation. It uses booth4 based 
 #### "axi4_lite_slave.sv"
 The AXI4-lite interface moudle. It has submodule of "axi4_lite_slave.sv", which is used for accessing "Tap RAM", and submodule of "axi4_lite_slave.sv", which is used for accessing  "Configure Register".
 
-#### "bram_access_arbiter.sv":** 
+#### "bram_access_arbiter.sv":
+
 Used for avoiding access conflicting.
 
 ## About IP
@@ -91,7 +92,7 @@ The "Tap RAM" is just basic BRAM, but the "Data RAM" is actually use "ram_based_
 </div>
 
 ## Simulation Result
-In this verification, we use a data set with total 600 data.
+In this verification, we use a data set with total 600 data. The last two check (2 and 4) are checking ctrl register with mask. The rdata is 3'b110 but with mask it will be 3'b010 and 3'b100, so the verification get passed.
 
 ![Simulation Result](Pass.png)
 
