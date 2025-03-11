@@ -84,8 +84,7 @@ Used for avoiding access conflicting.
 
 ## About IP
 The "Tap RAM" is just basic BRAM, but the "Data RAM" is actually use "ram_based_shifter". Both has no output register with a depth of 1024.
-
-  ![Tap Ram](tap_ram.png)![Data Ram](data_ram.png)
+<img src="![Tap Ram](tap_ram.png)![Data Ram](data_ram.png)" width="100px">
 
 ## Simulation Result
 ![Simulation Result](Pass.png)
