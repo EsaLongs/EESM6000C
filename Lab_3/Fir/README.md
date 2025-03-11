@@ -34,23 +34,61 @@ You can only write to "Data RAM". The FIR will need new data through AXI4-stream
 ## About Files
 All files in this directory are needed. Here I will show you what they are used for.
 
+The relationship looks like this.
+
+fir_top.sv
+
+  fir_core.sv
+
+    booth4wallace_multiplier_nbit.sv
+
+      booth4_op_generator.sv
+
+        op_n_to_2_nbit.sv
+
+          op_n_to_2_nbit_onestage.sv
+
+            op_3_to_2_nbit.sv
+
+              onebit_adder.sv
+
+      brent_kung_adder_nbit.sv
+        
+        pg_unit.sv
+
+    brent_kung_adder_nbit.sv
+      
+      pg_unit.sv
+
+  axi4_lite_slave.sv
+
+    axi4_lite_slave_bram.sv
+
+    axi4_lite_slave_conf.sv
+
+  axi4_stream_slave_bram.sv
+
+  bram_access_arbiter.sv
+
 ### "fir_top.sv"
 The top module, has AXI4-lite and AXI4-stream (slave and master) interface. It also has two RAM interface.
 
 #### "fir_core.sv":
-The core module, which is responsible for the calculation.
+The core module, which is responsible for the calculation. It uses booth4 based wallace multiplier and brent kung adder.
 
 #### "axi4_lite_slave.sv"
-The AXI4-lite interface moudle
+The AXI4-lite interface moudle. It has submodule of "axi4_lite_slave.sv", which is used for accessing "Tap RAM", and submodule of "axi4_lite_slave.sv", which is used for accessing  "Configure Register".
 
-##### "axi4_lite_slave_bram.sv"
-Submodule of "axi4_lite_slave.sv", used for accessing "Tap RAM".
-
-##### "axi4_lite_slave_conf":
-Submodule of "axi4_lite_slave.sv", used for accessing  "Configure Register".
-
-**"axi4_lite_slave.sv":** 
-
+**"bram_access_arbiter.sv":** 
+Used for avoiding access conflicting.
 
 ## About IP
 
+## Simulation Result
+![alt text](Pass.png)
+
+## Others
+Actually the results have considered about the carry, but here we just use the lower 32 bits as the output.
+
+About scalability, idealy you can change the parameter and get different size's FIR.
+The "pDATA_WIDTH" can be set as "8, 16, 32, 64, 128 ...." (2 ^ n, n >= 3), and the "TAP_NUM_WIDTH" and "DATA_NUM_WIDTH" can be set as any value as long as they matched the depth of RAM you used. (again, please notice that the depth of two same should be same, and should be larger that the number of tap you want to calculate). However, I haven't verified this, I will finish this job later.
