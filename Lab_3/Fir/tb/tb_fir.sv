@@ -28,6 +28,7 @@ module fir_tb #(
   parameter DATA_NUM_WIDTH = 10,
   parameter DATA_NUM       = 600
 )();
+//------------------------ Port Declare ---------------------------------------------//
   wire                                awready;
   wire                                wready;
   reg                                 awvalid;
@@ -67,96 +68,106 @@ module fir_tb #(
   wire [DATA_NUM_WIDTH - 1 : 0] data_A;
   wire [pDATA_WIDTH    - 1 : 0] data_Do;
 
+//------------------------ Module Instantiate ---------------------------------------//
   fir_top fir_DUT(
-  .out_s_awready ( awready    ),
-  .out_s_wready  ( wready     ),
-  .in_s_awvalid  ( awvalid    ),
-  .in_s_awaddr   ( awaddr     ),
-  .in_s_wvalid   ( wvalid     ),
-  .in_s_wdata    ( wdata      ),
-  .out_s_arready ( arready    ),
-  .in_s_rready   ( rready     ),
-  .in_s_arvalid  ( arvalid    ),
-  .in_s_araddr   ( araddr     ),
-  .out_s_rvalid  ( rvalid     ),
-  .out_s_rdata   ( rdata      ),
-  .in_ss_tvalid  ( ss_tvalid  ),
-  .in_ss_tdata   ( ss_tdata   ),
-  .in_ss_tlast   ( ss_tlast   ),
-  .out_ss_tready ( ss_tready  ),
-  .in_sm_tready  ( sm_tready  ),
-  .out_sm_tvalid ( sm_tvalid  ),
-  .out_sm_tdata  ( sm_tdata   ),
-  .out_sm_tlast  ( sm_tlast   ),
+    //------------------------ Axi4 Lite Interface ----------------------------------//
+    .out_s_awready ( awready    ),
+    .out_s_wready  ( wready     ),
+    .in_s_awvalid  ( awvalid    ),
+    .in_s_awaddr   ( awaddr     ),
+    .in_s_wvalid   ( wvalid     ),
+    .in_s_wdata    ( wdata      ),
+    .out_s_arready ( arready    ),
+    .in_s_rready   ( rready     ),
+    .in_s_arvalid  ( arvalid    ),
+    .in_s_araddr   ( araddr     ),
+    .out_s_rvalid  ( rvalid     ),
+    .out_s_rdata   ( rdata      ),
 
-  // ram for tap
-  .out_tap_WE    ( tap_WE     ),
-  .out_tap_EN    ( tap_EN     ),
-  .out_tap_Di    ( tap_Di     ),
-  .out_tap_A     ( tap_A      ),
-  .in_tap_Do     ( tap_Do     ),
+    //------------------------ Axi4 Stream Interface --------------------------------//
+    .in_ss_tvalid  ( ss_tvalid  ),
+    .in_ss_tdata   ( ss_tdata   ),
+    .in_ss_tlast   ( ss_tlast   ),
+    .out_ss_tready ( ss_tready  ),
+    .in_sm_tready  ( sm_tready  ),
+    .out_sm_tvalid ( sm_tvalid  ),
+    .out_sm_tdata  ( sm_tdata   ),
+    .out_sm_tlast  ( sm_tlast   ),
 
-  // ram for data
-  .out_data_EN   ( data_EN    ),
-  .out_data_Di   ( data_Di    ),
-  .out_data_A    ( data_A     ),
-  .in_data_Do    ( data_Do    ),
+    //------------------------ Tap RAM Interface ------------------------------------//
+    .out_tap_WE    ( tap_WE     ),
+    .out_tap_EN    ( tap_EN     ),
+    .out_tap_Di    ( tap_Di     ),
+    .out_tap_A     ( tap_A      ),
+    .in_tap_Do     ( tap_Do     ),
 
-  .aclk          ( axis_clk   ),
-  .aresetn       ( axis_rst_n )
+    //------------------------ Data RAM Interface -----------------------------------//
+    .out_data_EN   ( data_EN    ),
+    .out_data_Di   ( data_Di    ),
+    .out_data_A    ( data_A     ),
+    .in_data_Do    ( data_Do    ),
+
+    //------------------------ Clk and Reset ----------------------------------------//
+    .aclk          ( axis_clk   ),
+    .aresetn       ( axis_rst_n )
   );
     
+  data_ram u_data_ram (
+    .A    ( data_A   ),
+    .CE   ( data_EN  ),
+    .CLK  ( axis_clk ),
+    .DIN  ( data_Di  ),
+    .DOUT ( data_Do  )
+  );
 
-    data_ram u_data_ram
-   (
-    .A(data_A),
-    .CE(data_EN),
-    .CLK(axis_clk),
-    .DIN(data_Di),
-    .DOUT(data_Do)
-    );
+  tap_bram u_tap_ram (
+    .A    ( tap_A    ),
+    .CLK  ( axis_clk ),
+    .DIN  ( tap_Di   ),
+    .DOUT ( tap_Do   ),
+    .EN   ( tap_EN   ),
+    .WE   ( tap_WE   )
+  );
 
-tap_bram u_tap_ram
-   (.A(tap_A),
-    .CLK(axis_clk),
-    .DIN(tap_Di),
-    .DOUT(tap_Do),
-    .EN(tap_EN),
-    .WE(tap_WE));
+//------------------------ Prepare --------------------------------------------------//
+  // **** Here "Din_list" will store the data waiting to be calculated. "golden_list"
+  //      will store the expected calculation result.
+  reg signed [ pDATA_WIDTH - 1 : 0] Din_list    [0 : DATA_NUM - 1];
+  reg signed [ pDATA_WIDTH - 1 : 0] golden_list [0 : DATA_NUM - 1];
 
-    reg signed [(pDATA_WIDTH-1):0] Din_list[0:(DATA_NUM-1)];
-    reg signed [(pDATA_WIDTH-1):0] golden_list[0:(DATA_NUM-1)];
+  initial begin
+    $dumpfile("fir.vcd");
+    $dumpvars();
+  end
 
-    initial begin
-        $dumpfile("fir.vcd");
-        $dumpvars();
+  // **** Create clock
+  initial begin
+    axis_clk = 0;
+    forever begin
+      #5 axis_clk = (~axis_clk);
     end
+  end
 
-    initial begin
-        axis_clk = 0;
-        forever begin
-            #5 axis_clk = (~axis_clk);
-        end
+  // **** Reset
+  initial begin
+    axis_rst_n = 0;
+    @(posedge axis_clk); 
+    @(posedge axis_clk);
+    axis_rst_n = 1;
+  end 
+
+  reg [31:0]  data_length;
+  integer Din, golden, input_data, golden_data, m;
+  initial begin
+    data_length = 0;
+    Din = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/samples_triangular_wave.txt","r");
+    golden = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/out_gold.txt","r");
+    for(m=0;m<DATA_NUM;m=m+1) begin
+      input_data = $fscanf(Din,"%d", Din_list[m]);
+      golden_data = $fscanf(golden,"%d", golden_list[m]);
+      data_length = data_length + 1;
     end
-
-    initial begin
-        axis_rst_n = 0;
-        @(posedge axis_clk); @(posedge axis_clk);
-        axis_rst_n = 1;
-    end 
-
-    reg [31:0]  data_length;
-    integer Din, golden, input_data, golden_data, m;
-    initial begin
-        data_length = 0;
-        Din = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/samples_triangular_wave.txt","r");
-        golden = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/out_gold.txt","r");
-        for(m=0;m<DATA_NUM;m=m+1) begin
-            input_data = $fscanf(Din,"%d", Din_list[m]);
-            golden_data = $fscanf(golden,"%d", golden_list[m]);
-            data_length = data_length + 1;
-        end
-    end
+  end
 
     integer i;
     initial begin
@@ -167,7 +178,7 @@ tap_bram u_tap_ram
             ss_tlast = 0; ss(Din_list[i]);
         end
         config_read_check(32'h00000000, 32'h00, 32'h0000_000f); // check idle = 0
-        ss_tlast = 1; ss(Din_list[(DATA_NUM-1)]);
+        ss_tlast = 1; ss(Din_list[DATA_NUM - 1]);
         $display("------End the data input(AXI-Stream)------");
     end
 
