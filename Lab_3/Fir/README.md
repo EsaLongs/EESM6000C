@@ -127,4 +127,4 @@ By default, the lower 32 bits are output. Modify `fir_top.sv` to access higher-o
  Core functionality is verified. Ongoing optimizations and detailed validations are in progress.
 
  ## Contribution
-Contributions to this project are highly encouraged and appreciated! Whether it's bug fixes, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality of the adder.
+Contributions to this project are highly encouraged and appreciated! Whether it's debug related, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality.
