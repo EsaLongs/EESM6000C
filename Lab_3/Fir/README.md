@@ -45,7 +45,7 @@ This section explains how to access each component.
 
 #### Access Data RAM
 • **Interface**: AXI4-Stream  
-• **Note**: Data is written dynamically during computation. Do not preload Data RAM, just make sure new data is there when tready is asserted.
+• **Note**: Data is written dynamically during computation. Do not preload Data RAM, just make sure new data is there when tready is asserted. **The Data RAM is just used as shifter, and the only reason I use it is just for reducing cost!**
 
 ## File Hierarchy
 The design hierarchy is as follows:
@@ -69,7 +69,6 @@ fir_top.sv
   ├── axi4_stream_slave_bram.sv
   └── bram_access_arbiter.sv
 ```
-
 ### Key Files
 • **`fir_top.sv`**: Top-level module with AXI4 interfaces.
 
