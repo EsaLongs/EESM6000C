@@ -46,8 +46,9 @@ module fir_core #(
 
 //------------------------ AXI4 Stream Interface ------------------------------------//
   // **** This output size is the minimum size that make sure no carry loss.
-  input  logic                                           in_sm_tready,
   input  logic                                           in_ss_tvalid,
+  
+  input  logic                                           in_sm_tready,
   output logic                                           out_sm_tvalid,
   output logic [2 * pDATA_WIDTH - 1 + TAP_NUM_WIDTH : 0] out_sm_tdata, 
   output logic                                           out_sm_tlast,

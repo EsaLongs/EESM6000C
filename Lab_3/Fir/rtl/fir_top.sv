@@ -215,8 +215,8 @@ module fir_top #(
     .out_data_A       ( out_data_A    ),
 
     //------------------------ AXI4 Stream Interface --------------------------------//
-    .in_sm_tready     ( in_sm_tready  ),
     .in_ss_tvalid     ( in_ss_tvalid  ),
+    .in_sm_tready     ( in_sm_tready  ),
     .out_sm_tvalid    ( out_sm_tvalid ),
     .out_sm_tdata     ( sm_tdata_full ),
     .out_sm_tlast     ( out_sm_tlast  ),

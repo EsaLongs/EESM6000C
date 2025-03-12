@@ -1,7 +1,9 @@
 # Fir
 ## How It Works
 ### Basic Using Steps
-Here will simply explain the basic idea about how it runs. However, the details will be showed in following parts. A diagram will also be uploaded in future update (just in one or two weeks).
+Here will simply explain the basic idea about how it runs. However, the details will be showed in following parts. A diagram shows the structure of this design.
+
+![alt text](diagram.jpg)
 
 In this design, you can access three places: **Tap RAM**, **Data RAM**, and **Configrue Register**.
 
