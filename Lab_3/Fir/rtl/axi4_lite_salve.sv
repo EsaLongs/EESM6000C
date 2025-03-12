@@ -21,8 +21,8 @@
 
 module axi4_lite_slave #(
   parameter CTRL_WIDTH     = 3,
-  parameter pDATA_WIDTH    = 32,
   parameter pADDR_WIDTH    = 32,
+  parameter pDATA_WIDTH    = 32,
   parameter TAP_NUM_WIDTH  = 10,
   parameter DATA_NUM_WIDTH = 10
   ) (

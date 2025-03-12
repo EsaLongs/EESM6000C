@@ -19,8 +19,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 module axi4_lite_slave_bram #(
-  parameter pDATA_WIDTH = 32,
   parameter pADDR_WIDTH = 32,
+  parameter pDATA_WIDTH = 32,
   parameter TAP_NUM_WIDTH = 10
   ) (
 //------------------------ Global Signals -------------------------------------------//
