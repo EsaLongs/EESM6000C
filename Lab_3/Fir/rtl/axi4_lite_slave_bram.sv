@@ -49,7 +49,6 @@ module axi4_lite_slave_bram #(
 //------------------------ Bram Interface -------------------------------------------//
   input  logic [pDATA_WIDTH     - 1 : 0] in_Do,
   output logic [pDATA_WIDTH     - 1 : 0] out_Di,
-  output logic [TAP_NUM_WIDTH   - 1 : 0] out_A,
   output logic [pDATA_WIDTH / 8 - 1 : 0] out_WE,
   
 //------------------------ Arbiter Channel ------------------------------------------//
@@ -59,6 +58,7 @@ module axi4_lite_slave_bram #(
   input  logic in_arbit_rvalid,
   input  logic in_arbit_awready,
   input  logic in_arbit_wready,
+  output logic [TAP_NUM_WIDTH   - 1 : 0] out_A,
   output logic out_EN
 );
 

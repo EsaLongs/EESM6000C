@@ -132,7 +132,6 @@ module axi4_lite_slave #(
     //------------------------ Bram Interface ---------------------------------------//
     .in_Do            ( in_tap_Do        ),
     .out_Di           ( bram_Di          ),
-    .out_A            ( bram_A           ),
     .out_WE           ( bram_WE          ),
 
     //------------------------ Arbiter Channel --------------------------------------//
@@ -140,6 +139,7 @@ module axi4_lite_slave #(
     .in_arbit_rvalid  ( in_arbit_rvalid  ),
     .in_arbit_awready ( in_arbit_awready ),
     .in_arbit_wready  ( in_arbit_wready  ),
+    .out_A            ( bram_A           ),
     .out_EN           ( bram_EN          )
   );
 
