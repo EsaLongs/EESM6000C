@@ -15,7 +15,7 @@
 // 
 // Revision: 0.01
 // 
-// Additional Comments: Nothing
+// Additional Comments:
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 module brent_kung_adder_nbit #(parameter ADDER_SIZE = 128) (
