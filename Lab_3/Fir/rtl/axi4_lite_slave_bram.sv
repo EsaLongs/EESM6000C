@@ -137,7 +137,6 @@ module axi4_lite_slave_bram #(
   assign araddr_temp = in_s_araddr >> 2;
   assign awaddr_temp = in_s_awaddr >> 2;
 
-
   logic [TAP_NUM_WIDTH - 1 : 0] addr_wr;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
