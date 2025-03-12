@@ -33,11 +33,11 @@ This section explains how to access each component.
 • Contains three registers:
   1. **Ctrl Register** (`32'h0xxx_xxxx`):
 
-   ◦ `ap_start` (bit 0): Write `1` to start computation.
+      ◦ `ap_start` (bit 0): Write `1` to start computation.
 
-   ◦ `ap_done` (bit 1): Indicates completion (read-only).
+      ◦ `ap_done` (bit 1): Indicates completion (read-only).
 
-   ◦ `ap_idle` (bit 2): Indicates idle state (read-only).
+      ◦ `ap_idle` (bit 2): Indicates idle state (read-only).
 
   2. **Tap Register** (`32'h1xxx_xxxx`): Specifies the number of taps (10-bit value).
 
@@ -102,16 +102,16 @@ The verification used 600 input data points. The final checks (points 2 and 4) v
 ### **Scalability**:  
 • We have following parameters can be set:
 
-   ◦ `pDATA_WIDTH`: The width of data.
+      ◦ `pDATA_WIDTH`: The width of data.
 
-   ◦ `TAP_NUM_WIDTH`: Actually it is the depth of RAM, both tap RAM and data RAM. You should make sure this width is enough to store you `TAP_NUM`.
+      ◦ `TAP_NUM_WIDTH`: Actually it is the depth of RAM, both tap RAM and data RAM. You should make sure this width is enough to store you `TAP_NUM`.
 
-   ◦ `DATA_NUM_WIDTH`: It doesn't need to match the RAM depth, and it can be any value as long as it is enough of store you `DATA_NUM`.
+      ◦ `DATA_NUM_WIDTH`: It doesn't need to match the RAM depth, and it can be any value as long as it is enough of store you `DATA_NUM`.
 • Programable part: 
 
-   ◦ `TAP_NUM`: It is used to simulate programing configure register.
+      ◦ `TAP_NUM`: It is used to simulate programing configure register.
 
-   ◦ `DATA_NUM`: Same as `TAP_NUM`.
+      ◦ `DATA_NUM`: Same as `TAP_NUM`.
 • Please don't change following parameter: `pADDR_WIDTH`
 • Idealy, `pDATA_WIDTH` can be `8, 16, 32, 64, 128...` (powers of 2, ≥8). I will verificate this as long as I have data.
 
