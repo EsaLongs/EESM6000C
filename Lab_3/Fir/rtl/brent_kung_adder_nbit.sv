@@ -8,13 +8,13 @@
 // Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a brent kung adder, which will be use in fir core.
+// Description: This is a brent kung adder, which will be used in fir core.
 // 
 // Dependencies: `pg_unit.sv`
 // 
 // Revision: 0.01
 // 
-// Additional Comments: Nothing
+// Additional Comments:
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 module brent_kung_adder_nbit #(parameter ADDER_SIZE = 128) (

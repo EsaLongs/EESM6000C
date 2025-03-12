@@ -10,11 +10,11 @@
 // Tool Versions: Vivado 2023.1
 // Description: This is a booth4 based wallace multiplier, which will be used in core.
 // 
-// Dependencies: `booth4_op_generator.sv` and `brent_kung_adder_nbit`
+// Dependencies: `booth4_op_generator.sv` and `brent_kung_adder_nbit.sv`
 // 
 // Revision: 0.01
 // 
-// Additional Comments: Nothing
+// Additional Comments:
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 

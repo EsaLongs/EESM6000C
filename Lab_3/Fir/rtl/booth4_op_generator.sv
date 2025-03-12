@@ -1,3 +1,23 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Company: Hong Kong University of Science and Technology
+// Engineer: TANG Yue
+// 
+// Create Date: 21.02.2025 20:20:12
+// Design Name:
+// Module Name: booth4_op_generator
+// Project Name: FIR
+// Target Devices: 
+// Tool Versions: Vivado 2023.1
+// Description: Submodule of multiplier, generating operands using wallace tree.
+// 
+// Dependencies: `op_n_to_2_nbit.sv`
+// 
+// Revision: 0.01
+// 
+// Additional Comments:
+// 
+///////////////////////////////////////////////////////////////////////////////////////
+
 module booth4_op_generator #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE,

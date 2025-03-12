@@ -3,12 +3,12 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 23.02.2025 18:20:29
-// Design Name: AXI4 Lite for BRAM and Configure Register
+// Design Name: 
 // Module Name: axi4_lite_slave
-// Project Name: 
+// Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a AXI4 Lite interface for slave BRAM and configure register.
+// Description: AXI4 Lite interface (slave) for tap RAM and configure register.
 // 
 // Dependencies:
 // 

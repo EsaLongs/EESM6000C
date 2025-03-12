@@ -5,10 +5,10 @@
 // Create Date: 23.02.2025 18:20:29
 // Design Name:
 // Module Name: axi4_lite_slave_bram
-// Project Name: 
+// Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a AXI4 Lite interface for slave BRAM.
+// Description: AXI4 Lite interface for tap RAM.
 // 
 // Dependencies:
 // 

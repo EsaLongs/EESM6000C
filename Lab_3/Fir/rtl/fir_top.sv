@@ -10,7 +10,7 @@
 // Tool Versions: Vivado 2023.1
 // Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Fir
 // 
-// Dependencies: `fir_core.sv`, `axi4_lite_slave.sv`, `axi4_stream_slave_bram.sv`, 
+// Dependencies: `fir_core.sv`, `axi4_lite_slave.sv`, `axi4_stream_slave_bram.sv`
 //               and `bram_access_arbiter.sv`
 // 
 // Revision:

@@ -4,8 +4,8 @@
 // 
 // Create Date: 23.02.2025 18:20:29
 // Design Name: 
-// Module Name: bram_w_access_arbiter
-// Project Name: 
+// Module Name: bram_access_arbiter
+// Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
 // Description: This is a arbiter used for distributing BRAM access permission.
