@@ -100,7 +100,8 @@ The verification used 600 input data points. The final checks (points 2 and 4) v
 
 ## Notes
 ### **Scalability**:  
-• `pDATA_WIDTH` can be `8, 16, 32, 64, 128...` (powers of 2, ≥8).  
-• `TAP_NUM_WIDTH` and `DATA_NUM_WIDTH` must match the RAM depth.  
+• Idealy, `pDATA_WIDTH` can be `8, 16, 32, 64, 128...` (powers of 2, ≥8). I will verificate this as long as I have data.
+• `TAP_NUM_WIDTH` must match the RAM depth (again, Tap RAM and Data RAM has same depth).
+• `DATA_NUM_WIDTH` doesn't need to match the RAM depth, and it can be any value as long as it is higher than the total number of data you have.
 • **Output Bits**: By default, the lower 32 bits are output. Modify `fir_top.sv` to access higher-order bits.  
 • **Status**: Core functionality is verified. Ongoing optimizations and detailed validations are in progress.

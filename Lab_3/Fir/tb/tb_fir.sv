@@ -69,7 +69,11 @@ module fir_tb #(
   wire [pDATA_WIDTH    - 1 : 0] data_Do;
 
 //------------------------ Module Instantiate ---------------------------------------//
-  fir_top fir_DUT(
+  fir_top #(
+    .pDATA_WIDTH    ( pDATA_WIDTH    ),
+    .TAP_NUM_WIDTH  ( TAP_NUM_WIDTH  ),
+    .DATA_NUM_WIDTH ( DATA_NUM_WIDTH )
+  ) fir_DUT(
     //------------------------ Axi4 Lite Interface ----------------------------------//
     .out_s_awready ( awready    ),
     .out_s_wready  ( wready     ),
@@ -157,7 +161,7 @@ module fir_tb #(
   end 
 
   // **** Read file.
-  reg [31:0]  data_length;
+  reg [pDATA_WIDTH - 1 : 0]  data_length;
   integer Din, golden, input_data, golden_data, m;
   initial begin
     data_length = 0;
@@ -171,7 +175,7 @@ module fir_tb #(
   end
 
   // **** Tap RAM data.
-  reg signed [31:0] coef[0:10];
+  reg signed [pDATA_WIDTH - 1 : 0] coef[0:10];
   initial begin
     coef[0]  =  32'd0;
     coef[1]  = -32'd10;
@@ -270,8 +274,8 @@ module fir_tb #(
 //------------------------ Task Define ----------------------------------------------//
   //------------------------ Axi4 Lite Write ----------------------------------------//
   task config_write;
-    input [31:0] addr;
-    input [31:0] data;
+    input [pDATA_WIDTH - 1 : 0] addr;
+    input [pDATA_WIDTH - 1 : 0] data;
     begin
       awvalid <= 0; wvalid <= 0;
       arvalid <= 0; rready <= 0;
@@ -285,9 +289,9 @@ module fir_tb #(
 
   //------------------------ Axi4 Lite Read -----------------------------------------//
   task config_read_check;
-    input        [31:0] addr;
-    input signed [31:0] exp_data;
-    input        [31:0] mask;
+    input        [pDATA_WIDTH - 1 : 0] addr;
+    input signed [pDATA_WIDTH - 1 : 0] exp_data;
+    input        [pDATA_WIDTH - 1 : 0] mask;
     begin
       arvalid <= 0;
       awvalid <= 0; wvalid <= 0;
@@ -307,7 +311,7 @@ module fir_tb #(
 
   //------------------------ Axi4 Stream Write (slave) ------------------------------//
   task ss;
-    input  signed [31:0] in1;
+    input  signed [pDATA_WIDTH - 1 : 0] in1;
     begin
       ss_tvalid <= 1;
       ss_tdata  <= in1;
@@ -320,8 +324,8 @@ module fir_tb #(
 
   //------------------------ Axi4 Stream Write (master) -----------------------------//
   task sm;
-    input signed [31:0] in2;  // golden data
-    input        [31:0] pcnt; // pattern count
+    input signed [pDATA_WIDTH - 1 : 0] in2;  // golden data
+    input        [pDATA_WIDTH - 1 : 0] pcnt; // pattern count
     begin
       sm_tready <= 1;
       @(posedge axis_clk) 

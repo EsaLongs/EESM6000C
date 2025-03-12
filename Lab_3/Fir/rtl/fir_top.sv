@@ -228,6 +228,6 @@ module fir_top #(
     .out_tap_A        ( core_tap_A    )
   );
 
-  assign out_sm_tdata = sm_tdata_full[31 : 0];
+  assign out_sm_tdata = sm_tdata_full[pDATA_WIDTH - 1 : 0];
 
 endmodule
