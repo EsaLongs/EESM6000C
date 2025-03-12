@@ -72,9 +72,13 @@ fir_top.sv
 
 ### Key Files
 • **`fir_top.sv`**: Top-level module with AXI4 interfaces.
+
 • **`fir_core.sv`**: FIR computation core using Booth-Wallace multiplier and Brent-Kung adder.
+
 • **`axi4_lite_slave.sv`**: AXI4-Lite interface handlers for registers and Tap RAM.
+
 • **`axi4_stream_slave_bram.sv`**: AXI4-Stream interface for Data RAM.
+
 • **`bram_access_arbiter.sv`**: Arbitration logic for RAM access.
 
 ## IP Configuration
