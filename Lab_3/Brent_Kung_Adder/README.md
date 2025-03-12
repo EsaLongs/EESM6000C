@@ -23,4 +23,5 @@ Following bit width have been verified: 4 bits, 16bits, 32bits and 128bits.
   <img src="png/schematic_128bit.png" alt="Tap RAM Structure" style="flex: 1; height: 200px; object-fit: cover;">
 </div>
 
-## 🤝 Contributing
+## Contribution
+Contributions to this project are highly encouraged and appreciated! Whether it's debug related, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality.
