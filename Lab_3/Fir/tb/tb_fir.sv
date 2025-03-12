@@ -166,10 +166,10 @@ module fir_tb ();
   integer Din, golden, input_data, golden_data, m;
   initial begin
     data_length = 0;
-    Din = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/samples_triangular_wave.txt","r");
+    Din    = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/samples_triangular_wave.txt","r");
     golden = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/out_gold.txt","r");
-    for(m=0;m<DATA_NUM;m=m+1) begin
-      input_data = $fscanf(Din,"%d", Din_list[m]);
+    for(m = 0;m < DATA_NUM; m = m + 1) begin
+      input_data  = $fscanf(Din,"%d", Din_list[m]);
       golden_data = $fscanf(golden,"%d", golden_list[m]);
       data_length = data_length + 1;
     end
@@ -197,7 +197,7 @@ module fir_tb ();
     $display("------------Start simulation-----------");
     ss_tvalid = 0;
     $display("----Start the data input(AXI-Stream)----");
-    for(i=0;i<(data_length-1);i=i+1) begin
+    for(i = 0; i < (data_length -1 ); i = i + 1) begin
       // **** Write input data to data RAM.
       ss_tlast = 0; ss(Din_list[i]);
     end
@@ -219,7 +219,7 @@ module fir_tb ();
     status_error = 0;
     sm_tready = 1;
     wait (sm_tvalid);
-    for(k=0;k < data_length;k=k+1) begin
+    for(k = 0; k < data_length; k = k+1) begin
       // **** Compare calculation result with golden result.
       sm(golden_list[k],k);
     end
@@ -250,7 +250,7 @@ module fir_tb ();
     awvalid <= 0; wvalid <= 0;
     // **** Check data in tao RAM.
     $display(" Check Coefficient ...");
-    for(k=0; k < TAP_NUM; k=k+1) begin
+    for(k = 0; k < TAP_NUM; k = k + 1) begin
       config_read_check(32'h30000000+k, coef[k], 32'hffffffff);
     end
     arvalid <= 0;
@@ -312,7 +312,8 @@ module fir_tb ();
 
   //------------------------ Axi4 Stream Write (slave) ------------------------------//
   task ss;
-    input  signed [pDATA_WIDTH - 1 : 0] in1;
+    input signed [pDATA_WIDTH - 1 : 0] in1;
+    
     begin
       ss_tvalid <= 1;
       ss_tdata  <= in1;
