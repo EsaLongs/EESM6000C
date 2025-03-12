@@ -2,13 +2,13 @@
 // Company: Hong Kong University of Science and Technology
 // Engineer: TANG Yue
 // 
-// Create Date: 08/03/2025 10:38:55
+// Create Date: 20.02.2025 19:44:04
 // Design Name: 
-// Module Name: onebit_adder
+// Module Name: gp_unit
 // Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: Submodule to help implement wallace tree.
+// Description: Submodule to help implement brent kung adder
 // Dependencies:
 // 
 // Revision:
@@ -17,12 +17,14 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module onebit_adder (
-  input  logic A, B, C,
-  output logic COUT, S
+module gp_unit (
+  input  logic in_g1, in_g2,
+  input  logic in_p1, in_p2,
+  output logic out_g,
+  output logic out_p
 );
 
-  assign S = A ^^ B ^^ C;
-  assign COUT = (A && B) || (B && C) || (C && A);
+  assign out_g = in_g2 || (in_p2 && in_g1);
+  assign out_p = in_p2 && in_p1;
 
 endmodule

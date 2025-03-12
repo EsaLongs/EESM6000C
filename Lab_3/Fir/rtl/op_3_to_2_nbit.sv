@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
+// Company: Hong Kong University of Science and Technology
 // Engineer: TANG Yue
 // 
-// Create Date: 08/03/2025 10:38:55 AM
+// Create Date: 08/03/2025 10:38:55
 // Design Name: 
 // Module Name: op_3_to_2_nbit
 // Project Name: FIR

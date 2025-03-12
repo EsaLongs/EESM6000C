@@ -10,7 +10,7 @@
 // Tool Versions: Vivado 2023.1
 // Description: This is a brent kung adder, which will be used in fir core.
 // 
-// Dependencies: `pg_unit.sv`
+// Dependencies: `gp_unit.sv`
 // 
 // Revision: 0.01
 // 
