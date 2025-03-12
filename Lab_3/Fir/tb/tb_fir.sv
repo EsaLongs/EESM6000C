@@ -20,14 +20,15 @@
 
 `timescale 1ns / 1ps
 
-module fir_tb #(
-  parameter pADDR_WIDTH    = 32,
+module fir_tb ();
+  parameter pADDR_WIDTH    = 32,   // Don't change addr width
+
   parameter pDATA_WIDTH    = 32,
-  parameter TAP_NUM        = 11,
   parameter TAP_NUM_WIDTH  = 10,
   parameter DATA_NUM_WIDTH = 10,
+  parameter TAP_NUM        = 11,
   parameter DATA_NUM       = 600
-)();
+
 //------------------------ Port Declare ---------------------------------------------//
   wire                                awready;
   wire                                wready;
