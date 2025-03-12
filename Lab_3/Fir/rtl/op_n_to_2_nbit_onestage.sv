@@ -11,8 +11,8 @@
 // Description: Submodule to help implement wallace tree.
 // Dependencies: `op_3_to_2_nbit.sv`
 // 
-// Revision:
-// Revision 0.01 - File Created
+// Revision 0.01
+//
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////

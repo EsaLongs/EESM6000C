@@ -13,8 +13,8 @@
 // Dependencies: `fir_core.sv`, `axi4_lite_slave.sv`, `axi4_stream_slave_bram.sv`
 //               and `bram_access_arbiter.sv`
 // 
-// Revision:
-// Revision 0.01 - File Created
+// Revision 0.01
+//
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////

@@ -11,8 +11,8 @@
 // Description: Submodule to help implement brent kung adder
 // Dependencies:
 // 
-// Revision:
-// Revision 0.01 - File Created
+// Revision 0.01
+//
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////

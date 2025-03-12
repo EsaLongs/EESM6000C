@@ -11,8 +11,8 @@
 // Description: This is a wallace tree implementation, transfer 3 operands to 2.
 // Dependencies: `op_3_to_2_nbit_onestage.sv`
 // 
-// Revision:
-// Revision 0.01 - File Created
+// Revision 0.01
+//
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////

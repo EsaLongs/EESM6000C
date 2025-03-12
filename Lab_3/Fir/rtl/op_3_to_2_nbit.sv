@@ -11,8 +11,8 @@
 // Description: Submodule to help implement wallace tree.
 // Dependencies: `onebit_adder.sv`
 // 
-// Revision:
-// Revision 0.01 - File Created
+// Revision 0.01
+//
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
