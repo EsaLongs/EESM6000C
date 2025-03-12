@@ -116,7 +116,7 @@ About scalability, idealy you can change the parameter and get different size's 
 ### Basic Using Steps
 Here we will briefly explain the basic idea of how it operates. The details will be shown in the following sections. The diagram below illustrates the structure of the design.
 
-![Structure Diagram](png\diagram.jpg)
+![Structure Diagram](png/diagram.jpg)
 
 In this design, you can access three components via the AXI4-Lite and AXI4-Stream interfaces: **Tap RAM**, **Data RAM**, and **Configure Register**.
 
