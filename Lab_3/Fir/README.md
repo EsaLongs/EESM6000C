@@ -102,11 +102,11 @@ The verification used 600 input data points. The final checks (points 2 and 4) v
 ### **Scalability**:  
 • We have following parameters can be set:
 
-  ◦ `pDATA_WIDTH`: The width of data.
+   ◦ `pDATA_WIDTH`: The width of data.
 
-  ◦ `TAP_NUM_WIDTH`: Actually it is the depth of RAM, both tap RAM and data RAM. You should make sure this width is enough to store you `TAP_NUM`.
+   ◦ `TAP_NUM_WIDTH`: Actually it is the depth of RAM, both tap RAM and data RAM. You should make sure this width is enough to store you `TAP_NUM`.
 
-  ◦ `DATA_NUM_WIDTH`: It doesn't need to match the RAM depth, and it can be any value as long as it is enough of store you `DATA_NUM`.
+   ◦ `DATA_NUM_WIDTH`: It doesn't need to match the RAM depth, and it can be any value as long as it is enough of store you `DATA_NUM`.
 • Programable part: 
 
     ◦ `TAP_NUM`: It is used to simulate programing configure register.
