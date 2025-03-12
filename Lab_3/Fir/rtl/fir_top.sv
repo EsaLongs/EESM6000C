@@ -11,7 +11,7 @@
 // Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Fir
 // 
 // Dependencies: `fir_core.sv`, `axi4_lite_slave.sv`, `axi4_stream_slave_bram.sv`, 
-//               `bram_access_arbiter.sv`
+//               and `bram_access_arbiter.sv`
 // 
 // Revision:
 // Revision 0.01 - File Created

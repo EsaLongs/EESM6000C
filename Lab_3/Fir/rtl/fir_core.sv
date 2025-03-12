@@ -10,7 +10,7 @@
 // Tool Versions: Vivado 2023.1
 // Description: This is the calculation part of fir.
 // 
-// Dependencies: `booth4wallace_multiplier_nbit.sv`, `brent_kung_adder_nbit`
+// Dependencies: `booth4wallace_multiplier_nbit.sv` and `brent_kung_adder_nbit`
 // 
 // Revision: 0.01
 // 
