@@ -78,6 +78,7 @@ fir_top.sv
 • **`bram_access_arbiter.sv`**: Arbitration logic for RAM access.
 
 ## IP Configuration
+
 • **Tap RAM**: Standard BRAM (1024-depth, no output registers).  
 • **Data RAM**: RAM-based shifter (1024-depth, no output registers).  
 
