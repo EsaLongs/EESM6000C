@@ -8,13 +8,14 @@
 // Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: AXI4 Lite interface (slave) for tap RAM and configure register.
+// Description: AXI4 Lite interface (slave) for tap RAM and configure register, this
+//              this module is mainly used to deal with address map.
 // 
 // Dependencies:
 // 
 // Revision: 0.01
 // 
-// Additional Comments: This AXI4 Lite interface mainly to deal with address map.
+// Additional Comments: This AXI4 Lite interface
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 

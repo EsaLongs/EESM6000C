@@ -8,7 +8,7 @@
 // Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: AXI4 Lite interface for tap RAM.
+// Description: AXI4 Lite interface (slave) for tap RAM.
 // 
 // Dependencies:
 // 
