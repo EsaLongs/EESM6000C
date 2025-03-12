@@ -20,6 +20,7 @@
 
 module axi4_lite_slave_bram #(
   parameter pDATA_WIDTH = 32,
+  parameter pADDR_WIDTH = 32,
   parameter TAP_NUM_WIDTH = 10
   ) (
 //------------------------ Global Signals -------------------------------------------//
@@ -27,12 +28,12 @@ module axi4_lite_slave_bram #(
   input  logic aresetn,
 
 //------------------------ Read Address Channel -------------------------------------//
-  input  logic [TAP_NUM_WIDTH - 1 : 0] in_s_araddr,
+  input  logic [pADDR_WIDTH - 1 : 0]   in_s_araddr,
   input  logic                         in_s_arvalid,
   output logic                         out_s_arready,
 
 //------------------------ Write Address Channel ------------------------------------//
-  input  logic [TAP_NUM_WIDTH - 1 : 0] in_s_awaddr,
+  input  logic [pADDR_WIDTH - 1 : 0]   in_s_awaddr,
   input  logic                         in_s_awvalid,
   output logic                         out_s_awready,
   
@@ -131,11 +132,17 @@ module axi4_lite_slave_bram #(
   // **** For read operation, BRAM will store the addr (A) itself, so we don't need
   //      another register.
 
+  logic [pADDR_WIDTH - 1 : 0] araddr_temp;
+  logic [pADDR_WIDTH - 1 : 0] awaddr_temp;
+  assign araddr_temp = in_s_araddr >> 2;
+  assign awaddr_temp = in_s_awaddr >> 2;
+
+
   logic [TAP_NUM_WIDTH - 1 : 0] addr_wr;
 
   always_ff @( posedge aclk or negedge aresetn ) begin : ADDR_WR
     if (!aresetn) addr_wr <= {TAP_NUM_WIDTH{1'b0}};
-    else if (state_idle_exit2wdata_ena) addr_wr <= in_s_awaddr[TAP_NUM_WIDTH - 1 : 0];
+    else if (state_idle_exit2wdata_ena) addr_wr <= awaddr_temp[TAP_NUM_WIDTH - 1 : 0];
     else addr_wr <= addr_wr;
   end
 
@@ -144,7 +151,7 @@ module axi4_lite_slave_bram #(
   // **** For read operation, the "A" will be passed to BRAM at the end of idle state.
 
   assign out_A  = (
-                   in_s_araddr[TAP_NUM_WIDTH - 1 : 0] 
+                   araddr_temp[TAP_NUM_WIDTH - 1 : 0] 
                  & {TAP_NUM_WIDTH{state_idle_exit2rdata_ena}}
                   )
                 | (

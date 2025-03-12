@@ -243,9 +243,9 @@ module fir_tb ();
     // **** Write "TAP_NUM" and "DATA_NUM" to configure register.
     config_write(32'h10000000, TAP_NUM);
     config_write(32'h20000000, data_length);
-    for(k=0; k< TAP_NUM; k=k+1) begin
+    for(k = 0; k < TAP_NUM; k = k + 1) begin
     // **** Write tap data to tap RAM.
-      config_write(32'h30000000+k, coef[k]);
+      config_write(32'h30000000 + 4 * k, coef[k]);
     end
     awvalid <= 0; wvalid <= 0;
     // **** Check data in tao RAM.

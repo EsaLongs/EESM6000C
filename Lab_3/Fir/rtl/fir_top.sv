@@ -22,6 +22,7 @@
 module fir_top #(
   parameter CTRL_WIDTH     = 3,
   parameter pDATA_WIDTH    = 32,
+  parameter pADDR_WIDTH    = 32,
   parameter TAP_NUM_WIDTH  = 10,
   parameter DATA_NUM_WIDTH = 10
   ) (
@@ -31,12 +32,12 @@ module fir_top #(
 
 //------------------------ Axi4 Lite ------------------------------------------------//
   //------------------------ Read Address Channel -----------------------------------//
-  input  logic [pDATA_WIDTH - 1 : 0] in_s_araddr,
+  input  logic [pADDR_WIDTH - 1 : 0] in_s_araddr,
   input  logic                       in_s_arvalid,
   output logic                       out_s_arready,
   
   //------------------------ Write Address Channel ----------------------------------//
-  input  logic [pDATA_WIDTH - 1 : 0] in_s_awaddr,
+  input  logic [pADDR_WIDTH - 1 : 0] in_s_awaddr,
   input  logic                       in_s_awvalid,
   output logic                       out_s_awready,
 
@@ -94,8 +95,9 @@ module fir_top #(
   logic [DATA_NUM_WIDTH - 1 : 0] conf_data;
 
   axi4_lite_slave #(
-    .pDATA_WIDTH    ( pDATA_WIDTH    ),
     .CTRL_WIDTH     ( CTRL_WIDTH     ),
+    .pDATA_WIDTH    ( pDATA_WIDTH    ),
+    .pADDR_WIDTH    ( pADDR_WIDTH    ),
     .TAP_NUM_WIDTH  ( TAP_NUM_WIDTH  ),
     .DATA_NUM_WIDTH ( DATA_NUM_WIDTH )
   ) u_axi4_lite_slave (

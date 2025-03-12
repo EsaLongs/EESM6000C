@@ -26,7 +26,7 @@ This section explains how to access each component.
 • **Interface**: AXI4-Lite  
 • **Address Range**: `32'h3xxx_xxxx` (upper 4 bits = `0011`)  
 • **Address Usage**: The lower 10 bits are used as the RAM address.  
-• **Note**: Taps must be written consecutively starting from `32'h3000_0000` (each address plus 1).
+• **Note**: Taps must be written consecutively starting from `32'h3000_0000` (each address plus 4).
 
 #### Access Configure Register
 • **Interface**: AXI4-Lite  
