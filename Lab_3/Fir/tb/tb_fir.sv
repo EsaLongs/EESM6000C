@@ -56,14 +56,14 @@ module fir_tb ();
   reg axis_clk;
   reg axis_rst_n;
 
-  // ram for tap
+  // ****  ram for tap
   wire [pDATA_WIDTH / 8 - 1 : 0] tap_WE;
   wire                           tap_EN;
   wire [pDATA_WIDTH     - 1 : 0] tap_Di;
   wire [TAP_NUM_WIDTH   - 1 : 0] tap_A;
   wire [pDATA_WIDTH     - 1 : 0] tap_Do;
 
-  // ram for data RAM
+  // ****  ram for data RAM
   wire                          data_EN;
   wire [pDATA_WIDTH    - 1 : 0] data_Di;
   wire [DATA_NUM_WIDTH - 1 : 0] data_A;
