@@ -69,7 +69,6 @@ fir_top.sv
   ├── axi4_stream_slave_bram.sv
   └── bram_access_arbiter.sv
 ```
-
 ### Key Files
 • **`fir_top.sv`**: Top-level module with AXI4 interfaces.
 
