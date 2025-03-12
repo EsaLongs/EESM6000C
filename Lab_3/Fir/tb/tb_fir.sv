@@ -313,7 +313,6 @@ module fir_tb ();
   //------------------------ Axi4 Stream Write (slave) ------------------------------//
   task ss;
     input signed [pDATA_WIDTH - 1 : 0] in1;
-    
     begin
       ss_tvalid <= 1;
       ss_tdata  <= in1;
