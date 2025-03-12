@@ -19,6 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 `timescale 1ns / 1ps
+
 module fir_tb ();
   parameter pADDR_WIDTH    = 32;   // Don't change addr width
 
