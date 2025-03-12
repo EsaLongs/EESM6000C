@@ -1,3 +1,24 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: TANG Yue
+// 
+// Create Date: 08/03/2025 10:38:55 AM
+// Design Name: 
+// Module Name: fir_top
+// Project Name: FIR
+// Target Devices: 
+// Tool Versions: Vivado 2023.1
+// Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Fir
+// 
+// Dependencies: `fir_core.sv`, `axi4_lite_slave.sv`, `axi4_stream_slave_bram.sv`, 
+//               `bram_access_arbiter.sv`
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
 module fir_top #(
   parameter CTRL_WIDTH     = 3,
   parameter pDATA_WIDTH    = 32,

@@ -3,14 +3,14 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 28.02.2025 17:28:20
-// Design Name: Main part of fir
+// Design Name:
 // Module Name: fir_core
-// Project Name: 
+// Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: Still Writing
+// Description: This is the calculation part of fir.
 // 
-// Dependencies:
+// Dependencies: `booth4wallace_multiplier_nbit.sv`, `brent_kung_adder_nbit`
 // 
 // Revision: 0.01
 // 

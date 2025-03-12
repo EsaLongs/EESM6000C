@@ -8,7 +8,7 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a AXI4 Lite interface for slave BRAM and configure Register.
+// Description: This is a AXI4 Lite interface for slave BRAM and configure register.
 // 
 // Dependencies:
 // 

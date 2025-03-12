@@ -3,15 +3,14 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 21.02.2025 20:20:12
-// Design Name: nbit booth4-wallace multiplier
+// Design Name:
 // Module Name: booth4wallace_multiplier_nbit
-// Project Name: 
+// Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a booth4 based wallace multiplier, you can set the value of 
-//              MUL_SIZE in to be 2 ^ n (8, 16, 32, 64, 128 ....). (At least 8)
+// Description: This is a booth4 based wallace multiplier, which will be used in core.
 // 
-// Dependencies: Many.
+// Dependencies: `booth4_op_generator.sv`, `brent_kung_adder_nbit`
 // 
 // Revision: 0.01
 // 
