@@ -9,6 +9,7 @@
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
 // Description: Submodule to help implement brent kung adder (generate and propagate)
+//
 // Dependencies:
 // 
 // Revision 0.01
