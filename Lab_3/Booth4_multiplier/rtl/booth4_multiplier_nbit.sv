@@ -3,28 +3,28 @@
 // Engineer: TANG Yue
 // 
 // Create Date: 21.02.2025 20:20:12
-// Design Name: nbit booth4 multiplier
+// Design Name: 
 // Module Name: booth4_multiplier_nbit
-// Project Name: 
+// Project Name: Booth multiplier design
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
 // Description: This is a booth 4 multiplier, you can set the value of MUL_SIZE in
 //              to be 2 ^ n (4, 8, 16, 32, 64, 128 ....).
 // 
-// Dependencies: "Brent_Kung_Adder_nbit" (instant
-//               iate), "gp_unit.sv" (instantiate unit for adder)
+// Dependencies: "Brent_Kung_Adder_nbit.sv", "gp_unit.sv"
 // 
 // Revision: 0.01
 // 
-// Additional Comments: Nothing
+// Additional Comments:
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-// The key part of this design is the state machine. It contains IDLE, CALC, and SEND
-// 3 states. In IDLE state, the multiplier will store the data from inputs to registers 
-// used for later calculation. In CACL state, we use a counter to tell when the calcul-
-// ation is finished and then enter SEND state. In SEND state, we will keep the result 
-// and won't exit present state until the destination module is ready to get the data.
+// **** The key part of this design is the state machine. It contains IDLE, CALC, and 
+//      SEND 3 states. In IDLE state, the multiplier will store the data from inputs 
+//      to registers used for later calculation. In CACL state, we use a counter to 
+//      tell when the calculation is finished and then enter SEND state. In SEND state, 
+//      we will keep the result and won't exit present state until the destination 
+//      module is ready to get the data.
 
 module booth4_multiplier_nbit #(
   parameter MUL_SIZE = 32,
@@ -73,7 +73,7 @@ module booth4_multiplier_nbit #(
   logic state_calc_exit_ena;
   logic state_send_exit_ena;
 
-  // Counter is only used for judging when the calculation is finished
+  // **** Counter is only used for judging when the calculation is finished
   logic [$clog2(MUL_SIZE) - 1 - 1 : 0] counter;
   logic calc_finish;
 
@@ -85,8 +85,8 @@ module booth4_multiplier_nbit #(
 
   assign calc_finish = (counter == (MUL_SIZE / 2 - 1));
 
-  // In this kind of design, the three kinds of ena signal only one of them will be
-  // 1 in each state, that's why we can integrate them into one state_exit_ena.
+  // **** In this kind of design, the three kinds of ena signal only one of them will 
+  //      be 1 in each state, that's why we can integrate them into one state_exit_ena.
   assign state_exit_ena = state_idle_exit_ena 
                        || state_calc_exit_ena 
                        || state_send_exit_ena;
@@ -99,7 +99,7 @@ module booth4_multiplier_nbit #(
   logic [1 : 0] state_calc_nxt;
   logic [1 : 0] state_send_nxt;
   
-  // This design logic here is as same as exit_ena signal
+  // **** This design logic here is as same as exit_ena signal
   assign state_nxt = state_idle_nxt | state_calc_nxt | state_send_nxt;
   assign state_idle_nxt = {2{state_idle_exit_ena}} & STATE_CALC;
   assign state_calc_nxt = {2{state_calc_exit_ena}} & STATE_SEND;
@@ -116,9 +116,9 @@ module booth4_multiplier_nbit #(
   assign out_valid = state_is_send;
 
 //------------------------ Temp Register --------------------------------------------//
-  // In this kind of design, we use a register to store the multipicand in IDLE state,
-  // which make the calculation won't by affected by inputs if they change in the CALC
-  // stage.
+  // **** In this kind of design, we use a register to store the multipicand in IDLE 
+  //      state, which make the calculation won't by affected by inputs if they change 
+  //      in the CALC stage.
   logic [MUL_SIZE - 1 + 1 : 0] multiplicand_reg;    // {sign, in_op1}
   logic [MUL_SIZE - 1 + 1 + 2 : 0] multiplier_reg;  // {sign, sign, in_op2, 1'b0}
 
@@ -180,7 +180,6 @@ module booth4_multiplier_nbit #(
   logic adder_cin;
   logic adder_cout;
 
-  // Instantiate adder
   brent_kung_adder_nbit u_brent_kung_adder_nbit (
     .in_op1   ( adder_op1  ),
     .in_op2   ( adder_op2  ),
