@@ -8,8 +8,7 @@
 // Project Name: Booth multiplier design
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a booth 4 multiplier, you can set the value of MUL_SIZE in
-//              to be 2 ^ n (4, 8, 16, 32, 64, 128 ....).
+// Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Booth4_multiplier
 // 
 // Dependencies: "Brent_Kung_Adder_nbit.sv", "gp_unit.sv"
 // 

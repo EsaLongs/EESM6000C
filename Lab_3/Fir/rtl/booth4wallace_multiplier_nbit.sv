@@ -18,11 +18,12 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-// The key part of this design is the state machine. It contains IDLE, CALC, and SEND
-// 3 states. In IDLE state, the multiplier will store the data from inputs to registers 
-// used for later calculation. In CACL state, we use a counter to tell when the calcul-
-// ation is finished and then enter SEND state. In SEND state, we will keep the result 
-// and won't exit present state until the destination module is ready to get the data.
+// **** The key part of this design is the state machine. It contains `IDLE`, `CALC`, 
+//      and `SEND` 3 states. In `IDLE` state, the multiplier will store the data from 
+//      inputs to registers used for later calculation. In `CACL` state, we use a 
+//      counter to tell when the calculation is finished and then enter `SEND` state. 
+//      In `SEND` state, we will keep the result and won't exit present state until 
+//      the destination module is ready to get the data.
 
 module booth4wallace_multiplier_nbit #(
   parameter MUL_SIZE = 32,
@@ -45,19 +46,19 @@ module booth4wallace_multiplier_nbit #(
 );
 
 //------------------------ Stall ----------------------------------------------------//
-  // When in_really is 0 (the destination hasn't received data), the pipeline will
-  // stall and wait.
+  // **** When in_really is 0 (the destination hasn't received data), the pipeline will
+  //      stall and wait.
   logic stall;
   assign stall = !in_ready;
 
 //------------------------ Valid Ready Signal ---------------------------------------//
-  // This design has two stages pipeline. The first one is for booth code to generate 
-  // initial operands. The second one is to provide final 2 operands to brent-kung
-  // adder.
+  // **** This design has two stages pipeline. The first one is for booth code to 
+  //      generate initial operands. The second one is to provide final 2 operands to 
+  //      brent-kung adder.
   localparam FLAG_PIPE_NUM = 2;
 
-  // This is a simple shifter. It will shift the input valid signal to output, so
-  // output can know whether present data is valid.
+  // **** This is a simple shifter. It will shift the input valid signal to output, so
+  //      output can know whether present data is valid.
   logic [FLAG_PIPE_NUM - 1 : 0] valid_flag;
   
   always_ff @( posedge clk or negedge rst_n ) begin : VALID_FLAG
@@ -70,7 +71,7 @@ module booth4wallace_multiplier_nbit #(
   assign out_ready = in_ready;
 
 //------------------------ First Pipeline -------------------------------------------//
-  // All the operands we need will be first store in registers.
+  // **** All the operands we need will be first store in registers.
   localparam OP_NUM_PIPE = MUL_SIZE / 2 + 1 + 2;
   logic [ADDER_SIZE - 1 : 0] op_generate     [OP_NUM_PIPE - 1 : 0];
   logic [ADDER_SIZE - 1 : 0] op_generate_reg [OP_NUM_PIPE - 1 : 0];
@@ -93,7 +94,7 @@ module booth4wallace_multiplier_nbit #(
   end
 
 //------------------------ Second Pipeline ------------------------------------------//
-  // After we transfer them into two operands, we will store them into registers.
+  // **** After we transfer them into two operands, we will store them into registers.
   logic [ADDER_SIZE - 1 : 0] op_adder [1 : 0];
   logic [ADDER_SIZE - 1 : 0] op_adder_reg [1 : 0];
   
