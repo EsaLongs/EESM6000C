@@ -179,7 +179,9 @@ module booth4_multiplier_nbit #(
   logic adder_cin;
   logic adder_cout;
 
-  brent_kung_adder_nbit u_brent_kung_adder_nbit (
+  brent_kung_adder_nbit #(
+    .ADDER_SIZE (ADDER_SIZE)
+  ) u_brent_kung_adder_nbit (
     .in_op1   ( adder_op1  ),
     .in_op2   ( adder_op2  ),
     .out_res  ( adder_res  ),
@@ -208,10 +210,10 @@ module booth4_multiplier_nbit #(
   assign adder_op2_sub1x = ~ adder_op2_add1x;
   assign adder_op2_sub2x = ~ adder_op2_add2x;
 
-  assign adder_op2 = booth_add1x    ? adder_op2_add1x :
-                     booth_add2x    ? adder_op2_add2x :
-                     booth_sub1x    ? adder_op2_sub1x :
-                     booth_sub2x    ? adder_op2_sub2x :
+  assign adder_op2 = booth_add1x ? adder_op2_add1x :
+                     booth_add2x ? adder_op2_add2x :
+                     booth_sub1x ? adder_op2_sub1x :
+                     booth_sub2x ? adder_op2_sub2x :
                      {ADDER_SIZE{1'b0}};
 
   assign adder_cin = booth_sub1x || booth_sub2x;

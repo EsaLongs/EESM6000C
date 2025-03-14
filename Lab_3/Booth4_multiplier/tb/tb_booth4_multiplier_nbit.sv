@@ -26,6 +26,7 @@ module tb_booth4_multiplier_nbit ();
   parameter MUL_SIZE   = 32;
   parameter ADDER_SIZE = 2 * MUL_SIZE;
   parameter TEST_NUM   = 20;
+  parameter CLK_PERIOD = 10;
 
   // **** Actually the width of "in_op1" and "in_op2" are both `MUL_SIZE`, but the
   //      problem that if we use exp_res = in_op1 * in_op2, the width of "exp_res" 
@@ -42,7 +43,7 @@ module tb_booth4_multiplier_nbit ();
   // **** Clock Generation
   initial begin
     clk = 0;
-    forever #5 clk = ~clk;  // 100MHz clock
+    forever #(CLK_PERIOD / 2) clk = ~clk;  // 100MHz clock
   end
 
   // **** Reset Generation
@@ -76,15 +77,12 @@ module tb_booth4_multiplier_nbit ();
 //------------------------ Simulation -----------------------------------------------//
   initial begin
     wait(rst_n);
-
     $display("Starting Multiplier Test");
-
     test_uu();  // Unsigned * Unsigned
     test_ss();  // Signed   * Signed
     test_su();  // Signed   * Unsigned
     test_us();  // Unsigned * Signed
-
-    // Final report
+    // **** Final report
     $display("\n%0d-bit width test finished", MUL_SIZE);
     $display("\n[TEST SUMMARY]\nUnsigned * Unsigned errors : %0d\nSigned   * Signed   errors : %0d\nSigned   * Unsigned errors : %0d\nUnsigned * Signed   errors : %0d",
              err_uu, err_ss, err_su, err_us);
@@ -109,7 +107,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      #5;
+      #(CLK_PERIOD / 2);
 
       // **** Result check
       check("Unsigned * Unsigned");
@@ -134,7 +132,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      #5;
+      #(CLK_PERIOD / 2);
 
       // **** Result check
       check("Signed * Signed");
@@ -159,7 +157,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      #5;
+      #(CLK_PERIOD / 2);
 
       // **** Result check
       check("Signed * Unsigned");
@@ -184,7 +182,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      #5;
+      #(CLK_PERIOD / 2);
 
       // **** Result check
       check("Unsigned * Signed");
