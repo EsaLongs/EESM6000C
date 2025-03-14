@@ -109,7 +109,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      @(posedge clk);
+      #5;
 
       // **** Result check
       check("Unsigned * Unsigned");
@@ -134,7 +134,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      @(posedge clk);
+      #5;
 
       // **** Result check
       check("Signed * Signed");
@@ -159,7 +159,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      @(posedge clk);
+      #5;
 
       // **** Result check
       check("Signed * Unsigned");
@@ -184,7 +184,7 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
-      @(posedge clk);
+      #5;
 
       // **** Result check
       check("Unsigned * Signed");
