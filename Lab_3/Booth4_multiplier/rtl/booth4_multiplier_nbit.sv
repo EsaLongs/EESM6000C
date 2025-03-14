@@ -24,7 +24,6 @@
 //      tell when the calculation is finished and then enter SEND state. In SEND state, 
 //      we will keep the result and won't exit present state until the destination 
 //      module is ready to get the data.
-
 module booth4_multiplier_nbit #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE
