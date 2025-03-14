@@ -2,11 +2,12 @@
 This is a Brent-Kung adder with configurable bit-width. It Supports any `2^n` bit-width (4/8/16/32/64/128...). You can adjust `ADDER_SIZE` to get the different-width adder you want.
 
 ## Simulation Results
-Following bit width have been verified: 4 bits, 16bits, 32bits and 128bits.
+Following bit width have been verified: 4 bits, 32bits, 64bits and 256bits.
 
 ![alt text](png/test1.png)
 ![alt text](png/test2.png)
-
+![alt text](png/test3.png)
+![alt text](png/test4.png)
 
 ## Synthesis Results
 ### Resource Utilization

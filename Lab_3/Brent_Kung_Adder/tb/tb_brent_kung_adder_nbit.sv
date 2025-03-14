@@ -22,216 +22,78 @@
 `timescale 1ns/1ps
 
 module tb_brent_kung_adder();
-  parameter TEST_DELAY   = 10;
-  parameter int SIZES[4] = '{4, 16, 32, 128}; // The width that will be tested
 
-  logic [SIZES[0] - 1 : 0] a4,   b4,   sum4;
-  logic [SIZES[1] - 1 : 0] a16,  b16,  sum16;
-  logic [SIZES[2] - 1 : 0] a32,  b32,  sum32;
-  logic [SIZES[3] - 1 : 0] a128, b128, sum128;
+//------------------------ Prepare --------------------------------------------------//
+  parameter ADDER_SIZE = 64;
+  parameter TEST_NUM   = 20;
 
-  logic cin4, cout4, cin16, cout16, cin32, cout32, cin128, cout128;
+  logic [ADDER_SIZE - 1 : 0] in_op1, in_op2, out_res;
+  logic [ADDER_SIZE - 1 : 0] exp_res;
+  logic cin;
+  logic cout;
 
-  brent_kung_adder_nbit #( 4   ) dut4   (.in_op1( a4   ), .in_op2( b4   ), .cin( cin4   ), .out_res( sum4   ), .cout( cout4   ));
-  brent_kung_adder_nbit #( 16  ) dut16  (.in_op1( a16  ), .in_op2( b16  ), .cin( cin16  ), .out_res( sum16  ), .cout( cout16  ));
-  brent_kung_adder_nbit #( 32  ) dut32  (.in_op1( a32  ), .in_op2( b32  ), .cin( cin32  ), .out_res( sum32  ), .cout( cout32  ));
-  brent_kung_adder_nbit #( 128 ) dut128 (.in_op1( a128 ), .in_op2( b128 ), .cin( cin128 ), .out_res( sum128 ), .cout( cout128 ));
+  brent_kung_adder_nbit #(
+    .ADDER_SIZE (ADDER_SIZE)
+    ) dut (
+      .in_op1  ( in_op1  ),
+      .in_op2  ( in_op2  ), 
+      .cin     ( cin     ), 
+      .out_res ( out_res ), 
+      .cout    ( cout    )
+    );
 
-  int err4 = 0;
-  int err16 = 0;
-  int err32 = 0;  
-  int err128 = 0;  
+  int err = 0;
 
+//------------------------ Simulation -----------------------------------------------//
   initial begin
     $display("Starting Brent-Kung Adder Test");
-    test_4bit   ();
-    test_16bit  ();
-    test_32bit  ();
-    test_128bit ();
 
-    #100 $display("\nAll tests completed. Total errors = %0d", err4 + err16 + err32 + err128);
+    test();
+
+    #10 $display("\nAll tests completed. Total errors = %0d", err);
     $finish;
   end
 
 //------------------------ Task Define ----------------------------------------------//
   /////////////////////////////////////////////////////////////////////////////////////
-  // 4-bit test
+  // Test
   /////////////////////////////////////////////////////////////////////////////////////
-  task test_4bit();
-    $display("\nTesting 4-bit adder...");
+  task test();
+    $display("\nTesting %0d-bit adder...", ADDER_SIZE);
     
-    // **** Sample 1: 0 + 0
-    a4 = 0; b4 = 0; cin4 = 0; #TEST_DELAY;
-    check_4bit("0+0+0", a4, b4, cin4, sum4, cout4, err4);
-    
-    // **** Sample 2: max + 1
-    a4 = '1; b4 = 1; cin4 = 0; #TEST_DELAY;
-    check_4bit("max+1", a4, b4, cin4, sum4, cout4, err4);
-    
-    // **** Random sample
-    repeat(10) begin
-      a4 = $urandom; 
-      b4 = $urandom;
-      cin4 = $random % 2;
-      #TEST_DELAY;
-      check_4bit("random", a4, b4, cin4, sum4, cout4, err4);
+    repeat(TEST_NUM) begin
+      in_op1 = $signed(random_gen()); 
+      in_op2 = $signed(random_gen());
+      cin = $random;
+      exp_res = $signed(in_op1 + in_op2 + cin);
+      #10;
+      check();
     end
-    
-    $display("4-bit adder: %0d errors", err4);
-  endtask
-
-  // **** 4-bit check
-  task automatic check_4bit(
-    input string                   msg,
-    input logic [SIZES[0] - 1 : 0] a,
-    input logic [SIZES[0] - 1 : 0] b,
-    input logic                    cin,
-    input logic [SIZES[0] - 1 : 0] sum,
-    input logic                    cout,
-    ref   int                      err4
-  );
-    automatic logic [4 : 0] gold = {1'b0, a} + {1'b0, b} + cin;
-    if ({cout, sum} !== gold) begin
-      $error("4-bit %s failed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-             msg, a, b, sum, gold[SIZES[0] - 1 : 0], cout, gold[4]);
-      err4++;
-    end else $display("16-bit %s succeed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-                      msg, a, b, sum, gold[SIZES[0] - 1 : 0], cout, gold[4]);
   endtask
 
   /////////////////////////////////////////////////////////////////////////////////////
-  // 16-bit test
+  // Check
   /////////////////////////////////////////////////////////////////////////////////////
-  task test_16bit();
-    $display("\nTesting 16-bit adder...");
-    
-    // **** Sample 1: 0 + 0
-    a16 = 0; b16 = 0; cin16 = 0; #TEST_DELAY;
-    check_16bit("0+0+0", a16, b16, cin16, sum16, cout16, err16);
-    
-    // **** Sample 2: max + 1
-    a16 = '1; b16 = 1; cin16 = 0; #TEST_DELAY;
-    check_16bit("max+1", a16, b16, cin16, sum16, cout16, err16);
-    
-    // **** Random sample
-    repeat(10) begin
-      a16 = $urandom; 
-      b16 = $urandom;
-      cin16 = $random % 2;
-      #TEST_DELAY;
-      check_16bit("random", a16, b16, cin16, sum16, cout16, err16);
+  task automatic check( );
+    if (out_res !== exp_res) begin
+      $display("%0d-bit test FAIL: op1=%h op2=%h sum=%h (expected %h)",
+               ADDER_SIZE, in_op1[ADDER_SIZE - 1 : 0], in_op2[ADDER_SIZE - 1 : 0], 
+               out_res, exp_res);
+      err = err + 1;
+    end else begin 
+      $display("%0d-bit test PASS: op1=%h op2=%h sum=%h (expected %h)",
+               ADDER_SIZE, in_op1[ADDER_SIZE - 1 : 0], in_op2[ADDER_SIZE - 1 : 0], 
+               out_res, exp_res);
     end
-    
-    $display("16-bit adder: %0d errors", err16);
   endtask
 
-  // **** 16-bit check
-  task automatic check_16bit(
-    input string                   msg,
-    input logic [SIZES[1] - 1 : 0] a,
-    input logic [SIZES[1] - 1 : 0] b,
-    input logic                    cin,
-    input logic [SIZES[1] - 1 : 0] sum,
-    input logic                    cout,
-    ref   int                      err16
-  );
-    automatic logic [16 : 0] gold = {1'b0, a} + {1'b0, b} + cin;
-    if ({cout, sum} !== gold) begin
-      $error("16-bit %s failed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-             msg, a, b, sum, gold[SIZES[1] - 1 : 0], cout, gold[16]);
-      err16++;
-    end else $display("16-bit %s succeed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-                      msg, a, b, sum, gold[SIZES[1] - 1 : 0], cout, gold[16]);
-  endtask
-
-  /////////////////////////////////////////////////////////////////////////////////////
-  // 32-bit test
-  /////////////////////////////////////////////////////////////////////////////////////
-  task test_32bit();
-    $display("\nTesting 32-bit adder...");
-    
-    // **** Sample 1: 0 + 0
-    a32 = 0; b32 = 0; cin32 = 0; #TEST_DELAY;
-    check_32bit("0+0+0", a32, b32, cin32, sum32, cout32, err32);
-    
-    // **** Sample 2: max + 1
-    a32 = '1; b32 = 1; cin32 = 0; #TEST_DELAY;
-    check_32bit("max+1", a32, b32, cin32, sum32, cout32, err32);
-    
-    // **** Random sample
-    repeat(10) begin
-      a32 = $urandom; 
-      b32 = $urandom;
-      cin32 = $random % 2;
-      #TEST_DELAY;
-      check_32bit("random", a32, b32, cin32, sum32, cout32, err32);
+//------------------------ Function Define ------------------------------------------//
+  // **** Define function generate random number
+  function automatic logic [ADDER_SIZE - 1 : 0] random_gen();
+    for (int i = 0; i < ADDER_SIZE; i = i + 1) begin
+      random_gen[i] = $random;
     end
-    
-    $display("32-bit adder: %0d errors", err32);
-  endtask
-
-  // **** 32-bit check
-  task automatic check_32bit(
-    input string                   msg,
-    input logic [SIZES[2] - 1 : 0] a,
-    input logic [SIZES[2] - 1 : 0] b,
-    input logic                    cin,
-    input logic [SIZES[2] - 1 : 0] sum,
-    input logic                    cout,
-    ref   int                      err32
-  );
-    automatic logic [32 : 0] gold = {1'b0, a} + {1'b0, b} + cin;
-    if ({cout, sum} !== gold) begin
-      $error("32-bit %s failed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-             msg, a, b, sum, gold[SIZES[2] - 1 : 0], cout, gold[32]);
-      err32++;
-    end else $display("32-bit %s succeed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-                      msg, a, b, sum, gold[SIZES[2] - 1 : 0], cout, gold[32]);
-  endtask
-
-  /////////////////////////////////////////////////////////////////////////////////////
-  // 128-bit test
-  /////////////////////////////////////////////////////////////////////////////////////
-  task test_128bit();
-    $display("\nTesting 128-bit adder...");
-    
-    // **** Sample 1: 0 + 0
-    a128 = 0; b128 = 0; cin128 = 0; #TEST_DELAY;
-    check_128bit("0+0+0", a128, b128, cin128, sum128, cout128, err128);
-    
-    // **** Sample 2: max + 1
-    a128 = '1; b128 = 1; cin128 = 0; #TEST_DELAY;
-    check_128bit("max+1", a128, b128, cin128, sum128, cout128, err128);
-    
-    // **** Random sample
-    repeat(10) begin
-      a128 = $urandom; 
-      b128 = $urandom;
-      cin128 = $random % 2;
-      #TEST_DELAY;
-      check_128bit("random", a128, b128, cin128, sum128, cout128, err128);
-    end
-    
-    $display("128-bit adder: %0d errors", err128);
-  endtask
-
-  // **** 128-bit check
-  task automatic check_128bit(
-    input string                   msg,
-    input logic [SIZES[3] - 1 : 0] a,
-    input logic [SIZES[3] - 1 : 0] b,
-    input logic                    cin,
-    input logic [SIZES[3] - 1 : 0] sum,
-    input logic                    cout,
-    ref   int                      err128
-  );
-    automatic logic [128 : 0] gold = {1'b0, a} + {1'b0, b} + cin;
-    if ({cout, sum} !== gold) begin
-      $error("128-bit %s failed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-             msg, a, b, sum, gold[SIZES[3] - 1 : 0], cout, gold[128]);
-      err128++;
-    end else $display("128-bit %s succeed: a=%h b=%h sum=%h (exp %h) cout=%b (exp %b)",
-                      msg, a, b, sum, gold[SIZES[3] - 1 : 0], cout, gold[128]);
-  endtask
+    return random_gen;
+  endfunction
 
 endmodule

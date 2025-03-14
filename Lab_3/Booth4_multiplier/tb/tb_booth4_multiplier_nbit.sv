@@ -22,17 +22,18 @@
 
 module tb_booth4_multiplier_nbit ();
 //------------------------ Prepare --------------------------------------------------//
-  // **** Modify the TB_MUL_SIZE to verify different width.
-  parameter TB_MUL_SIZE = 64;
-  parameter TB_ADDER_SIZE = 2 * TB_MUL_SIZE;
+  // **** Modify the MUL_SIZE to verify different width.
+  parameter MUL_SIZE   = 32;
+  parameter ADDER_SIZE = 2 * MUL_SIZE;
+  parameter TEST_NUM   = 20;
 
-  //  **** Actually the width of "in_op1" and "in_op2" are both `TB_MUL_SIZE`, but the
-  //       problem that if we use exp_res = in_op1 * in_op2, the width of "exp_res" 
-  //       will be set as same as the width of "in_op1" and "in_op2". Therefore, we 
-  //       should extend sign bit to `TB_ADDER_SIZE` width.
-  logic [TB_ADDER_SIZE - 1 : 0] in_op1, in_op2;
-  logic [TB_ADDER_SIZE - 1 : 0] exp_res;
-  logic [TB_ADDER_SIZE - 1 : 0] out_res;
+  // **** Actually the width of "in_op1" and "in_op2" are both `MUL_SIZE`, but the
+  //      problem that if we use exp_res = in_op1 * in_op2, the width of "exp_res" 
+  //      will be set as same as the width of "in_op1" and "in_op2". Therefore, we 
+  //      should extend sign bit to `ADDER_SIZE` width.
+  logic [ADDER_SIZE - 1 : 0] in_op1, in_op2;
+  logic [ADDER_SIZE - 1 : 0] out_res;
+  logic [ADDER_SIZE - 1 : 0] exp_res;
 
   logic in_op1_signed, in_op2_signed;
   logic in_valid, out_ready, in_ready, out_valid;
@@ -47,23 +48,23 @@ module tb_booth4_multiplier_nbit ();
   // **** Reset Generation
   initial begin
     rst_n = 0;
-    repeat(3) @(posedge clk);  // Hold reset for 3 cycles
+    repeat(2) @(posedge clk);  // Hold reset for 2 cycles
     rst_n = 1;
   end
 
-  // **** Instantiate the booth4_multiplier module
-  booth4_multiplier_nbit #(.MUL_SIZE  (TB_MUL_SIZE)) tb_booth4_multiplier (
-    .in_op1         ( in_op1        ),
-    .in_op2         ( in_op2        ),
-    .out_res        ( out_res       ),
-    .in_op1_signed  ( in_op1_signed ),
-    .in_op2_signed  ( in_op2_signed ),
-    .in_valid       ( in_valid      ),
-    .out_ready      ( out_ready     ),
-    .in_ready       ( in_ready      ),
-    .out_valid      ( out_valid     ),
-    .clk            ( clk           ),
-    .rst_n          ( rst_n         )
+  // **** Instantiate
+  booth4_multiplier_nbit #(.MUL_SIZE  (MUL_SIZE)) tb_booth4_multiplier (
+    .in_op1         ( in_op1[MUL_SIZE - 1 : 0] ),
+    .in_op2         ( in_op2[MUL_SIZE - 1 : 0] ),
+    .out_res        ( out_res                  ),
+    .in_op1_signed  ( in_op1_signed            ),
+    .in_op2_signed  ( in_op2_signed            ),
+    .in_valid       ( in_valid                 ),
+    .out_ready      ( out_ready                ),
+    .in_ready       ( in_ready                 ),
+    .out_valid      ( out_valid                ),
+    .clk            ( clk                      ),
+    .rst_n          ( rst_n                    )
   );
     
   // **** Error count
@@ -76,21 +77,26 @@ module tb_booth4_multiplier_nbit ();
   initial begin
     wait(rst_n);
 
+    $display("Starting Multiplier Test");
+
     test_uu();  // Unsigned * Unsigned
     test_ss();  // Signed   * Signed
     test_su();  // Signed   * Unsigned
     test_us();  // Unsigned * Signed
 
     // Final report
+    $display("\n%0d-bit width test finished", MUL_SIZE);
     $display("\n[TEST SUMMARY]\nUnsigned * Unsigned errors : %0d\nSigned   * Signed   errors : %0d\nSigned   * Unsigned errors : %0d\nUnsigned * Signed   errors : %0d",
              err_uu, err_ss, err_su, err_us);
     $finish();
   end
 
 //------------------------ Task Define ----------------------------------------------//
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Unsigned * Unsigned test
+  /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_uu();
-  logic [TB_MUL_SIZE   - 1 : 0] op1_temp, op2_temp;
-    repeat(20) begin
+    repeat(TEST_NUM) begin
       config_set(0, 0, 1, 1); 
       // **** Generate random inputs
       in_op1  = $unsigned(unsign_extend_random());
@@ -103,23 +109,19 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
+      @(posedge clk);
 
       // **** Result check
-      if (out_res !== exp_res) begin
-        $display("[UU CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-        err_uu = err_uu + 1;
-      end
-      else begin
-        $display("[UU CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-      end
+      check("Unsigned * Unsigned");
       @(posedge clk);
     end
   endtask
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Signed * Signed test
+  /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_ss();
-    repeat(20) begin
+    repeat(TEST_NUM) begin
       config_set(1, 1, 1, 1); 
       // **** Generate random inputs
       in_op1  = $signed(sign_extend_random());
@@ -132,23 +134,19 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
+      @(posedge clk);
 
       // **** Result check
-      if (out_res !== exp_res) begin
-        $display("[SS CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-        err_ss = err_ss + 1;
-      end
-      else begin
-        $display("[SS CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-      end
+      check("Signed * Signed");
       @(posedge clk);
     end
   endtask
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Signed * Unsigned test
+  /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_su();
-    repeat(20) begin
+    repeat(TEST_NUM) begin
       config_set(1, 0, 1, 1); 
       // **** Generate random inputs
       in_op1  = $signed(sign_extend_random());
@@ -161,23 +159,19 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
+      @(posedge clk);
 
       // **** Result check
-      if (out_res !== exp_res) begin
-        $display("[SU CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-        err_su = err_su + 1;
-      end
-      else begin
-        $display("[SU CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-      end
+      check("Signed * Unsigned");
       @(posedge clk);
     end
   endtask
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Unsigned * Signed test
+  /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_us();
-    repeat(20) begin
+    repeat(TEST_NUM) begin
       config_set(0, 1, 1, 1); 
       // **** Generate random inputs
       in_op1  = $unsigned(unsign_extend_random());
@@ -190,21 +184,37 @@ module tb_booth4_multiplier_nbit ();
 
       // **** Wait for valid output
       wait(out_valid);
+      @(posedge clk);
 
       // **** Result check
-      if (out_res !== exp_res) begin
-        $display("[US CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-        err_us = err_us + 1;
-      end
-      else begin
-        $display("[US CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
-                 $time, in_op1, in_op2, out_res, exp_res);
-      end
+      check("Unsigned * Signed");
       @(posedge clk);
     end
   endtask
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Check
+  /////////////////////////////////////////////////////////////////////////////////////
+  task automatic check(
+    input string msg
+  );
+    if (out_res !== exp_res) begin
+      $display("[%s CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
+               msg, $time, in_op1, in_op2, out_res, exp_res);
+      if (msg == "Unsigned * Unsigned") err_uu = err_uu + 1;
+      else if (msg == "Signed * Signed") err_ss = err_ss + 1;
+      else if (msg == "Signed * Unsigned") err_su = err_su + 1;
+      else err_us = err_us + 1;
+    end
+    else begin
+      $display("[%s CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
+               msg, $time, in_op1, in_op2, out_res, exp_res);
+    end
+  endtask
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Config
+  /////////////////////////////////////////////////////////////////////////////////////
   task automatic config_set(
     input logic op1_signed,
     input logic op2_signed,
@@ -219,22 +229,22 @@ module tb_booth4_multiplier_nbit ();
 
 //------------------------ Function Define ------------------------------------------//
   // **** Define function generate random number
-  function automatic logic [TB_MUL_SIZE - 1 : 0] random_gen();
-    for (int i = 0; i < TB_MUL_SIZE; i = i + 1) begin
+  function automatic logic [MUL_SIZE - 1 : 0] random_gen();
+    for (int i = 0; i < MUL_SIZE; i = i + 1) begin
       random_gen[i] = $random;
     end
     return random_gen;
   endfunction
 
-  function automatic logic [2 * TB_MUL_SIZE - 1 : 0] unsign_extend_random();
-    unsign_extend_random = {{TB_MUL_SIZE{1'b0}}, random_gen()};
+  function automatic logic [2 * MUL_SIZE - 1 : 0] unsign_extend_random();
+    unsign_extend_random = {{MUL_SIZE{1'b0}}, random_gen()};
     return unsign_extend_random;
   endfunction
 
-  function automatic logic [2 * TB_MUL_SIZE - 1 : 0] sign_extend_random();
-    automatic logic [TB_MUL_SIZE - 1 : 0] temp;
+  function automatic logic [2 * MUL_SIZE - 1 : 0] sign_extend_random();
+    automatic logic [MUL_SIZE - 1 : 0] temp;
     temp = random_gen();
-    sign_extend_random = {{TB_MUL_SIZE{temp[TB_MUL_SIZE - 1]}}, temp};
+    sign_extend_random = {{MUL_SIZE{temp[MUL_SIZE - 1]}}, temp};
     return sign_extend_random;
   endfunction
 

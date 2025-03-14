@@ -10,7 +10,7 @@
 // Tool Versions: Vivado 2023.1
 // Description: This is a brent kung adder, you can set the value of ADDER_SIZE to be
 //              2 ^ n (2, 4, 8, 16, 32, 64, 128 ....). Here it will be used for creating
-//              booth4 based multiplier.
+//              booth radix4 based multiplier.
 // 
 // Dependencies: "gp_unit.sv" (used to get generate and propagate)
 // 
