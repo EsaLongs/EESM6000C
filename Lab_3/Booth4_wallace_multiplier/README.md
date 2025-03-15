@@ -13,16 +13,22 @@ The multiplier utilizes Booth's Radix-4 algorithm and Wallace tree compression f
 
 4. **Pipeline Control**:  
    The design features a two-stage pipeline:
+
    • **Stage 1**: Partial product generation and initial compression.
+
    • **Stage 2**: Final adder computation and result output.  
+
    The pipeline requires 2 cycles for initial latency and produces one result per cycle thereafter.
 
 ### Handshake Protocol
 The multiplier implements a ready-valid handshake for flow control:
 
 • **in_valid**: Indicates valid input data (from source). The multiplier processes data regardless but uses this signal to validate results.
+
 • **out_valid**: Asserted 2 cycles after `in_valid`, marking valid output data.
+
 • **in_ready**: Indicates downstream readiness (from destination). Stalls the pipeline when low.
+
 • **out_ready**: Asserted when the multiplier can accept new inputs. De-asserts during pipeline stalls.
 
 ## File Hierarchy
@@ -41,7 +47,9 @@ booth4wallace_multiplier_nbit.sv (Top Module)
 ```
 ## Key Modules
 • **`booth4_op_generator.sv`**: Implements Booth Radix-4 encoding with configurable sign handling.
+
 • **`op_n_to_2_nbit.sv`**: Configurable Wallace tree compressor supporting arbitrary operand reduction (parameter `OP_NUM`, `OP_WIDTH`).
+
 • **`Brent_Kung_Adder_nbit.sv`**: Low-latency adder for final summation.
 
 ## Simulation Verification
@@ -52,9 +60,13 @@ Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle
 
 ### Test Coverage
 • Verified widths: 8, 32, 64, 128 bits
+
 • Test patterns included:
+
   • Corner cases (minimum/maximum values)
+
   • Signed/unsigned combinations
+
   • Pipeline stall scenarios
 
 ![8-bit Test Result](png/mul_8bit.png)  
@@ -64,6 +76,7 @@ Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle
 
 ## Scalability Notes
   • Supported widths: 8, 16, 32... (2^n, n≥3)
+  
   • Minimum width enforced as 8 bits through parameter checking
 
 ## Contribution
