@@ -11,7 +11,7 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 
 ------------------------------------
 %%{
-  init: {
+  'init': {
     title: FSM
     'theme': 'base',
     'themeVariables': {
