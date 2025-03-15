@@ -4,11 +4,11 @@
 // 
 // Create Date: 21.02.2025 20:20:12
 // Design Name: 
-// Module Name: tb_booth4_multiplier_nbit
-// Project Name: Booth multiplier design
+// Module Name: tb_booth4wallace_multiplier_nbit
+// Project Name: Booth Radix4 based wallace multiplier design
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Booth4_multiplier
+// Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Booth4_wallace_multiplier
 // 
 // Dependencies:
 // 
@@ -17,7 +17,6 @@
 // Additional Comments:
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
-
 `timescale 1ns / 1ps
 
 module tb_booth4wallace_multiplier_nbit ();
@@ -83,6 +82,7 @@ module tb_booth4wallace_multiplier_nbit ();
   initial begin
     wait(rst_n);
     $display("Starting Multiplier Test");
+    config_set(0, 0, 0, 0); 
     test_uu();  // Unsigned * Unsigned
     test_ss();  // Signed   * Signed
     test_su();  // Signed   * Unsigned
@@ -94,13 +94,21 @@ module tb_booth4wallace_multiplier_nbit ();
     $finish();
   end
 
+  initial begin
+    // **** Result check
+    check("Unsigned * Unsigned");
+    check("Signed * Signed");
+    check("Signed * Unsigned");
+    check("Unsigned * Signed");
+  end
+
 //------------------------ Task Define ----------------------------------------------//
   /////////////////////////////////////////////////////////////////////////////////////
   // Unsigned * Unsigned test
   /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_uu();
     for (int i = 0; i < TEST_NUM; i = i + 1) begin
-      (@posedge clk)
+      @(posedge clk);
       config_set(0, 0, 1, 1); 
       // **** Generate random inputs
       in_op1  = $unsigned(unsign_extend_random());
@@ -108,34 +116,20 @@ module tb_booth4wallace_multiplier_nbit ();
       exp_res = $unsigned(in_op1 * in_op2);
       exp_res_list[i] = exp_res;
     end
-
-    for (int i = 0; i < TEST_NUM; i = i + 1) begin
-        wait(out_valid);
-        #(CLK_PERIOD / 2);
-        out_res_list[i] = out_res;
-    end
-
-    // **** Result check
-    check("Unsigned * Unsigned");
   endtask
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Signed * Signed test
   /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_ss();
-    repeat(TEST_NUM) begin
+    for (int i = 0; i < TEST_NUM; i = i + 1) begin
+      @(posedge clk);
       config_set(1, 1, 1, 1); 
       // **** Generate random inputs
       in_op1  = $signed(sign_extend_random());
       in_op2  = $signed(sign_extend_random());
       exp_res = $signed(in_op1 * in_op2);
-
-      // **** Wait for valid output
-      wait(out_valid);
-      #(CLK_PERIOD / 2);
-
-      // **** Result check
-      check("Signed * Signed");
+      exp_res_list[i] = exp_res;
     end
   endtask
 
@@ -143,19 +137,14 @@ module tb_booth4wallace_multiplier_nbit ();
   // Signed * Unsigned test
   /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_su();
-    repeat(TEST_NUM) begin
+    for (int i = 0; i < TEST_NUM; i = i + 1) begin
+      @(posedge clk);
       config_set(1, 0, 1, 1); 
       // **** Generate random inputs
       in_op1  = $signed(sign_extend_random());
       in_op2  = $unsigned(unsign_extend_random());
       exp_res = $signed(in_op1 * in_op2);
-
-      // **** Wait for valid output
-      wait(out_valid);
-      #(CLK_PERIOD / 2);
-
-      // **** Result check
-      check("Signed * Unsigned");
+      exp_res_list[i] = exp_res;
     end
   endtask
 
@@ -163,19 +152,14 @@ module tb_booth4wallace_multiplier_nbit ();
   // Unsigned * Signed test
   /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_us();
-    repeat(TEST_NUM) begin
+    for (int i = 0; i < TEST_NUM; i = i + 1) begin
+      @(posedge clk);
       config_set(0, 1, 1, 1); 
       // **** Generate random inputs
       in_op1  = $unsigned(unsign_extend_random());
       in_op2  = $signed(sign_extend_random());
       exp_res = $signed(in_op1 * in_op2);
-
-      // **** Wait for valid output
-      wait(out_valid);
-      #(CLK_PERIOD / 2);
-
-      // **** Result check
-      check("Unsigned * Signed");
+      exp_res_list[i] = exp_res;
     end
   endtask
 
@@ -185,16 +169,23 @@ module tb_booth4wallace_multiplier_nbit ();
   task automatic check(
     input string msg
   );
-    if (out_res_list !== exp_res_list) begin
-      $display("[%s CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
-               msg, $time, in_op1, in_op2, out_res, exp_res);
-      if (msg == "Unsigned * Unsigned") err_uu = err_uu + 1;
-      else if (msg == "Signed * Signed") err_ss = err_ss + 1;
-      else if (msg == "Signed * Unsigned") err_su = err_su + 1;
-      else err_us = err_us + 1;
-    end else begin
-      $display("[%s CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
-               msg, $time, in_op1, in_op2, out_res, exp_res);
+
+    for (int i = 0; i < TEST_NUM; i = i + 1) begin
+      wait(out_valid);
+      #(CLK_PERIOD / 2);
+      out_res_list[i] = out_res;    
+      if (out_res_list[i] !== exp_res_list[i]) begin
+        $display("[%s CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
+                msg, $time, in_op1, in_op2, out_res_list[i], exp_res_list[i]);
+        if (msg == "Unsigned * Unsigned") err_uu = err_uu + 1;
+        else if (msg == "Signed * Signed") err_ss = err_ss + 1;
+        else if (msg == "Signed * Unsigned") err_su = err_su + 1;
+        else err_us = err_us + 1;
+      end else begin
+        $display("[%s CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
+                msg, $time, in_op1, in_op2, out_res_list[i], exp_res_list[i]);
+      end
+      #(CLK_PERIOD / 2);
     end
   endtask
 
