@@ -59,10 +59,10 @@ fir_top.sv
   │     │     │           └── op_n_to_2_nbit_onestage.sv
   │     │     │                 └── op_3_to_2_nbit.sv
   │     │     │                       └── onebit_adder.sv
-  │     │     └── brent_kung_adder_nbit.sv
-  │     │           └── pg_unit.sv
+  │     │     ├── brent_kung_adder_nbit.sv
+  │     │     │     └── pg_unit.sv
+  │     │     └── op_n_to_2_nbit.sv
   │     └── brent_kung_adder_nbit.sv
-  │           └── pg_unit.sv
   ├── axi4_lite_slave.sv
   │     ├── axi4_lite_slave_bram.sv
   │     └── axi4_lite_slave_conf.sv
