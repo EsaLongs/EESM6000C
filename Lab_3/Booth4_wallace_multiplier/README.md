@@ -1,6 +1,6 @@
 # Booth Radix4 Based Wallace Multiplier
 ## Basic Function
-This is a Booth4-based Wallace multiplier. It has two-stage pipelines inside to increase max frequency. It needs 2 cycles to start and will generate an output each clock cycle after that. The output valid signal shows whether the result is valid. The data width of the multiplier has been set as a parameter, and you can modify it to be 8, 16, 32, 64, 128, 256, .... **(2 ^ n)**. Please kindly note that the minimum width is 8 and you should keep the ADDER_SIZE to be 2 * MUL_SIZE also.
+This is a Booth4-based Wallace multiplier. It has two-stage pipelines inside to increase max frequency. It needs 2 cycles to start and will generate an output each clock cycle after that. The output valid signal shows whether the result is valid. The data width of the multiplier has been set as a parameter, and you can modify it to be 8, 16, 32, 64, 128, 256, .... **(2 ^ n)**. Please kindly note that the minimum width is 8.
 
 ### Essential Files
 
@@ -30,22 +30,17 @@ Please kindly know that the input data should be complementary. You should also 
 
 The simulation tool is Vivado 2023.1. Here we show the process of one round calculation. In this case, we set the __MUL_SIZE__ to be 32 bits.
 
-![alt text](png/Wave.png)
-
-Please notice that, because of my bad testbench skill, each 4 results is a test loop, for example, the out_res at 35, 45, 55, and 65 ns are from one loop including unsigned * unsigned, signed * signed, unsigned * signed, and signed * unsigned. Meanwhile, the results are corresponded to tb_res1, tb_res2, tb_res3, and tb_res4 respectively.
+![alt text](png/MUL_WAVE.png)
 
 **TEST RESULT**
 
 The following figure shows some of the tests used to judge whether the result is correct.
+8, 32, 64, 128 has been verified. 2 and 4 can't be achieved in this design.
+![alt text](png/mul_8bit.png)
+![alt text](png/mul_32bit.png)
+![alt text](png/mul_64it.png)
+![alt text](png/mul_128bit.png)
 
-![alt text](png/Test.png)
-
-**SCHEMATIC**
-The follwing figure shows the 8 bit and 32 bit schematic
-
-![alt text](png/schematic_8.png)
-
-![alt text](png/schematic_32.png)
 
 ## Contribution
 Contributions to this project are highly encouraged and appreciated! Whether it's bug fixes, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality of the multiplier.

@@ -119,7 +119,6 @@ Please don't change following parameter:
 
 Idealy, `pDATA_WIDTH` can be `8, 16, 32, 64, 128...` (powers of 2, ≥8). I will verificate this as long as I have data.
 
-
 ### **Output Bits**:
 By default, the lower 32 bits are output. Modify `fir_top.sv` to access higher-order bits.  
 
