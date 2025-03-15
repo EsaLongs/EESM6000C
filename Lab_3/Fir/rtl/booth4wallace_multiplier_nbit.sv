@@ -18,13 +18,6 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-// **** The key part of this design is the state machine. It contains `IDLE`, `CALC`, 
-//      and `SEND` 3 states. In `IDLE` state, the multiplier will store the data from 
-//      inputs to registers used for later calculation. In `CACL` state, we use a 
-//      counter to tell when the calculation is finished and then enter `SEND` state. 
-//      In `SEND` state, we will keep the result and won't exit present state until 
-//      the destination module is ready to get the data.
-
 module booth4wallace_multiplier_nbit #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE
