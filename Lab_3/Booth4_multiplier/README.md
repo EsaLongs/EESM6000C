@@ -14,7 +14,7 @@ stateDiagram-v2
     CALC --> SEND : counter == MUL_SIZE/2-1
     SEND --> IDLE : out_valid && in_ready
 
-    classDef default fill:none,stroke:#000,font-family:"Times New Roman"
+    classDef default fill:DEFAULT,stroke:#000,font-family:"Times New Roman"
     classDef transition fill:none,stroke:none,font-family:"Times New Roman"
 ```
 ## Verification
