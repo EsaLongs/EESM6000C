@@ -13,12 +13,13 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
   init: {
     'theme': 'base',
     'themeVariables': {
-      'primaryColor': '#BB2528',
-      'primaryTextColor': '#fff',
-      'primaryBorderColor': '#7C0000',
-      'lineColor': '#F8B229',
-      'secondaryColor': '#006100',
-      'tertiaryColor': '#fff'
+      'primaryColor': '#ffffff',
+      'mermaid-container': "#ffffff",
+      'primaryTextColor': '#ffffff',
+      'primaryBorderColor': '#ffffff',
+      'lineColor': '#ffffff',
+      'secondaryColor': '#ffffff',
+      'tertiaryColor': '#ffffff'
     }
   }
 }%%
