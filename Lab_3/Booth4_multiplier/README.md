@@ -10,13 +10,9 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 ```mermaid
 stateDiagram-v2
     [*] --> IDLE
-    IDLE --> CALC : in_valid && out_ready
+    IDLE --> CALC : <font style="font-family:monospace">in_valid && out_ready</font>
     CALC --> SEND : counter == MUL_SIZE/2-1
     SEND --> IDLE : out_valid && in_ready
-    
-    classDef default font-family:"Fira Code",monospace;
-    classDef state font-size:14px,fill:#F8F9FA,color:#212529;
-    classDef transition font-size:12px,font-style:italic;
 ```
 ## Verification
 Following bit-widths have been verified : 8, 16, 32, 64.
