@@ -1,5 +1,5 @@
 # Booth Radix4 Based Wallace Multiplier
-## Basic Operation Flow
+## Operation Flow
 The multiplier utilizes Booth's Radix-4 algorithm and Wallace tree compression for efficient partial product accumulation. Here's the step-by-step workflow:
 
 1. **Booth4 Encoding**:  
