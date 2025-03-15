@@ -54,7 +54,9 @@ module tb_booth4_multiplier_nbit ();
   end
 
   // **** Instantiate
-  booth4_multiplier_nbit #(.MUL_SIZE  (MUL_SIZE)) tb_booth4_multiplier (
+  booth4_multiplier_nbit #(
+      .MUL_SIZE ( MUL_SIZE )
+      ) tb_booth4_multiplier (
     .in_op1         ( in_op1[MUL_SIZE - 1 : 0] ),
     .in_op2         ( in_op2[MUL_SIZE - 1 : 0] ),
     .out_res        ( out_res                  ),
