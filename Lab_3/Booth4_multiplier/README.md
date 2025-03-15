@@ -9,20 +9,20 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 
 ## Implementation
 ### FSM Workflow
-```mermaid
+<style>
+  .mermaid {
+    font-family: "Arial", sans-serif; /* 修改字体类型 */
+    font-size: 14px; /* 修改字体大小 */
+  }
+</style>
+
+<div class="mermaid">
 stateDiagram-v2
     [*] --> IDLE
     IDLE --> CALC : in_valid && out_ready
     CALC --> SEND : counter == MUL_SIZE/2-1
     SEND --> IDLE : out_valid && in_ready
-    
-    state CALC {
-        [*] --> Shift
-        Shift --> Adder
-        Adder --> Shift : !calc_finish
-        Adder --> [*] : calc_finish
-    }
-```
+</div>
 ## Verification
 Following bit-widths have been verified : 8, 16, 32, 64.
 
