@@ -10,20 +10,12 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 ```mermaid
 
 ------------------------------------
-%%{
-  'init': {
-    title: FSM
-    'theme': 'base',
-    'themeVariables': {
-      'primaryColor': '#BB2528',
-      'primaryTextColor': '#fff',
-      'primaryBorderColor': '#7C0000',
-      'lineColor': '#F8B229',
-      'secondaryColor': '#006100',
-      'tertiaryColor': '#fff'
-    }
-  }
-}%%
+title: FSM
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#ffffff"
+    mermaid-container: "#ffffff"
 ------------------------------------
 
 stateDiagram-v2
