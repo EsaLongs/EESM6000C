@@ -1,28 +1,22 @@
 # Booth Radix-4 Multiplier 
 Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Supports 2 ^ n bit-widths (4/16/32/64...).
 
-<img src="png/architecture.png" alt="Architecture Diagram" width="600"/>
-
 ## Key Features
 • **Parameterized Design**: Customizable `MUL_SIZE` (4/16/32/64/128...)
 • **Dual-mode Operation**: Supports both signed (Two's complement) & unsigned numbers
 
 ## Implementation
 ### FSM Workflow
-<style>
-  .mermaid {
-    font-family: "Arial", sans-serif; /* 修改字体类型 */
-    font-size: 14px; /* 修改字体大小 */
-  }
-</style>
-
-<div class="mermaid">
+<script>
+  mermaid.initialize({ theme: 'neutral' });
+</script>
+```mermaid
 stateDiagram-v2
     [*] --> IDLE
     IDLE --> CALC : in_valid && out_ready
     CALC --> SEND : counter == MUL_SIZE/2-1
     SEND --> IDLE : out_valid && in_ready
-</div>
+```
 ## Verification
 Following bit-widths have been verified : 8, 16, 32, 64.
 
