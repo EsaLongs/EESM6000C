@@ -13,6 +13,10 @@ stateDiagram-v2
     IDLE --> CALC : in_valid && out_ready
     CALC --> SEND : counter == MUL_SIZE/2-1
     SEND --> IDLE : out_valid && in_ready
+
+    classDef default font-family:"Times New Roman",serif
+    classDef state fill:none,stroke:#000,stroke-width:2px,color:#000
+    classDef transition fill:none,stroke:none,font-family:"Times New Roman",serif
 ```
 ## Verification
 Following bit-widths have been verified : 8, 16, 32, 64.
