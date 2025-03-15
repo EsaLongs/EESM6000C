@@ -35,7 +35,7 @@ The multiplier implements a ready-valid handshake for flow control:
 The design hierarchy is structured as follows:
 
 ```
-booth4wallace_multiplier_nbit.sv (Top Module)
+booth4wallace_multiplier_nbit.sv
   ├── booth4_op_generator.sv
   │     └── op_n_to_2_nbit.sv
   │           └── op_n_to_2_nbit_onestage.sv
@@ -61,14 +61,6 @@ Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle
 ### Test Coverage
 • Verified widths: 8, 32, 64, 128 bits
 
-• Test patterns included:
-
-  • Corner cases (minimum/maximum values)
-
-  • Signed/unsigned combinations
-
-  • Pipeline stall scenarios
-
 ![8-bit Test Result](png/mul_8bit.png)  
 ![32-bit Test Result](png/mul_32bit.png)  
 ![64-bit Test Result](png/mul_64bit.png)  
@@ -76,8 +68,6 @@ Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle
 
 ## Scalability Notes
   • Supported widths: 8, 16, 32... (2^n, n≥3)
-  
-  • Minimum width enforced as 8 bits through parameter checking
 
 ## Contribution
 Contributions to this project are highly encouraged and appreciated! Whether it's debug related, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality.
