@@ -15,7 +15,6 @@ stateDiagram-v2
     SEND --> IDLE : out_valid && in_ready
 
     classDef state fill:none,stroke:#000,font-family:"Times New Roman";
-    class IDLE, CALC, SEND state;
 ```
 ## Verification
 Following bit-widths have been verified : 8, 16, 32, 64.
