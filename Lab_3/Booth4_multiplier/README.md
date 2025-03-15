@@ -23,7 +23,7 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 stateDiagram-v2
     [*] --> IDLE : reset
     IDLE --> CALC : in_valid && out_ready
-    CALC --> SEND : counter == MUL_SIZE/2-1
+    CALC --> SEND : counter == MUL_SIZE / 2 - 1
     SEND --> IDLE : out_valid && in_ready
 ```
 ## Verification
