@@ -1,4 +1,4 @@
-# Booth4 Based Wallace Multiplier
+# Booth Radix4 Based Wallace Multiplier
 ## Basic Function
 This is a Booth4-based Wallace multiplier. It has two-stage pipelines inside to increase max frequency. It needs 2 cycles to start and will generate an output each clock cycle after that. The output valid signal shows whether the result is valid. The data width of the multiplier has been set as a parameter, and you can modify it to be 8, 16, 32, 64, 128, 256, .... **(2 ^ n)**. Please kindly note that the minimum width is 8 and you should keep the ADDER_SIZE to be 2 * MUL_SIZE also.
 
