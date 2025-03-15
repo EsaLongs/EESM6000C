@@ -8,14 +8,14 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 ## Implementation
 ### FSM Workflow
 ```mermaid
-------------------------------------
-title:
+---
+title: 
 config:
   theme: base
   themeVariables:
     primaryColor: "#ffffff"
     mermaid-container: "#ffffff"
-------------------------------------
+---
 
 stateDiagram-v2
     [*] --> IDLE : reset
