@@ -25,6 +25,12 @@
 //      In "SEND" state, we will keep the result and won't exit present state until the 
 //      destination module is ready to get the data.
 
+//      [*]  --> IDLE : reset
+//      IDLE --> CALC : in_valid && out_ready
+//      CALC --> SEND : counter == MUL_SIZE / 2 - 1
+//      SEND --> IDLE : out_valid && in_ready
+
+
 module booth4_multiplier_nbit #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE
