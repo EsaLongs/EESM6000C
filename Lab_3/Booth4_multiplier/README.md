@@ -10,7 +10,7 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 ```mermaid
 stateDiagram-v2
     [*] --> IDLE
-    IDLE --> CALC : <font style="font-family:monospace">in_valid && out_ready</font>
+    IDLE --> CALC : in_valid && out_ready
     CALC --> SEND : counter == MUL_SIZE/2-1
     SEND --> IDLE : out_valid && in_ready
 ```
