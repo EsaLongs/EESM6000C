@@ -15,7 +15,7 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
     'themeVariables': {
       'primaryColor': '#ffffff',
       'primaryBorderColor': '#000000',
-      'font': 'times new roman'
+      'fontFamily': 'Times New Roman'
     }
   }
 }%%
