@@ -40,6 +40,9 @@ module tb_booth4wallace_multiplier_nbit ();
   logic in_valid, out_ready, in_ready, out_valid;
   logic clk, rst_n;
 
+  logic [ADDER_SIZE - 1 : 0] out_res_list [TEST_NUM - 1 : 0];
+  logic [ADDER_SIZE - 1 : 0] exp_res_list [TEST_NUM - 1 : 0];
+
   // **** Clock Generation
   initial begin
     clk = 0;
@@ -96,21 +99,24 @@ module tb_booth4wallace_multiplier_nbit ();
   // Unsigned * Unsigned test
   /////////////////////////////////////////////////////////////////////////////////////
   task automatic test_uu();
-    repeat(TEST_NUM) begin
+    for (int i = 0; i < TEST_NUM; i = i + 1) begin
+      (@posedge clk)
       config_set(0, 0, 1, 1); 
       // **** Generate random inputs
       in_op1  = $unsigned(unsign_extend_random());
       in_op2  = $unsigned(unsign_extend_random());
       exp_res = $unsigned(in_op1 * in_op2);
-
-      // **** Wait for valid output
-      wait(out_valid);
-      #(CLK_PERIOD / 2);
-
-      // **** Result check
-      check("Unsigned * Unsigned");
-      @(posedge clk);
+      exp_res_list[i] = exp_res;
     end
+
+    for (int i = 0; i < TEST_NUM; i = i + 1) begin
+        wait(out_valid);
+        #(CLK_PERIOD / 2);
+        out_res_list[i] = out_res;
+    end
+
+    // **** Result check
+    check("Unsigned * Unsigned");
   endtask
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +136,6 @@ module tb_booth4wallace_multiplier_nbit ();
 
       // **** Result check
       check("Signed * Signed");
-      @(posedge clk);
     end
   endtask
 
@@ -151,7 +156,6 @@ module tb_booth4wallace_multiplier_nbit ();
 
       // **** Result check
       check("Signed * Unsigned");
-      @(posedge clk);
     end
   endtask
 
@@ -172,7 +176,6 @@ module tb_booth4wallace_multiplier_nbit ();
 
       // **** Result check
       check("Unsigned * Signed");
-      @(posedge clk);
     end
   endtask
 
@@ -182,15 +185,14 @@ module tb_booth4wallace_multiplier_nbit ();
   task automatic check(
     input string msg
   );
-    if (out_res !== exp_res) begin
+    if (out_res_list !== exp_res_list) begin
       $display("[%s CHECK FAIL] %0dns: %h * %h = %h (Expected %h)", 
                msg, $time, in_op1, in_op2, out_res, exp_res);
       if (msg == "Unsigned * Unsigned") err_uu = err_uu + 1;
       else if (msg == "Signed * Signed") err_ss = err_ss + 1;
       else if (msg == "Signed * Unsigned") err_su = err_su + 1;
       else err_us = err_us + 1;
-    end
-    else begin
+    end else begin
       $display("[%s CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
                msg, $time, in_op1, in_op2, out_res, exp_res);
     end

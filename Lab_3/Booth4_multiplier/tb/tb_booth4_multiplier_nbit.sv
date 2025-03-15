@@ -205,8 +205,7 @@ module tb_booth4_multiplier_nbit ();
       else if (msg == "Signed * Signed") err_ss = err_ss + 1;
       else if (msg == "Signed * Unsigned") err_su = err_su + 1;
       else err_us = err_us + 1;
-    end
-    else begin
+    end else begin
       $display("[%s CKECK PASS] %0dns: Result matches: %h * %h = %h (Expected %h)", 
                msg, $time, in_op1, in_op2, out_res, exp_res);
     end
