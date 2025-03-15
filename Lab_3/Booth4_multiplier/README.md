@@ -10,7 +10,7 @@ Configurable Radix-4 Booth multiplier implementing with Brent-Kung adder. Suppor
 ```mermaid
 
 ------------------------------------
-title: FSM
+title: 'FSM'
 config:
   theme: base
   themeVariables:
