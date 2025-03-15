@@ -19,7 +19,7 @@ stateDiagram-v2
 ## Verification
 Following bit-widths have been verified : 8, 16, 32, 64.
 
-![8-bit](png/32bit.png)
+![8-bit](png/8bit.png)
 ![16-bit](png/16bit.png)
 ![32-bit](png/32bit.png)
 ![64-bit](png/64bit.png)
