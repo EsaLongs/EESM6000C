@@ -123,6 +123,8 @@ The critical path appears in the multiplier, especially for the partial generato
 It seems that this board doesn't have enough ports because we set tap ram and data ram as output module, which add additional hundreds of ports.
 ![utilization](png/utilization.png)
 
+The detail reports are in the `lab3_vivado` dictionary, you can copy it to vivado and open as a project.
+
 ## Notes
 ### **Scalability**:  
 We have following parameters can be set:
