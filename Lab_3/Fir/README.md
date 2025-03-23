@@ -98,15 +98,29 @@ The verification used 600 input data points. The final checks (points 2 and 4) v
 
 ![Simulation Result](png/Pass.png)
 
+Following picture shows the process of writing tap RAM.
 ![write_coef](png/write_coef.png)
+
+This picture shows core starts at 755 ns.
 ![ap_start](png/ap_start.png)
+
+This picture shows core finishes at 72915 ns, which means it uses 600 * 12 cycles to calculate all the data.
 ![ap_done](png/ap_done.png)
-![tlast](png/final_output.png)
+
+This picture shows the tlast signal
+![tlast](png/tlast.png)
 
 ## Synthesis Results
+Here we use pynq-z2 board
 ![board](png/board.png)
+
+The max frequency is about 165 MHz
 ![timing](png/timing_check.png)
+
+The critical path appears in the multiplier, especially for the partial generator part (used for wallace tree).
 ![critical_path](png/critical_path.png)
+
+It seems that this board doesn't have enough ports because we set tap ram and data ram as output module, which add additional hundreds of ports.
 ![utilization](png/utilization.png)
 
 ## Notes
