@@ -1,0 +1,14 @@
+#-----------------------------------------------------------
+# Vivado v2023.1 (64-bit)
+# SW Build 3865809 on Sun May  7 15:05:29 MDT 2023
+# IP Build 3864474 on Sun May  7 20:36:21 MDT 2023
+# SharedData Build 3865790 on Sun May 07 13:33:03 MDT 2023
+# Start of session at: Sun Mar 23 19:14:38 2025
+# Process ID: 5024
+# Current directory: C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1
+# Command line: vivado.exe -log fir_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source fir_top.tcl
+# Log file: C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1/fir_top.vds
+# Journal file: C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1\vivado.jou
+# Running On: CCVDIAI3007, OS: Windows, CPU Frequency: 2594 MHz, CPU Physical cores: 4, Host memory: 17178 MB
+#-----------------------------------------------------------
+source fir_top.tcl -notrace

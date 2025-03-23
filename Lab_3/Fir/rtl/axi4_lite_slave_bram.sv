@@ -101,7 +101,6 @@ module axi4_lite_slave_bram #(
   logic state_exit_ena;
   logic state_idle_exit2rdata_ena;
   logic state_idle_exit2wdata_ena;
-  logic state_rdwait_exit_ena;
   logic state_rdata_exit_ena;
   logic state_wdata_exit_ena;
 
