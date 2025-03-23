@@ -96,8 +96,9 @@ All other files are used to create multiplier and adder in core part.
 ## Simulation Results
 The verification used 600 input data points. The final checks (points 2 and 4) validated the control register with masking. Despite `rdata` being `3'b110`, masking yielded `3'b010` and `3'b100`, confirming correct operation.
 
-![Simulation Result](png/Pass.png "Simulation Result")
-![write_coef](png/write_coef.png "write_coef")
+![Simulation Result](png/Pass.png)
+
+![write_coef](png/write_coef.png)
 ![ap_start](png/ap_start.png)
 ![ap_done](png/ap_done.png)
 ![tlast](png/final_output.png)
