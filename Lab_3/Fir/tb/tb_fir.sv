@@ -251,7 +251,7 @@ module fir_tb ();
     // **** Check data in tao RAM.
     $display(" Check Coefficient ...");
     for(k = 0; k < TAP_NUM; k = k + 1) begin
-      config_read_check(32'h30000000+k, coef[k], 32'hffffffff);
+      config_read_check(32'h30000000 + 4 * k, coef[k], 32'hffffffff);
     end
     arvalid <= 0;
     $display(" Tape programming done ...");
