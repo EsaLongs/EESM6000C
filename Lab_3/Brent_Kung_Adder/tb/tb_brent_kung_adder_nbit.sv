@@ -54,6 +54,11 @@ module tb_brent_kung_adder();
     $finish;
   end
 
+  initial begin
+    $dumpfile("wave.vcd");
+    $dumpvars(0, tb_brent_kung_adder);
+  end
+
 //------------------------ Task Define ----------------------------------------------//
   /////////////////////////////////////////////////////////////////////////////////////
   // Test
