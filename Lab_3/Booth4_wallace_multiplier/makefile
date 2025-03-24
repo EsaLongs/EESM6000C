@@ -19,7 +19,7 @@ run:
 	./obj_dir/Vtb_booth4wallace_multiplier_nbit
 
 	# ---------------- 观察波形 ---------------- #
-	gtkwave wave.vcd
+	gtkwave *.vcd
 
 clean:
 	rm -rf obj_dir

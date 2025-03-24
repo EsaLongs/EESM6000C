@@ -19,6 +19,8 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module axi4_lite_slave #(
   parameter CTRL_WIDTH     = 3,
   parameter pADDR_WIDTH    = 32,
@@ -156,6 +158,7 @@ module axi4_lite_slave #(
   logic [pDATA_WIDTH    - 1 : 0] conf_s_rdata;
   logic                          conf_s_rvalid;
   logic                          conf_s_wready;
+  logic                          conf_req;
   logic [CTRL_WIDTH     - 1 : 0] conf_ctrl;
   logic [TAP_NUM_WIDTH  - 1 : 0] conf_tap;
   logic [DATA_NUM_WIDTH - 1 : 0] conf_data;

@@ -19,6 +19,8 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module fir_top #(
   parameter CTRL_WIDTH     = 3,
   parameter pDATA_WIDTH    = 32,

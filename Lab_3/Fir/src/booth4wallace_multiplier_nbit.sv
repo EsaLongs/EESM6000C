@@ -18,6 +18,8 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module booth4wallace_multiplier_nbit #(
   parameter MUL_SIZE = 32,
   parameter ADDER_SIZE = 2 * MUL_SIZE

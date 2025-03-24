@@ -1,22 +1,5 @@
-///////////////////////////////////////////////////////////////////////////////////////
-// Company: Hong Kong University of Science and Technology
-// Engineer: TANG Yue
-// 
-// Create Date: 21.02.2025 20:20:12
-// Design Name:
-// Module Name: booth4_op_generator
-// Project Name: FIR
-// Target Devices: 
-// Tool Versions: Vivado 2023.1
-// Description: Submodule of multiplier, generating operands using wallace tree.
-// 
-// Dependencies: `op_n_to_2_nbit.sv`
-// 
-// Revision: 0.01
-// 
-// Additional Comments:
-// 
-///////////////////////////////////////////////////////////////////////////////////////
+
+`timescale 1ns / 1ps
 
 module booth4_op_generator #(
   parameter MUL_SIZE = 32,
@@ -66,15 +49,15 @@ module booth4_op_generator #(
     for (i = 0; i < OP_NUM; i = i + 1) begin
       always_comb begin : OUT_OP
         case (multiplier_booth[2 * i + 2 : 2 * i])
-          3'b000 : out_op[i] <= {ADDER_SIZE{1'b0}};
-          3'b001 : out_op[i] <= multipicand_base << (2 * i);
-          3'b010 : out_op[i] <= multipicand_base << (2 * i);
-          3'b011 : out_op[i] <= multipicand_base << (2 * i + 1);
-          3'b100 : out_op[i] <= ~(multipicand_base << (2 * i + 1));
-          3'b101 : out_op[i] <= ~(multipicand_base << (2 * i));
-          3'b110 : out_op[i] <= ~(multipicand_base << (2 * i));
-          3'b111 : out_op[i] <= {ADDER_SIZE{1'b0}};
-          default: out_op[i] <= {ADDER_SIZE{1'b0}};
+          3'b000 : out_op[i] = {ADDER_SIZE{1'b0}};
+          3'b001 : out_op[i] = multipicand_base << (2 * i);
+          3'b010 : out_op[i] = multipicand_base << (2 * i);
+          3'b011 : out_op[i] = multipicand_base << (2 * i + 1);
+          3'b100 : out_op[i] = ~(multipicand_base << (2 * i + 1));
+          3'b101 : out_op[i] = ~(multipicand_base << (2 * i));
+          3'b110 : out_op[i] = ~(multipicand_base << (2 * i));
+          3'b111 : out_op[i] = {ADDER_SIZE{1'b0}};
+          default: out_op[i] = {ADDER_SIZE{1'b0}};
         endcase 
       end
     end
@@ -92,15 +75,15 @@ module booth4_op_generator #(
     for (i = 0; i < MUL_SIZE / 2 + 1; i = i + 1) begin
       always_comb begin : NEG_BOOTH_FLAG
         case (multiplier_booth[2 * i + 2 : 2 * i])
-          3'b000 : neg_booth_flag[i] <= 1'b0;
-          3'b001 : neg_booth_flag[i] <= 1'b0;
-          3'b010 : neg_booth_flag[i] <= 1'b0;
-          3'b011 : neg_booth_flag[i] <= 1'b0;
-          3'b100 : neg_booth_flag[i] <= 1'b1;
-          3'b101 : neg_booth_flag[i] <= 1'b1;
-          3'b110 : neg_booth_flag[i] <= 1'b1;
-          3'b111 : neg_booth_flag[i] <= 1'b0;
-          default: neg_booth_flag[i] <= 1'b0;
+          3'b000 : neg_booth_flag[i] = 1'b0;
+          3'b001 : neg_booth_flag[i] = 1'b0;
+          3'b010 : neg_booth_flag[i] = 1'b0;
+          3'b011 : neg_booth_flag[i] = 1'b0;
+          3'b100 : neg_booth_flag[i] = 1'b1;
+          3'b101 : neg_booth_flag[i] = 1'b1;
+          3'b110 : neg_booth_flag[i] = 1'b1;
+          3'b111 : neg_booth_flag[i] = 1'b0;
+          default: neg_booth_flag[i] = 1'b0;
         endcase 
       end
     end
@@ -117,9 +100,9 @@ module booth4_op_generator #(
     for (i = 0; i < OP_NUM; i = i + 1) begin
       always_comb begin : FLAG_OP_EXTEND
         case (neg_booth_flag[i])
-          1'b0 : op_neg_flag[i]   <= {$clog2(MUL_SIZE){1'b0}};
-          1'b1 : op_neg_flag[i]   <= {{($clog2(MUL_SIZE) - 1){1'b0}}, {1'b1}};
-          default: op_neg_flag[i] <= {$clog2(MUL_SIZE){1'b0}};
+          1'b0 : op_neg_flag[i]   = {$clog2(MUL_SIZE){1'b0}};
+          1'b1 : op_neg_flag[i]   = {{($clog2(MUL_SIZE) - 1){1'b0}}, {1'b1}};
+          default: op_neg_flag[i] = {$clog2(MUL_SIZE){1'b0}};
         endcase 
       end
     end

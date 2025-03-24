@@ -18,6 +18,8 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module axi4_lite_slave_bram #(
   parameter pADDR_WIDTH = 32,
   parameter pDATA_WIDTH = 32,
