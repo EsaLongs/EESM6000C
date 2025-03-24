@@ -125,6 +125,14 @@ It seems that this board doesn't have enough ports because we set tap ram and da
 
 The detail reports are in the `lab3_vivado` dictionary, you can copy it to vivado and open as a project.
 
+## Run with Verilator
+You can use following command to run simulation with verilator tool.
+```
+make clean
+make all
+make run
+```
+
 ## Notes
 ### **Scalability**:  
 We have following parameters can be set:
