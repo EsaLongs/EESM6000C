@@ -22,8 +22,6 @@ module data_ram_behav #(
     end
   end
 
-  always @(posedge clk) begin
-    out_Do <= ram[in_A];
-  end
+  assign out_Do = ram[in_A];
 
 endmodule
