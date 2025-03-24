@@ -162,18 +162,19 @@ module axi4_lite_slave #(
   logic [CTRL_WIDTH     - 1 : 0] conf_ctrl;
   logic [TAP_NUM_WIDTH  - 1 : 0] conf_tap;
   logic [DATA_NUM_WIDTH - 1 : 0] conf_data;
+  logic                          access_req;
 
   assign conf_s_arvalid = conf_req && in_s_arvalid;
   assign conf_s_awvalid = conf_req && in_s_awvalid;
   
-  assign access_ctrl = (in_s_awaddr[31 : 28] == 4'b0000)
-                    || (in_s_araddr[31 : 28] == 4'b0000);
+  assign access_ctrl = ((in_s_awaddr[31 : 28] == 4'b0000) && in_s_awvalid)
+                    || ((in_s_araddr[31 : 28] == 4'b0000) && in_s_arvalid);
 
-  assign access_tap  = (in_s_awaddr[31 : 28] == 4'b0001)
-                    || (in_s_araddr[31 : 28] == 4'b0001);
+  assign access_tap  = ((in_s_awaddr[31 : 28] == 4'b0001) && in_s_awvalid)
+                    || ((in_s_araddr[31 : 28] == 4'b0001) && in_s_arvalid);
 
-  assign access_data = (in_s_awaddr[31 : 28] == 4'b0010)
-                    || (in_s_araddr[31 : 28] == 4'b0010);
+  assign access_data = ((in_s_awaddr[31 : 28] == 4'b0010) && in_s_awvalid)
+                    || ((in_s_araddr[31 : 28] == 4'b0010) && in_s_arvalid);
 
   assign conf_req    =  access_ctrl
                      || access_tap

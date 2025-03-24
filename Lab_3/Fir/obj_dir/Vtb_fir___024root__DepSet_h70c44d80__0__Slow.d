@@ -1,0 +1,17 @@
+Vtb_fir___024root__DepSet_h70c44d80__0__Slow.o: \
+  /Users/yue/EESM6000C-1/Lab_3/Fir/obj_dir/Vtb_fir__pch.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilatedos.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated_config.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated_types.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated_funcs.h \
+  /Users/yue/EESM6000C-1/Lab_3/Fir/obj_dir/Vtb_fir__Syms.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated_vcd_c.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated_trace.h \
+  /Users/yue/EESM6000C-1/Lab_3/Fir/obj_dir/Vtb_fir.h \
+  /Users/yue/EESM6000C-1/Lab_3/Fir/obj_dir/Vtb_fir___024root.h \
+  /opt/homebrew/Cellar/verilator/5.034/share/verilator/include/verilated_timing.h \
+  /Users/yue/EESM6000C-1/Lab_3/Fir/obj_dir/Vtb_fir_brent_kung_adder_nbit__A40.h \
+  /Users/yue/EESM6000C-1/Lab_3/Fir/obj_dir/Vtb_fir_op_3_to_2_nbit.h \
+  Vtb_fir___024root__DepSet_h70c44d80__0__Slow.cpp Vtb_fir__pch.h \
+  Vtb_fir___024root.h
