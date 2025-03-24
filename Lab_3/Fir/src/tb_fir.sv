@@ -20,7 +20,7 @@
 
 `timescale 1ns / 1ps
 
-module fir_tb ();
+module tb_fir ();
   parameter pADDR_WIDTH    = 32;   // Don't change addr width
 
   parameter pDATA_WIDTH    = 32;
@@ -28,6 +28,7 @@ module fir_tb ();
   parameter DATA_NUM_WIDTH = 10;
   parameter TAP_NUM        = 11;
   parameter DATA_NUM       = 600;
+  parameter CLK_PERIOD     = 10;
 
 //------------------------ Port Declare ---------------------------------------------//
   wire                                awready;
@@ -117,21 +118,28 @@ module fir_tb ();
     .aresetn       ( axis_rst_n )
   );
     
-  data_ram u_data_ram (
-    .A    ( data_A   ),
-    .CE   ( data_EN  ),
-    .CLK  ( axis_clk ),
-    .DIN  ( data_Di  ),
-    .DOUT ( data_Do  )
+  
+  tap_ram_behav #(
+    .pADDR_WIDTH ( TAP_NUM_WIDTH ),
+    .pDATA_WIDTH ( pDATA_WIDTH   )
+  ) u_tap_ram_behave (
+    .clk    ( axis_clk ),
+    .in_EN  ( tap_EN   ),
+    .in_A   ( tap_A    ),
+    .in_WE  ( tap_WE   ),
+    .in_Di  ( tap_Di   ),
+    .out_Do ( tap_Do   )
   );
 
-  tap_ram u_tap_ram (
-    .A    ( tap_A    ),
-    .CLK  ( axis_clk ),
-    .DIN  ( tap_Di   ),
-    .DOUT ( tap_Do   ),
-    .EN   ( tap_EN   ),
-    .WE   ( tap_WE   )
+  data_ram_behav #(
+    .pADDR_WIDTH ( TAP_NUM_WIDTH ),
+    .pDATA_WIDTH ( pDATA_WIDTH   )
+  ) u_data_ram_behave (
+    .clk    ( axis_clk  ),
+    .in_CE  ( data_EN   ),
+    .in_A   ( data_A    ),
+    .in_Di  ( data_Di   ),
+    .out_Do ( data_Do   )
   );
 
 //------------------------ Data Prepare ---------------------------------------------//
@@ -149,7 +157,7 @@ module fir_tb ();
   initial begin
     axis_clk = 0;
     forever begin
-      #5 axis_clk = (~axis_clk);
+      #CLK_PERIOD axis_clk = (~axis_clk);
     end
   end
 
@@ -166,8 +174,8 @@ module fir_tb ();
   integer Din, golden, input_data, golden_data, m;
   initial begin
     data_length = 0;
-    Din    = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/samples_triangular_wave.txt","r");
-    golden = $fopen("C:/Users/ytangdg/project_EESM6000C_lab3/out_gold.txt","r");
+    Din    = $fopen("samples_triangular_wave.txt","r");
+    golden = $fopen("out_gold.txt","r");
     for(m = 0;m < DATA_NUM; m = m + 1) begin
       input_data  = $fscanf(Din,"%d", Din_list[m]);
       golden_data = $fscanf(golden,"%d", golden_list[m]);
@@ -194,8 +202,9 @@ module fir_tb ();
   // **** Data RAM data.
   integer i;
   initial begin
+    wait (axis_rst_n);
     $display("------------Start simulation-----------");
-    ss_tvalid = 0;
+    ss_tvalid = 1;
     $display("----Start the data input(AXI-Stream)----");
     for(i = 0; i < (data_length -1 ); i = i + 1) begin
       // **** Write input data to data RAM.
@@ -218,6 +227,7 @@ module fir_tb ();
     error = 0; 
     status_error = 0;
     sm_tready = 1;
+    wait (axis_rst_n);
     wait (sm_tvalid);
     for(k = 0; k < data_length; k = k+1) begin
       // **** Compare calculation result with golden result.
@@ -238,6 +248,7 @@ module fir_tb ();
 
   // **** Check tap RAM written function and start simulation.
   initial begin
+    wait (axis_rst_n);
     error_coef = 0;
     $display("----Start the coefficient input(AXI-lite)----");
     // **** Write "TAP_NUM" and "DATA_NUM" to configure register.
@@ -251,7 +262,7 @@ module fir_tb ();
     // **** Check data in tao RAM.
     $display(" Check Coefficient ...");
     for(k = 0; k < TAP_NUM; k = k + 1) begin
-      config_read_check(32'h30000000 + 4 * k, coef[k], 32'hffffffff);
+      config_read_check(32'h30000000+4 * k, coef[k], 32'hffffffff);
     end
     arvalid <= 0;
     $display(" Tape programming done ...");
@@ -278,13 +289,21 @@ module fir_tb ();
     input [pDATA_WIDTH - 1 : 0] addr;
     input [pDATA_WIDTH - 1 : 0] data;
     begin
-      awvalid <= 0; wvalid <= 0;
-      arvalid <= 0; rready <= 0;
+      awaddr = addr;
+      wdata = data;
+      awvalid = 0; wvalid = 0;
+      arvalid = 0; rready = 0;
       @(posedge axis_clk);
-      awvalid <= 1; awaddr <= addr;
-      wvalid  <= 1; wdata <= data;
+      # (CLK_PERIOD / 2);
+      awvalid = 1; wvalid  = 0;
+      @(posedge axis_clk);
+      while (!awready) @(posedge axis_clk);
+      # (CLK_PERIOD / 2);
+      awvalid = 0; wvalid  = 1;
       @(posedge axis_clk);
       while (!wready) @(posedge axis_clk);
+      # (CLK_PERIOD / 2);
+      awvalid = 0; wvalid = 0;
     end
   endtask
 
@@ -294,11 +313,12 @@ module fir_tb ();
     input signed [pDATA_WIDTH - 1 : 0] exp_data;
     input        [pDATA_WIDTH - 1 : 0] mask;
     begin
-      arvalid <= 0;
+      araddr <= addr;
+      arvalid <= 0; rready <= 0;
       awvalid <= 0; wvalid <= 0;
       @(posedge axis_clk);
-      arvalid <= 1; araddr <= addr;
-      rready <= 1;
+      # (CLK_PERIOD / 2);
+      arvalid <= 1; rready <= 1;
       @(posedge axis_clk);
       while (!rvalid) @(posedge axis_clk);
       if( (rdata & mask) != (exp_data & mask)) begin
