@@ -18,6 +18,8 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module axi4_lite_slave_conf #(
   parameter pDATA_WIDTH = 32,
   parameter CTRL_WIDTH = 3,

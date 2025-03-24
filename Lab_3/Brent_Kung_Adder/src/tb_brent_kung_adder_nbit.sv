@@ -55,7 +55,7 @@ module tb_brent_kung_adder_nbit();
   end
 
   initial begin
-    $dumpfile("wave.vcd");
+    $dumpfile("adder.vcd");
     $dumpvars();
   end
 

@@ -18,6 +18,8 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module fir_core #(
   parameter pDATA_WIDTH  = 32,
   // **** The "TAP_NUM_WIDTH" should be matched with the RAM size. For example, here 
@@ -156,7 +158,7 @@ module fir_core #(
   //      calculation.
   always_ff @( posedge clk or negedge rst_n ) begin: COUNTER_CLR
     if (!rst_n) counter_clr <= {TAP_NUM_WIDTH{1'b0}};
-    else if (state_is_clr) counter_clr = counter_clr + 1;
+    else if (state_is_clr) counter_clr <= counter_clr + 1;
     else counter_clr <= {TAP_NUM_WIDTH{1'b0}};
   end
 
@@ -231,7 +233,7 @@ module fir_core #(
     end
   end
 
-  assign temp_tap = temp_set_0 ? {DATA_NUM_WIDTH{1'b0}} : in_tap_Do;
+  assign temp_tap = temp_set_0 ? {pDATA_WIDTH{1'b0}} : in_tap_Do;
 
   // **** We will generate a data_valid signal, and it will pass through pipeline 
   //      to make sure it reaches the output will the valid data at the same time.

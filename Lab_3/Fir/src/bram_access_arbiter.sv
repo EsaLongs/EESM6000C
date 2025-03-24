@@ -18,6 +18,8 @@
 // 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module bram_access_arbiter #(
   parameter pDATA_WIDTH = 32,
   parameter TAP_NUM_WIDTH = 10

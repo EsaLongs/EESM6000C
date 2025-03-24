@@ -11,7 +11,7 @@ VL_ATTR_COLD void Vtb_booth4wallace_multiplier_nbit___024root___eval_initial__TO
     Vtb_booth4wallace_multiplier_nbit__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     auto& vlSelfRef = std::ref(*vlSelf).get();
     // Body
-    vlSymsp->_vm_contextp__->dumpfile(std::string{"wave.vcd"});
+    vlSymsp->_vm_contextp__->dumpfile(std::string{"mul.vcd"});
     vlSymsp->_traceDumpOpen();
     vlSelfRef.tb_booth4wallace_multiplier_nbit__DOT__dut__DOT__u_brent_kung_adder_nbit__DOT__P[0U] 
         = (0xfffffffffffffffeULL & vlSelfRef.tb_booth4wallace_multiplier_nbit__DOT__dut__DOT__u_brent_kung_adder_nbit__DOT__P

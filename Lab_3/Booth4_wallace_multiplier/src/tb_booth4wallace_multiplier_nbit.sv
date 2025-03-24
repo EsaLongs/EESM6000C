@@ -104,8 +104,8 @@ module tb_booth4wallace_multiplier_nbit ();
   end
 
   initial begin
-    $dumpfile("wave.vcd");
-    $dumpvars(0, tb_booth4wallace_multiplier_nbit);
+    $dumpfile("mul.vcd");
+    $dumpvars();
   end
 
 //------------------------ Task Define ----------------------------------------------//

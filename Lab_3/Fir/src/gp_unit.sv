@@ -17,6 +17,8 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module gp_unit (
   input  logic in_g1, in_g2,
   input  logic in_p1, in_p2,

@@ -17,6 +17,8 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+`timescale 1ns / 1ps
+
 module op_n_to_2_nbit #( 
   parameter OP_NUM = 16, 
   parameter OP_WIDTH = 64
