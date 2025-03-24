@@ -318,9 +318,9 @@ module tb_fir ();
       awvalid <= 0; wvalid <= 0;
       @(posedge axis_clk);
       # (CLK_PERIOD / 2);
-      arvalid <= 1; rready <= 1;
-      @(posedge axis_clk);
-      while (!rvalid) @(posedge axis_clk);
+      arvalid <= 1; rready = 1;
+      @(posedge rvalid);
+      # (CLK_PERIOD / 2);
       if( (rdata & mask) != (exp_data & mask)) begin
         $display("ERROR: exp = %d, rdata = %d", exp_data, rdata);
         error_coef <= 1;
