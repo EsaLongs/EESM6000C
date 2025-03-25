@@ -70,6 +70,7 @@ proc create_report { reportName command } {
   }
 }
 OPTRACE "synth_1" START { ROLLUP_AUTO }
+set_msg_config -id {Common 17-41} -limit 10000000
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7z020clg400-1
 
@@ -87,21 +88,21 @@ set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib -sv {
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_salve.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_bram.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_conf.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_stream_slave_bram.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4wallace_multiplier_nbit.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/bram_access_arbiter.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/brent_kung_adder_nbit.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_core.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/gp_unit.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/onebit_adder.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_3_to_2_nbit.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv
-  C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_top.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_salve.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_slave_bram.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_slave_conf.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_stream_slave_bram.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4wallace_multiplier_nbit.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/bram_access_arbiter.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/brent_kung_adder_nbit.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/fir_core.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/gp_unit.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/onebit_adder.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_3_to_2_nbit.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv
+  C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/fir_top.sv
 }
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being
@@ -112,7 +113,12 @@ OPTRACE "Adding files" END { }
 foreach dcp [get_files -quiet -all -filter file_type=="Design\ Checkpoint"] {
   set_property used_in_implementation false $dcp
 }
+read_xdc C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/constrs_1/new/CLK.xdc
+set_property used_in_implementation false [get_files C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/constrs_1/new/CLK.xdc]
+
 set_param ips.enableIPCacheLiteLoad 1
+
+read_checkpoint -auto_incremental -incremental C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/utils_1/imports/synth_1/fir_top.dcp
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }

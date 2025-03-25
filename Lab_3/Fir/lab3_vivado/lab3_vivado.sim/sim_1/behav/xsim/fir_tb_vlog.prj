@@ -1,0 +1,29 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../../lab3_example/lab3_example.gen/sources_1/bd/tap_ram/ip/tap_ram_blk_mem_gen_0_0/sim/tap_ram_blk_mem_gen_0_0.v" \
+"../../../../../lab3_example/lab3_example.gen/sources_1/bd/tap_ram/sim/tap_ram.v" \
+"../../../../../lab3_example/lab3_example.gen/sources_1/bd/data_ram/sim/data_ram.v" \
+
+sv xil_defaultlib  \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_salve.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_bram.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_conf.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_stream_slave_bram.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4wallace_multiplier_nbit.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/bram_access_arbiter.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/brent_kung_adder_nbit.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_core.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_top.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/gp_unit.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/onebit_adder.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_3_to_2_nbit.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv" \
+"../../../../../lab3_example/lab3_example.srcs/sources_1/imports/Fir/tb/tb_fir.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

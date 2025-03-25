@@ -1,0 +1,5 @@
+vhdl xil_defaultlib  \
+"../../../../../lab3_example/lab3_example.gen/sources_1/bd/data_ram/ip/data_ram_c_shift_ram_0_0/sim/data_ram_c_shift_ram_0_0.vhd" \
+
+# Do not sort compile order
+nosort
