@@ -138,7 +138,7 @@ module tb_fir ();
   );
   */
 
-  /*No synthsis
+  /*
   tap_ram_behav #(
     .pADDR_WIDTH ( TAP_NUM_WIDTH ),
     .pDATA_WIDTH ( pDATA_WIDTH   )
