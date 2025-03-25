@@ -210,4 +210,35 @@ OK: exp =           0, rdata =           0
 [PASS] [Pattern        190] Golden answer:       -6588, Your answer:       -6588
 [PASS] [Pattern        191] Golden answer:       -6771, Your answer:       -6771
 [PASS] [Pattern        192] Golden answer:       -6954, Your answer:       -6954
-[PASS] [Pattern       
+[PASS] [Pattern        193] Golden answer:       -7137, Your answer:       -7137
+[PASS] [Pattern        194] Golden answer:       -7320, Your answer:       -7320
+[PASS] [Pattern        195] Golden answer:       -7503, Your answer:       -7503
+[PASS] [Pattern        196] Golden answer:       -7686, Your answer:       -7686
+[PASS] [Pattern        197] Golden answer:       -7869, Your answer:       -7869
+[PASS] [Pattern        198] Golden answer:       -8052, Your answer:       -8052
+[PASS] [Pattern        199] Golden answer:       -8235, Your answer:       -8235
+[PASS] [Pattern        200] Golden answer:       -8418, Your answer:       -8418
+[PASS] [Pattern        201] Golden answer:       -8601, Your answer:       -8601
+[PASS] [Pattern        202] Golden answer:       -8784, Your answer:       -8784
+[PASS] [Pattern        203] Golden answer:       -8967, Your answer:       -8967
+[PASS] [Pattern        204] Golden answer:       -9150, Your answer:       -9150
+[PASS] [Pattern        205] Golden answer:       -9333, Your answer:       -9333
+[PASS] [Pattern        206] Golden answer:       -9516, Your answer:       -9516
+[PASS] [Pattern        207] Golden answer:       -9699, Your answer:       -9699
+[PASS] [Pattern        208] Golden answer:       -9882, Your answer:       -9882
+[PASS] [Pattern        209] Golden answer:      -10065, Your answer:      -10065
+[PASS] [Pattern        210] Golden answer:      -10248, Your answer:      -10248
+[PASS] [Pattern        211] Golden answer:      -10431, Your answer:      -10431
+[PASS] [Pattern        212] Golden answer:      -10614, Your answer:      -10614
+[PASS] [Pattern        213] Golden answer:      -10797, Your answer:      -10797
+[PASS] [Pattern        214] Golden answer:      -10980, Your answer:      -10980
+[PASS] [Pattern        215] Golden answer:      -11163, Your answer:      -11163
+[PASS] [Pattern        216] Golden answer:      -11346, Your answer:      -11346
+[PASS] [Pattern        217] Golden answer:      -11529, Your answer:      -11529
+[PASS] [Pattern        218] Golden answer:      -11712, Your answer:      -11712
+[PASS] [Pattern        219] Golden answer:      -11895, Your answer:      -11895
+[PASS] [Pattern        220] Golden answer:      -12078, Your answer:      -12078
+[PASS] [Pattern        221] Golden answer:      -12261, Your answer:      -12261
+[PASS] [Pattern        222] Golden answer:      -12444, Your answer:      -12444
+[PASS] [Pattern        223] Golden answer:      -12627, Your answer:      -12627
+INFO: xsimkernel Simulation Memory Usage: 19688 KB (Peak: 19688 KB), Simulation CPU Usage: 14984 ms
