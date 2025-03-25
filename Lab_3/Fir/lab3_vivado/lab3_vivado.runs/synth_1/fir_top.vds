@@ -3,191 +3,196 @@
 # SW Build 3865809 on Sun May  7 15:05:29 MDT 2023
 # IP Build 3864474 on Sun May  7 20:36:21 MDT 2023
 # SharedData Build 3865790 on Sun May 07 13:33:03 MDT 2023
-# Start of session at: Sun Mar 23 19:14:38 2025
-# Process ID: 5024
+# Start of session at: Tue Mar 25 17:50:53 2025
+# Process ID: 756
 # Current directory: C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1
 # Command line: vivado.exe -log fir_top.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source fir_top.tcl
 # Log file: C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1/fir_top.vds
 # Journal file: C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1\vivado.jou
-# Running On: CCVDIAI3007, OS: Windows, CPU Frequency: 2594 MHz, CPU Physical cores: 4, Host memory: 17178 MB
+# Running On: CCVDIAI3022, OS: Windows, CPU Frequency: 2594 MHz, CPU Physical cores: 4, Host memory: 17178 MB
 #-----------------------------------------------------------
 source fir_top.tcl -notrace
-create_project: Time (s): cpu = 00:00:07 ; elapsed = 00:00:12 . Memory (MB): peak = 445.680 ; gain = 164.012
+create_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:12 . Memory (MB): peak = 445.168 ; gain = 162.621
+Command: read_checkpoint -auto_incremental -incremental C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/utils_1/imports/synth_1/fir_top.dcp
+INFO: [Vivado 12-5825] Read reference checkpoint from C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/utils_1/imports/synth_1/fir_top.dcp for incremental synthesis
+INFO: [Vivado 12-7989] Please ensure there are no constraint changes
 Command: synth_design -top fir_top -part xc7z020clg400-1 -max_dsp 0
 Starting synth_design
 Attempting to get a license for feature 'Synthesis' and/or device 'xc7z020'
 INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7z020'
 INFO: [Vivado_Tcl 4-287] User specified maximum number of block DSP allowed in design is 0
+INFO: [Device 21-403] Loading part xc7z020clg400-1
+INFO: [Designutils 20-5440] No compile time benefit to using incremental synthesis; A full resynthesis will be run
+INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
 INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
 INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
-INFO: [Synth 8-7075] Helper process launched with PID 9688
-INFO: [Synth 8-11241] undeclared symbol 'conf_req', assumed default net type 'wire' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_salve.sv:175]
+INFO: [Synth 8-7075] Helper process launched with PID 4636
 ---------------------------------------------------------------------------------
-Starting Synthesize : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 887.387 ; gain = 412.863
+Starting RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 1294.957 ; gain = 411.973
 ---------------------------------------------------------------------------------
-INFO: [Synth 8-6157] synthesizing module 'fir_top' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_top.sv:22]
-INFO: [Synth 8-6157] synthesizing module 'axi4_lite_slave' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_salve.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'fir_top' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/fir_top.sv:24]
+INFO: [Synth 8-6157] synthesizing module 'axi4_lite_slave' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_salve.sv:24]
 	Parameter CTRL_WIDTH bound to: 3 - type: integer 
 	Parameter pADDR_WIDTH bound to: 32 - type: integer 
 	Parameter pDATA_WIDTH bound to: 32 - type: integer 
 	Parameter TAP_NUM_WIDTH bound to: 10 - type: integer 
 	Parameter DATA_NUM_WIDTH bound to: 10 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'axi4_lite_slave_bram' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_bram.sv:21]
+INFO: [Synth 8-6157] synthesizing module 'axi4_lite_slave_bram' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_slave_bram.sv:23]
 	Parameter pDATA_WIDTH bound to: 32 - type: integer 
 	Parameter TAP_NUM_WIDTH bound to: 10 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'axi4_lite_slave_bram' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_bram.sv:21]
-INFO: [Synth 8-6157] synthesizing module 'axi4_lite_slave_conf' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_conf.sv:21]
+INFO: [Synth 8-6155] done synthesizing module 'axi4_lite_slave_bram' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_slave_bram.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'axi4_lite_slave_conf' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_slave_conf.sv:23]
 	Parameter pDATA_WIDTH bound to: 32 - type: integer 
 	Parameter CTRL_WIDTH bound to: 3 - type: integer 
 	Parameter TAP_NUM_WIDTH bound to: 10 - type: integer 
 	Parameter DATA_NUM_WIDTH bound to: 10 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'axi4_lite_slave_conf' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_slave_conf.sv:21]
-INFO: [Synth 8-6155] done synthesizing module 'axi4_lite_slave' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_lite_salve.sv:22]
-INFO: [Synth 8-6157] synthesizing module 'axi4_stream_slave_bram' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_stream_slave_bram.sv:21]
+INFO: [Synth 8-6155] done synthesizing module 'axi4_lite_slave_conf' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_slave_conf.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'axi4_lite_slave' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_lite_salve.sv:24]
+INFO: [Synth 8-6157] synthesizing module 'axi4_stream_slave_bram' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_stream_slave_bram.sv:23]
 	Parameter pDATA_WIDTH bound to: 32 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'axi4_stream_slave_bram' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/axi4_stream_slave_bram.sv:21]
-INFO: [Synth 8-6157] synthesizing module 'bram_access_arbiter' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/bram_access_arbiter.sv:21]
-INFO: [Synth 8-6155] done synthesizing module 'bram_access_arbiter' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/bram_access_arbiter.sv:21]
-INFO: [Synth 8-6157] synthesizing module 'fir_core' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_core.sv:21]
+INFO: [Synth 8-6155] done synthesizing module 'axi4_stream_slave_bram' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/axi4_stream_slave_bram.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'bram_access_arbiter' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/bram_access_arbiter.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'bram_access_arbiter' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/bram_access_arbiter.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'fir_core' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/fir_core.sv:23]
 	Parameter pDATA_WIDTH bound to: 32 - type: integer 
 	Parameter TAP_NUM_WIDTH bound to: 10 - type: integer 
 	Parameter DATA_NUM_WIDTH bound to: 10 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'booth4wallace_multiplier_nbit' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4wallace_multiplier_nbit.sv:21]
+INFO: [Synth 8-6157] synthesizing module 'booth4wallace_multiplier_nbit' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4wallace_multiplier_nbit.sv:23]
 	Parameter MUL_SIZE bound to: 32 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'booth4_op_generator' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:21]
+INFO: [Synth 8-6157] synthesizing module 'booth4_op_generator' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:4]
 	Parameter MUL_SIZE bound to: 32 - type: integer 
 	Parameter ADDER_SIZE bound to: 64 - type: integer 
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:68]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:94]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:119]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit.sv:20]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:51]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:77]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-226] default block is never used [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:102]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit.sv:22]
 	Parameter OP_NUM bound to: 17 - type: integer 
 	Parameter OP_WIDTH bound to: 5 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
 	Parameter IN_OP_NUM bound to: 17 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'op_3_to_2_nbit' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_3_to_2_nbit.sv:20]
+INFO: [Synth 8-6157] synthesizing module 'op_3_to_2_nbit' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_3_to_2_nbit.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'onebit_adder' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/onebit_adder.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'onebit_adder' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/onebit_adder.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'op_3_to_2_nbit' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_3_to_2_nbit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized0' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6157] synthesizing module 'onebit_adder' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/onebit_adder.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'onebit_adder' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/onebit_adder.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'op_3_to_2_nbit' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_3_to_2_nbit.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized0' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
 	Parameter IN_OP_NUM bound to: 12 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized0' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized1' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized0' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized1' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
 	Parameter IN_OP_NUM bound to: 8 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized1' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized2' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized1' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized2' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
 	Parameter IN_OP_NUM bound to: 6 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized2' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized3' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized2' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized3' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
 	Parameter IN_OP_NUM bound to: 4 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized3' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized4' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized3' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized4' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 5 - type: integer 
 	Parameter IN_OP_NUM bound to: 3 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized4' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'booth4_op_generator' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4_op_generator.sv:21]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit__parameterized0' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized4' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'booth4_op_generator' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4_op_generator.sv:4]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit__parameterized0' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit.sv:22]
 	Parameter OP_NUM bound to: 19 - type: integer 
 	Parameter OP_WIDTH bound to: 64 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized5' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized5' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 19 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'op_3_to_2_nbit__parameterized0' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_3_to_2_nbit.sv:20]
+INFO: [Synth 8-6157] synthesizing module 'op_3_to_2_nbit__parameterized0' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_3_to_2_nbit.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_3_to_2_nbit__parameterized0' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_3_to_2_nbit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized5' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized6' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_3_to_2_nbit__parameterized0' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_3_to_2_nbit.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized5' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized6' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 13 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized6' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized7' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized6' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized7' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 9 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized7' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized8' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized7' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized8' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 6 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized8' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized9' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized8' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized9' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 4 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized9' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized10' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized9' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized10' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 3 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized10' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized11' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized10' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'op_n_to_2_nbit_onestage__parameterized11' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
 	Parameter OP_WIDTH bound to: 64 - type: integer 
 	Parameter IN_OP_NUM bound to: 2 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized11' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit_onestage.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit__parameterized0' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/op_n_to_2_nbit.sv:20]
-INFO: [Synth 8-6157] synthesizing module 'brent_kung_adder_nbit' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/brent_kung_adder_nbit.sv:20]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit_onestage__parameterized11' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit_onestage.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'op_n_to_2_nbit__parameterized0' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/op_n_to_2_nbit.sv:22]
+INFO: [Synth 8-6157] synthesizing module 'brent_kung_adder_nbit' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/brent_kung_adder_nbit.sv:23]
 	Parameter ADDER_SIZE bound to: 64 - type: integer 
-INFO: [Synth 8-6157] synthesizing module 'gp_unit' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/gp_unit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'gp_unit' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/gp_unit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'brent_kung_adder_nbit' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/brent_kung_adder_nbit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'booth4wallace_multiplier_nbit' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/booth4wallace_multiplier_nbit.sv:21]
-INFO: [Synth 8-6157] synthesizing module 'brent_kung_adder_nbit__parameterized0' [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/brent_kung_adder_nbit.sv:20]
+INFO: [Synth 8-6157] synthesizing module 'gp_unit' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/gp_unit.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'gp_unit' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/gp_unit.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'brent_kung_adder_nbit' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/brent_kung_adder_nbit.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'booth4wallace_multiplier_nbit' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/booth4wallace_multiplier_nbit.sv:23]
+INFO: [Synth 8-6157] synthesizing module 'brent_kung_adder_nbit__parameterized0' [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/brent_kung_adder_nbit.sv:23]
 	Parameter ADDER_SIZE bound to: 10 - type: integer 
-INFO: [Synth 8-6155] done synthesizing module 'brent_kung_adder_nbit__parameterized0' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/brent_kung_adder_nbit.sv:20]
-INFO: [Synth 8-6155] done synthesizing module 'fir_core' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_core.sv:21]
-INFO: [Synth 8-6155] done synthesizing module 'fir_top' (0#1) [C:/Users/ytangdg/lab3_example/lab3_example.srcs/sources_1/imports/Fir/rtl/fir_top.sv:22]
+INFO: [Synth 8-6155] done synthesizing module 'brent_kung_adder_nbit__parameterized0' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/brent_kung_adder_nbit.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'fir_core' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/fir_core.sv:23]
+INFO: [Synth 8-6155] done synthesizing module 'fir_top' (0#1) [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/sources_1/new/fir_top.sv:24]
 WARNING: [Synth 8-7129] Port aclk in module axi4_stream_slave_bram is either unconnected or has no load
 WARNING: [Synth 8-7129] Port aresetn in module axi4_stream_slave_bram is either unconnected or has no load
 WARNING: [Synth 8-7129] Port in_s_wdata[31] in module axi4_lite_slave_conf is either unconnected or has no load
@@ -214,23 +219,52 @@ WARNING: [Synth 8-7129] Port in_s_wdata[11] in module axi4_lite_slave_conf is ei
 WARNING: [Synth 8-7129] Port in_s_wdata[10] in module axi4_lite_slave_conf is either unconnected or has no load
 WARNING: [Synth 8-7129] Port in_ss_tlast in module fir_top is either unconnected or has no load
 ---------------------------------------------------------------------------------
-Finished Synthesize : Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 992.887 ; gain = 518.363
+Finished RTL Elaboration : Time (s): cpu = 00:00:10 ; elapsed = 00:00:14 . Memory (MB): peak = 1399.309 ; gain = 516.324
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Constraint Validation : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 992.887 ; gain = 518.363
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:10 ; elapsed = 00:00:14 . Memory (MB): peak = 1399.309 ; gain = 516.324
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:10 ; elapsed = 00:00:14 . Memory (MB): peak = 1399.309 ; gain = 516.324
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.285 . Memory (MB): peak = 1399.309 ; gain = 0.000
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/constrs_1/new/CLK.xdc]
+Finished Parsing XDC File [C:/Users/ytangdg/lab3_vivado/lab3_vivado.srcs/constrs_1/new/CLK.xdc]
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.017 . Memory (MB): peak = 1509.754 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.141 . Memory (MB): peak = 1509.754 ; gain = 0.000
+INFO: [Designutils 20-5440] No compile time benefit to using incremental synthesis; A full resynthesis will be run
+INFO: [Designutils 20-4379] Flow is switching to default flow due to incremental criteria not met. If you would like to alter this behaviour and have the flow terminate instead, please set the following parameter config_implementation {autoIncr.Synth.RejectBehavior Terminate}
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:21 ; elapsed = 00:00:30 . Memory (MB): peak = 1509.754 ; gain = 626.770
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Loading Part and Timing Information
 ---------------------------------------------------------------------------------
 Loading part: xc7z020clg400-1
 ---------------------------------------------------------------------------------
-Finished Loading Part and Timing Information : Time (s): cpu = 00:00:11 ; elapsed = 00:00:14 . Memory (MB): peak = 992.887 ; gain = 518.363
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:21 ; elapsed = 00:00:30 . Memory (MB): peak = 1509.754 ; gain = 626.770
 ---------------------------------------------------------------------------------
-INFO: [Device 21-403] Loading part xc7z020clg400-1
 ---------------------------------------------------------------------------------
-Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:13 ; elapsed = 00:00:16 . Memory (MB): peak = 1008.422 ; gain = 533.898
+Start Applying 'set_property' XDC Constraints
 ---------------------------------------------------------------------------------
-No constraint files found.
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:21 ; elapsed = 00:00:31 . Memory (MB): peak = 1509.754 ; gain = 626.770
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:22 ; elapsed = 00:00:32 . Memory (MB): peak = 1509.754 ; gain = 626.770
+---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start RTL Component Statistics 
 ---------------------------------------------------------------------------------
@@ -251,8 +285,8 @@ Detailed RTL Component Info :
 +---Muxes : 
 	   2 Input   74 Bit        Muxes := 1     
 	   2 Input   32 Bit        Muxes := 3     
-	   2 Input   10 Bit        Muxes := 4     
-	   2 Input    1 Bit        Muxes := 9     
+	   2 Input   10 Bit        Muxes := 3     
+	   2 Input    1 Bit        Muxes := 8     
 	   8 Input    1 Bit        Muxes := 16    
 ---------------------------------------------------------------------------------
 Finished RTL Component Statistics 
@@ -266,7 +300,6 @@ BRAMs: 280 (col length: RAMB18 60 RAMB36 30)
 ---------------------------------------------------------------------------------
 Finished Part Resource Summary
 ---------------------------------------------------------------------------------
-No constraint files found.
 ---------------------------------------------------------------------------------
 Start Cross Boundary and Area Optimization
 ---------------------------------------------------------------------------------
@@ -291,20 +324,25 @@ WARNING: [Synth 8-7129] Port in_s_awaddr[1] in module fir_top is either unconnec
 WARNING: [Synth 8-7129] Port in_s_awaddr[0] in module fir_top is either unconnected or has no load
 WARNING: [Synth 8-7129] Port in_ss_tlast in module fir_top is either unconnected or has no load
 ---------------------------------------------------------------------------------
-Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:24 ; elapsed = 00:00:33 . Memory (MB): peak = 1269.148 ; gain = 794.625
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:30 ; elapsed = 00:00:44 . Memory (MB): peak = 1509.754 ; gain = 626.770
 ---------------------------------------------------------------------------------
-No constraint files found.
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:37 ; elapsed = 00:00:55 . Memory (MB): peak = 1509.754 ; gain = 626.770
+---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Timing Optimization
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Timing Optimization : Time (s): cpu = 00:00:24 ; elapsed = 00:00:34 . Memory (MB): peak = 1269.148 ; gain = 794.625
+Finished Timing Optimization : Time (s): cpu = 00:00:40 ; elapsed = 00:00:58 . Memory (MB): peak = 1509.754 ; gain = 626.770
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Technology Mapping
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Technology Mapping : Time (s): cpu = 00:00:26 ; elapsed = 00:00:36 . Memory (MB): peak = 1278.750 ; gain = 804.227
+Finished Technology Mapping : Time (s): cpu = 00:00:42 ; elapsed = 00:01:01 . Memory (MB): peak = 1517.801 ; gain = 634.816
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start IO Insertion
@@ -322,37 +360,37 @@ Start Final Netlist Cleanup
 Finished Final Netlist Cleanup
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished IO Insertion : Time (s): cpu = 00:00:31 ; elapsed = 00:00:43 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished IO Insertion : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Instances
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Instances : Time (s): cpu = 00:00:31 ; elapsed = 00:00:43 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Rebuilding User Hierarchy
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Ports
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Ports : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Handling Custom Attributes
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Handling Custom Attributes : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Renaming Generated Nets
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
-Finished Renaming Generated Nets : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 Start Writing Synthesis Report
@@ -371,76 +409,37 @@ Report Cell Usage:
 |1     |BUFG   |     1|
 |2     |CARRY4 |     3|
 |3     |LUT1   |     2|
-|4     |LUT2   |    34|
-|5     |LUT3   |   304|
-|6     |LUT4   |    87|
-|7     |LUT5   |   407|
-|8     |LUT6   |   540|
+|4     |LUT2   |    31|
+|5     |LUT3   |   302|
+|6     |LUT4   |    90|
+|7     |LUT5   |   412|
+|8     |LUT6   |   535|
 |9     |FDCE   |   526|
 |10    |FDPE   |     1|
 |11    |IBUF   |   164|
 |12    |OBUF   |   161|
 +------+-------+------+
-
-Report Instance Areas: 
-+------+-----------------------------------------------+-----------------------------------------+------+
-|      |Instance                                       |Module                                   |Cells |
-+------+-----------------------------------------------+-----------------------------------------+------+
-|1     |top                                            |                                         |  2230|
-|2     |  u_axi4_lite_slave                            |axi4_lite_slave                          |   200|
-|3     |    u_axi4_lite_slave_bram                     |axi4_lite_slave_bram                     |    52|
-|4     |    u_axi4_lite_slave_conf                     |axi4_lite_slave_conf                     |   148|
-|5     |  u_fir_core                                   |fir_core                                 |  1704|
-|6     |    u_booth4wallace_multiplier_nbit            |booth4wallace_multiplier_nbit            |  1361|
-|7     |      u_op_n_to_2_nbit                         |op_n_to_2_nbit__parameterized0           |    12|
-|8     |        \genblk1[0].u_op_n_to_2_nbit_onestage  |op_n_to_2_nbit_onestage__parameterized5  |     1|
-|9     |          \genblk1[7].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_16        |     1|
-|10    |            \genblk1[31].u_onebit_adder        |onebit_adder_17                          |     1|
-|11    |        \genblk1[1].u_op_n_to_2_nbit_onestage  |op_n_to_2_nbit_onestage__parameterized6  |     3|
-|12    |          \genblk1[1].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_10        |     1|
-|13    |            \genblk1[31].u_onebit_adder        |onebit_adder_15                          |     1|
-|14    |          \genblk1[4].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_11        |     1|
-|15    |            \genblk1[31].u_onebit_adder        |onebit_adder_14                          |     1|
-|16    |          \genblk1[7].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_12        |     1|
-|17    |            \genblk1[31].u_onebit_adder        |onebit_adder_13                          |     1|
-|18    |        \genblk1[2].u_op_n_to_2_nbit_onestage  |op_n_to_2_nbit_onestage__parameterized7  |     4|
-|19    |          \genblk1[0].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_6         |     2|
-|20    |            \genblk1[31].u_onebit_adder        |onebit_adder_9                           |     2|
-|21    |          \genblk1[3].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_7         |     2|
-|22    |            \genblk1[31].u_onebit_adder        |onebit_adder_8                           |     2|
-|23    |        \genblk1[3].u_op_n_to_2_nbit_onestage  |op_n_to_2_nbit_onestage__parameterized8  |     2|
-|24    |          \genblk1[0].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_2         |     1|
-|25    |            \genblk1[31].u_onebit_adder        |onebit_adder_5                           |     1|
-|26    |          \genblk1[3].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_3         |     1|
-|27    |            \genblk1[31].u_onebit_adder        |onebit_adder_4                           |     1|
-|28    |        \genblk1[4].u_op_n_to_2_nbit_onestage  |op_n_to_2_nbit_onestage__parameterized9  |     1|
-|29    |          \genblk1[1].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0_0         |     1|
-|30    |            \genblk1[31].u_onebit_adder        |onebit_adder_1                           |     1|
-|31    |        \genblk1[5].u_op_n_to_2_nbit_onestage  |op_n_to_2_nbit_onestage__parameterized10 |     1|
-|32    |          \genblk1[0].u_op_3_to_2_nbit         |op_3_to_2_nbit__parameterized0           |     1|
-|33    |            \genblk1[31].u_onebit_adder        |onebit_adder                             |     1|
-+------+-----------------------------------------------+-----------------------------------------+------+
 ---------------------------------------------------------------------------------
-Finished Writing Synthesis Report : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 ---------------------------------------------------------------------------------
-Synthesis finished with 0 errors, 0 critical warnings and 45 warnings.
-Synthesis Optimization Runtime : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
-Synthesis Optimization Complete : Time (s): cpu = 00:00:31 ; elapsed = 00:00:44 . Memory (MB): peak = 1293.582 ; gain = 819.059
+Synthesis finished with 0 errors, 0 critical warnings and 20 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:34 ; elapsed = 00:01:03 . Memory (MB): peak = 1532.578 ; gain = 539.148
+Synthesis Optimization Complete : Time (s): cpu = 00:00:48 ; elapsed = 00:01:09 . Memory (MB): peak = 1532.578 ; gain = 649.594
 INFO: [Project 1-571] Translating synthesized netlist
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.043 . Memory (MB): peak = 1305.629 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.048 . Memory (MB): peak = 1541.926 ; gain = 0.000
 INFO: [Netlist 29-17] Analyzing 3 Unisim elements for replacement
 INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
 INFO: [Project 1-570] Preparing netlist for logic optimization
 INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
-Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1338.359 ; gain = 0.000
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.001 . Memory (MB): peak = 1546.918 ; gain = 0.000
 INFO: [Project 1-111] Unisim Transformation Summary:
 No Unisim elements were transformed.
 
-Synth Design complete | Checksum: 8c4f95c8
+Synth Design complete | Checksum: fba6b952
 INFO: [Common 17-83] Releasing license: Synthesis
-125 Infos, 45 Warnings, 0 Critical Warnings and 0 Errors encountered.
+132 Infos, 45 Warnings, 0 Critical Warnings and 0 Errors encountered.
 synth_design completed successfully
-synth_design: Time (s): cpu = 00:00:34 ; elapsed = 00:00:48 . Memory (MB): peak = 1338.359 ; gain = 887.711
+synth_design: Time (s): cpu = 00:00:54 ; elapsed = 00:01:20 . Memory (MB): peak = 1546.918 ; gain = 1074.461
 INFO: [Common 17-1381] The checkpoint 'C:/Users/ytangdg/lab3_vivado/lab3_vivado.runs/synth_1/fir_top.dcp' has been generated.
 INFO: [runtcl-4] Executing : report_utilization -file fir_top_utilization_synth.rpt -pb fir_top_utilization_synth.pb
-INFO: [Common 17-206] Exiting Vivado at Sun Mar 23 19:15:46 2025...
+INFO: [Common 17-206] Exiting Vivado at Tue Mar 25 17:52:33 2025...

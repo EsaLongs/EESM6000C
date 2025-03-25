@@ -138,6 +138,7 @@ module tb_fir ();
   );
   */
 
+  /*
   tap_ram_behav #(
     .pADDR_WIDTH ( TAP_NUM_WIDTH ),
     .pDATA_WIDTH ( pDATA_WIDTH   )
@@ -160,7 +161,7 @@ module tb_fir ();
     .in_Di  ( data_Di   ),
     .out_Do ( data_Do   )
   );
-
+  */
 
 //------------------------ Data Prepare ---------------------------------------------//
   // **** Here "Din_list" will store the data waiting to be calculated. "golden_list"
