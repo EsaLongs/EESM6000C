@@ -4,7 +4,7 @@
 // 
 // Create Date: 08/03/2025 10:38:55 AM
 // Design Name: 
-// Module Name: fir_tb
+// Module Name: tb_fir
 // Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
@@ -117,8 +117,27 @@ module tb_fir ();
     .aclk          ( axis_clk   ),
     .aresetn       ( axis_rst_n )
   );
-    
-  
+
+  // If you want to enable IP instead of behaviour RAM, please valid this part.
+  /*
+  tap_ram u_tap_ram (
+    .CLK  ( axis_clk ),
+    .EN   ( tap_EN   ),
+    .A    ( tap_A    ),
+    .WE   ( tap_WE   ),
+    .DIN  ( tap_Di   ),
+    .DOUT ( tap_Do   )
+  );
+
+  data_ram u_data_ram (
+    .CLK  ( axis_clk  ),
+    .CE   ( data_EN   ),
+    .A    ( data_A    ),
+    .DIN  ( data_Di   ),
+    .DOUT ( data_Do   )
+  );
+  */
+
   tap_ram_behav #(
     .pADDR_WIDTH ( TAP_NUM_WIDTH ),
     .pDATA_WIDTH ( pDATA_WIDTH   )
@@ -141,6 +160,7 @@ module tb_fir ();
     .in_Di  ( data_Di   ),
     .out_Do ( data_Do   )
   );
+
 
 //------------------------ Data Prepare ---------------------------------------------//
   // **** Here "Din_list" will store the data waiting to be calculated. "golden_list"
