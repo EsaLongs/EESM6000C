@@ -104,7 +104,7 @@ module tb_brent_kung_adder_nbit();
   // **** Define function generate random number
   function automatic logic [ADDER_SIZE - 1 : 0] random_gen();
     for (int i = 0; i < ADDER_SIZE; i = i + 1) begin
-      random_gen[i] = $random[0];
+      random_gen[i] = $random[i];
     end
     return random_gen;
   endfunction

@@ -84,7 +84,7 @@ module booth4_multiplier_nbit #(
 
   always_ff @( posedge clk or negedge rst_n ) begin : COUNTER
     if (!rst_n) counter <= 'b0;
-    else if (state_is_calc) counter = counter + 1;
+    else if (state_is_calc) counter <= counter + 1;
     else counter <= 'b0;
   end
 
