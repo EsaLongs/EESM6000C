@@ -104,7 +104,7 @@ module tb_booth4wallace_multiplier_nbit ();
   end
 
   initial begin
-    $dumpfile("mul.vcd");
+    $dumpfile("tb_booth4wallace_multiplier_nbit.vcd");
     $dumpvars();
   end
 
