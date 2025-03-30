@@ -214,7 +214,7 @@ module tb_booth4wallace_multiplier_nbit ();
   // **** Define function generate random number
   function automatic logic [MUL_SIZE - 1 : 0] random_gen();
     for (int i = 0; i < MUL_SIZE; i = i + 1) begin
-      random_gen[i] = $random[0];
+      random_gen[i] = $random % 2;
     end
     return random_gen;
   endfunction

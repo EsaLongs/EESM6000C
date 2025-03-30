@@ -138,7 +138,6 @@ module tb_fir ();
   );
   */
 
-  /*
   tap_ram_behav #(
     .pADDR_WIDTH ( TAP_NUM_WIDTH ),
     .pDATA_WIDTH ( pDATA_WIDTH   )
@@ -161,7 +160,6 @@ module tb_fir ();
     .in_Di  ( data_Di   ),
     .out_Do ( data_Do   )
   );
-  */
 
 //------------------------ Data Prepare ---------------------------------------------//
   // **** Here "Din_list" will store the data waiting to be calculated. "golden_list"
@@ -185,7 +183,7 @@ module tb_fir ();
   // **** Reset.
   initial begin
     axis_rst_n = 0;
-    @(posedge axis_clk); 
+    @(posedge axis_clk);;
     @(posedge axis_clk);
     axis_rst_n = 1;
   end 
@@ -223,7 +221,7 @@ module tb_fir ();
   // **** Data RAM data.
   integer i;
   initial begin
-    wait (axis_rst_n);
+    wait (axis_rst_n)
     $display("------------Start simulation-----------");
     ss_tvalid = 1;
     $display("----Start the data input(AXI-Stream)----");
