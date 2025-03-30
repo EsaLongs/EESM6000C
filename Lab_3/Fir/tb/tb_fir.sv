@@ -277,13 +277,13 @@ module tb_fir ();
     // **** Write tap data to tap RAM.
       config_write(32'h30000000 + 4 * k, coef[k]);
     end
-    awvalid <= 0; wvalid <= 0;
+    awvalid = 0; wvalid = 0;
     // **** Check data in tao RAM.
     $display(" Check Coefficient ...");
     for(k = 0; k < TAP_NUM; k = k + 1) begin
       config_read_check(32'h30000000+4 * k, coef[k], 32'hffffffff);
     end
-    arvalid <= 0;
+    arvalid = 0;
     $display(" Tape programming done ...");
     // **** Start simulation (set ap_start to be 1)
     $display(" Start FIR");
@@ -332,17 +332,17 @@ module tb_fir ();
     input signed [pDATA_WIDTH - 1 : 0] exp_data;
     input        [pDATA_WIDTH - 1 : 0] mask;
     begin
-      araddr <= addr;
-      arvalid <= 0; rready <= 0;
-      awvalid <= 0; wvalid <= 0;
+      araddr = addr;
+      arvalid = 0; rready = 0;
+      awvalid = 0; wvalid = 0;
       @(posedge axis_clk);
       # (CLK_PERIOD / 2);
-      arvalid <= 1; rready = 1;
+      arvalid = 1; rready = 1;
       @(posedge rvalid);
       # (CLK_PERIOD / 2);
       if( (rdata & mask) != (exp_data & mask)) begin
         $display("ERROR: exp = %d, rdata = %d", exp_data, rdata);
-        error_coef <= 1;
+        error_coef = 1;
       end else begin
         $display("OK: exp = %d, rdata = %d", exp_data, rdata);
       end
@@ -353,8 +353,8 @@ module tb_fir ();
   task ss;
     input signed [pDATA_WIDTH - 1 : 0] in1;
     begin
-      ss_tvalid <= 1;
-      ss_tdata  <= in1;
+      ss_tvalid = 1;
+      ss_tdata  = in1;
       @(posedge axis_clk);
       while (!ss_tready) begin
         @(posedge axis_clk);
@@ -367,13 +367,13 @@ module tb_fir ();
     input signed [pDATA_WIDTH - 1 : 0] in2;  // golden data
     input        [pDATA_WIDTH - 1 : 0] pcnt; // pattern count
     begin
-      sm_tready <= 1;
+      sm_tready = 1;
       @(posedge axis_clk) 
       wait(sm_tvalid);
       while(!sm_tvalid) @(posedge axis_clk);
       if (sm_tdata != in2) begin
         $display("[ERROR] [Pattern %d] Golden answer: %d, Your answer: %d", pcnt, in2, sm_tdata);
-        error <= 1;
+        error = 1;
       end
       else begin
         $display("[PASS] [Pattern %d] Golden answer: %d, Your answer: %d", pcnt, in2, sm_tdata);
