@@ -54,19 +54,11 @@ module tb_brent_kung_adder_nbit();
     $finish;
   end
 
-<<<<<<< HEAD
-  initial begin
-    $dumpfile("wave.vcd");
-    $dumpvars(0, tb_brent_kung_adder);
-  end
-
-=======
   initial begin
     $dumpfile("adder.vcd");
     $dumpvars();
   end
 
->>>>>>> e86f6063a9bae75d17d8614d58c93ef1dec108b2
 //------------------------ Task Define ----------------------------------------------//
   /////////////////////////////////////////////////////////////////////////////////////
   // Test
