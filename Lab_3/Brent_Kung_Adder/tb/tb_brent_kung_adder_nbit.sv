@@ -47,7 +47,6 @@ module tb_brent_kung_adder_nbit();
 //------------------------ Simulation -----------------------------------------------//
   initial begin
     $display("Starting Brent-Kung Adder Test");
-
     test();
     #10;
     $display("\nAll tests completed. Total errors = %0d", err);
