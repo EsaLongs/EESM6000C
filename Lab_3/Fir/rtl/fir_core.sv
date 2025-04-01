@@ -76,9 +76,9 @@ module fir_core #(
   //      the output, so we don't want the pipeline stall here. Therefore, we can
   //      use a "all_round_finish" signal to keep the pipeline working during this
   //      period of time.
-  assign stall = (!in_sm_tready   ) ? 1'b1 :
-                 (all_round_finish) ? 1'b0 :
-                 (in_ss_tvalid    ) ? 1'b0 :
+  assign stall = (!in_sm_tready && one_round_finish ) ? 1'b1 :
+                 (all_round_finish)                   ? 1'b0 :
+                 (in_ss_tvalid    )                   ? 1'b0 :
                  1'b1;
 
 //------------------------ State Machine --------------------------------------------//

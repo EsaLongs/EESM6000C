@@ -168,7 +168,7 @@ module tb_fir ();
   reg signed [ pDATA_WIDTH - 1 : 0] golden_list [0 : DATA_NUM - 1];
 
   initial begin
-    $dumpfile("fir.vcd");
+    $dumpfile("tb_fir.vcd");
     $dumpvars();
   end
 
