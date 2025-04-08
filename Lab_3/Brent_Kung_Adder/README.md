@@ -1,3 +1,5 @@
+This readme will be updated later. The main update is this adder support `any` bits now instead of just `2^n`.
+
 # Brent-Kung Adder
 This is a Brent-Kung adder with configurable bit-width. It Supports any `2^n` bit-width (4/8/16/32/64/128...). You can adjust `ADDER_SIZE` to get the different-width adder you want.
 
