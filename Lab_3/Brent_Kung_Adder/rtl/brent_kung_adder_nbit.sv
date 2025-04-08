@@ -8,7 +8,7 @@
 // Project Name:
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: This is a brent kung adder, you can set the value of ADDER_SIZE_SYN by yourself
+// Description: This is a brent kung adder, you can set the value of `ADDER_SIZE` by yourself
 // 
 // Dependencies: "gp_unit.sv" (used to get generate and propagate)
 // 
