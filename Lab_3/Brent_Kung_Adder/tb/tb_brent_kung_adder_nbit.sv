@@ -54,7 +54,7 @@ module tb_brent_kung_adder_nbit();
   end
 
   initial begin
-    $dumpfile("adder.vcd");
+    $dumpfile("tb_brent_kung_adder_nbit.vcd");
     $dumpvars();
   end
 
@@ -68,7 +68,7 @@ module tb_brent_kung_adder_nbit();
     repeat(TEST_NUM) begin
       in_op1 = $signed(random_gen()); 
       in_op2 = $signed(random_gen());
-      cin = $random[0];
+      cin = $random % 2;
       exp_res = $signed(in_op1 + in_op2 + {{(ADDER_SIZE - 1){1'b0}},{cin}});
       #10;
       check();
@@ -92,10 +92,10 @@ module tb_brent_kung_adder_nbit();
   endtask
 
 //------------------------ Function Define ------------------------------------------//
-  // **** Define function generate random number
+  // ** Define function generate random number
   function automatic logic [ADDER_SIZE - 1 : 0] random_gen();
     for (int i = 0; i < ADDER_SIZE; i = i + 1) begin
-      random_gen[i] = $random[i];
+      random_gen[i] = $random % 2;
     end
     return random_gen;
   endfunction
