@@ -13,7 +13,7 @@ module booth4_op_generator #(
   input  logic in_op2_signed,   // Whether the operand 2 is signed, if unsigned, should be 0
 
   // The another 2 is for dealing with negative booth operation + 1 issue
-  output logic [ADDER_SIZE - 1 : 0] out_op [OP_NUM + 2 - 1: 0]
+  output logic [ADDER_SIZE - 1 : 0] out_op [0 : OP_NUM + 2 - 1]
 );
 
   logic multiplicand_sign;
@@ -94,7 +94,7 @@ module booth4_op_generator #(
   // it will be 00000. The final sum of them is the number of flag 1.
   localparam OP_NEG_FLAG_WIDTH = $clog2(MUL_SIZE);
 
-  logic [OP_NEG_FLAG_WIDTH - 1 : 0] op_neg_flag [OP_NUM - 1 : 0];
+  logic [OP_NEG_FLAG_WIDTH - 1 : 0] op_neg_flag [0 : OP_NUM - 1];
 
   generate
     for (i = 0; i < OP_NUM; i = i + 1) begin
@@ -109,9 +109,9 @@ module booth4_op_generator #(
   endgenerate
 
   // Transform the sum of all op_neg_flag to 2 operands.
-  logic [OP_NEG_FLAG_WIDTH - 1 : 0] neg_sum [1 : 0];
+  logic [OP_NEG_FLAG_WIDTH - 1 : 0] neg_sum [0 : 1];
   // Extend to ADDER_SIZE bit
-  logic [ADDER_SIZE - 1 : 0] op_neg [1 : 0];
+  logic [ADDER_SIZE - 1 : 0] op_neg [0 : 1];
 
   op_n_to_2_nbit #(.OP_NUM ( OP_NUM ), .OP_WIDTH ( OP_NEG_FLAG_WIDTH )
   ) u_op_n_to_2_nbit (

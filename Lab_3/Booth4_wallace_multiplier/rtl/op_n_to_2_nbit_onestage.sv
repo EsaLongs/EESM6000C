@@ -1,4 +1,24 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Hong Kong University of Science and Technology
+// Engineer: TANG Yue
+// 
+// Create Date: 08/03/2025 10:38:55
+// Design Name: 
+// Module Name: op_n_to_2_nbit_onestage
+// Project Name: FIR
+// Target Devices: 
+// Tool Versions: Vivado 2023.1
+// Description: Submodule to help implement wallace tree.
+// Dependencies: `op_3_to_2_nbit.sv`
+// 
+// Revision 0.01
+//
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
 `timescale 1ns / 1ps
+
 module op_n_to_2_nbit_onestage #(
   parameter OP_WIDTH  = 64,
   parameter IN_OP_NUM = 8,

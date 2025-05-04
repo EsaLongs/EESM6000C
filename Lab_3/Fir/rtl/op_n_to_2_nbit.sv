@@ -24,7 +24,7 @@ module op_n_to_2_nbit #(
   parameter OP_WIDTH = 64
 ) (
   input  logic [OP_WIDTH - 1 : 0] in_op [OP_NUM - 1 : 0],
-  output logic [OP_WIDTH - 1 : 0] out_op [1: 0]
+  output logic [OP_WIDTH - 1 : 0] out_op [0 : 1]
 );
 
 //------------------------ Parameter Calculation ------------------------------------//
@@ -55,7 +55,7 @@ module op_n_to_2_nbit #(
   // use the 3to2 unit. For example, if IN_OP_NUM = 32, because 32 % 3
   // = 2, then out_op[1 : 0] will be assigned by in_op[1 : 0] (after 
   // sign extend). The out_op[OUT_OP_NUM - 1 : 2] will use 3to2 unit.
-  typedef int CAL_OP_NUM[STAGE_NUM : 0];
+  typedef int CAL_OP_NUM[0 : STAGE_NUM];
   
   function CAL_OP_NUM OP_NUM_STAGE_RETURN();
     integer i;
@@ -66,13 +66,17 @@ module op_n_to_2_nbit #(
     return OP_NUM_STAGE_RETURN;
   endfunction
 
-  localparam int OP_NUM_STAGE [STAGE_NUM : 0] = OP_NUM_STAGE_RETURN();
+  localparam int OP_NUM_STAGE [0 : STAGE_NUM] = OP_NUM_STAGE_RETURN();
 
 //------------------------ Instantiate ----------------------------------------------//
   // Just used for instantiating.
   genvar i;
   
-  logic [OP_WIDTH - 1 : 0] op_temp [STAGE_NUM - 1 : 0] [OP_NUM - 1 : 0];
+  generate
+    for (i = 0; i < STAGE_NUM; i = i + 1) begin: op_gen
+      logic [OP_WIDTH - 1 : 0] op_temp [0 : OP_NUM_STAGE[i + 1] - 1];
+    end
+  endgenerate
   
   generate
     // This part looks complicated. For example, assuming that the OP_NUM = IN_OP_NUM
@@ -87,27 +91,19 @@ module op_n_to_2_nbit #(
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
           .in_op  (in_op),
-          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
+          .out_op (op_gen[i].op_temp)
         );
-      end else if (i == 1) begin 
+      end else begin 
         op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
         ) u_op_n_to_2_nbit_onestage (
-          .in_op  (op_temp[i - 1][OP_NUM_STAGE[i] - 1 : 0]),
-          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
-        );
-      end else begin
-        op_n_to_2_nbit_onestage #(.OP_WIDTH(OP_WIDTH), .IN_OP_NUM(OP_NUM_STAGE[i])
-        ) u_op_n_to_2_nbit_onestage (
-          // The last stage op_temp
-          .in_op  (op_temp[i - 1][OP_NUM_STAGE[i] - 1 : 0]),
-          // This stage op_temp
-          .out_op (op_temp[i][OP_NUM_STAGE[i + 1] - 1 : 0])
+          .in_op  (op_gen[i - 1].op_temp),
+          .out_op (op_gen[i].op_temp)
         );
       end
     end
   endgenerate
   
-  assign out_op = op_temp[STAGE_NUM - 1][1 : 0];
+  assign out_op = op_gen[STAGE_NUM - 1].op_temp;
 
 
  endmodule

@@ -1,4 +1,24 @@
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Hong Kong University of Science and Technology
+// Engineer: TANG Yue
+// 
+// Create Date: 20.02.2025 19:44:04
+// Design Name: 
+// Module Name: gp_unit
+// Project Name: FIR
+// Target Devices: 
+// Tool Versions: Vivado 2023.1
+// Description: Submodule to help implement brent kung adder
+// Dependencies:
+// 
+// Revision 0.01
+//
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
 `timescale 1ns / 1ps
+
 module gp_unit (
   input  logic in_g1, in_g2,
   input  logic in_p1, in_p2,

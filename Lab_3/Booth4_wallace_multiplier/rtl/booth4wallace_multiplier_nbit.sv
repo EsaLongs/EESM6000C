@@ -5,10 +5,10 @@
 // Create Date: 21.02.2025 20:20:12
 // Design Name:
 // Module Name: booth4wallace_multiplier_nbit
-// Project Name: Booth Radix4 Based Wallace Multiplier
+// Project Name: FIR
 // Target Devices: 
 // Tool Versions: Vivado 2023.1
-// Description: https://github.com/EsaLongs/EESM6000C/tree/main/Lab_3/Booth4_wallace_multiplier
+// Description: This is a booth4 based wallace multiplier, which will be used in core.
 // 
 // Dependencies: `booth4_op_generator.sv` and `brent_kung_adder_nbit.sv`
 // 
@@ -83,11 +83,9 @@ module booth4wallace_multiplier_nbit #(
   );
 
   always_ff @( posedge clk or negedge rst_n ) begin : OP_GENERATE
-    for (int i = 0; i < OP_NUM_PIPE; i = i + 1) begin
-      if (!rst_n) op_generate_reg[i] <= {ADDER_SIZE{1'b0}};
-      else if (stall) op_generate_reg[i] <= op_generate_reg[i];
-      else op_generate_reg[i] <= op_generate[i];
-    end
+    if (!rst_n) op_generate_reg <= '{default: '0};
+    else if (stall) op_generate_reg <= op_generate_reg;
+    else op_generate_reg <= op_generate;
   end
 
 //------------------------ Second Pipeline ------------------------------------------//
@@ -104,11 +102,9 @@ module booth4wallace_multiplier_nbit #(
   );
 
   always_ff @( posedge clk or negedge rst_n ) begin : OP_ADDER
-    for (int i = 0; i < 2; i = i + 1) begin
-      if (!rst_n) op_adder_reg[i] <= 'b0;
-      else if (stall) op_adder_reg[i] <= op_adder_reg[i];
-      else op_adder_reg[i] <= op_adder[i];
-    end
+    if (!rst_n) op_adder_reg <= '{default: '0};
+    else if (stall) op_adder_reg <= op_adder_reg;
+    else op_adder_reg <= op_adder;
   end
 
 //------------------------ Final Add ------------------------------------------------//
