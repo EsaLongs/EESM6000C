@@ -20,7 +20,7 @@
 
 `timescale 1ns / 1ps
 
-module tb_fir ();
+module tb_fir_top ();
   parameter pADDR_WIDTH    = 32;   // Don't change addr width
 
   parameter pDATA_WIDTH    = 32;
