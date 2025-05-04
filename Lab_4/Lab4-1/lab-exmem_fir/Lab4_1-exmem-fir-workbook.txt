@@ -1,0 +1,149 @@
+SOC Design
+Lab4-1 Execute Code in User Memory
+
+Content
+●
+
+Prepare firmware code & RTL
+○
+
+FIR in C code
+
+○
+
+Firmware management in main()
+
+○
+
+Linker for address arrangement
+
+○
+
+Design your BRAM in user_project
+
+○
+
+Compilation
+
+●
+
+Synthesis & Verification
+
+●
+
+Reference
+○
+
+https://github.com/bol-edu/caravel-soc_fpga-lab/tree/main/lab-exmem_fir
+
+FIR in C code
+●
+
+Generate data in header file
+
+●
+
+In lab-exmem_fir/testbench/fir.h
+
+Defined by yourself
+
+FIR in C code
+●
+
+In lab-exmem_fir/testbench/fir.c
+The function is located at section “mprjram”. Don’t modify it.
+
+Firmware management in main()
+●
+
+In lab-exmem_fir/testbench/counter_la_fir.c
+
+Setting IO pad. CPU will keep idle until
+reg_mprj_xfer = 0
+
+Linker for address arrangement
+●
+
+In lab-exmem_fir/firmware/section.lds
+
+Allocate 4MB memory for mapping but
+notice that the size of BRAM in
+user_project is limited
+
+Design your BRAM in user_project
+●
+
+In lab-exmem_fir/rtl/user_proj_example.counter.v
+○
+
+Design the controller connected with wishbone bus
+
+○
+
+Response after the parameter Delay
+
+Delay = 10
+
+Read BRAM
+
+Design your BRAM in user_project
+●
+
+In lab-exmem_fir/rtl/bram.v
+○
+
+Estimate the required size of BRAM
+
+Compilation
+●
+
+Given script to compile
+○
+
+●
+
+Transform .elf to .hex
+○
+
+●
+
+.riscv32-unknown-elf-gcc -I../../firmware -o counter_la_fir.elf ..
+
+.riscv32-unknown-elf-objcopy -O verilog counter_la_fir.elf counter_la_fir.hex
+
+Export assembly code for debugging
+○
+
+.riscv32-unknown-elf-objdump -D counter_la_fir.elf > counter_la_fir.out
+
+Compilation
+●
+
+Simulate by xsim after compiling C code
+
+●
+
+Note that .hex is directly written on testbench
+○
+
+In this Lab you need to …
+●
+
+●
+
+Write FIR C code
+○
+
+fir.c
+
+○
+
+fir.h
+
+Write RTL in user_project
+○
+
+Controller for delayed response and communication between BRAM
+and wishbone bus
+
+

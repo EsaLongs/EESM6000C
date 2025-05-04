@@ -3,7 +3,6 @@
 
 module booth4_op_generator #(
   parameter MUL_SIZE = 32,
-  parameter ADDER_SIZE = 2 * MUL_SIZE,
   parameter OP_NUM = MUL_SIZE / 2 + 1
 ) (
   input  logic [MUL_SIZE - 1 : 0] in_op1,   // Multiplicand
@@ -13,7 +12,7 @@ module booth4_op_generator #(
   input  logic in_op2_signed,   // Whether the operand 2 is signed, if unsigned, should be 0
 
   // The another 2 is for dealing with negative booth operation + 1 issue
-  output logic [ADDER_SIZE - 1 : 0] out_op [OP_NUM + 2 - 1: 0]
+  output logic [MUL_SIZE - 1 : 0] out_op [OP_NUM + 2 - 1: 0]
 );
 
   logic multiplicand_sign;

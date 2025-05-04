@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Clean previous hex file
+rm -f counter_la_fir.hex
+
+# Compile C code using the correct riscv64 toolchain path and targeting rv32i with zicsr
+/opt/homebrew/bin/riscv64-unknown-elf-gcc -Wl,--no-warn-rwx-segments -g \
+    --save-temps \
+    -Xlinker -Map=output.map \
+    -I../../firmware \
+    -march=rv32i_zicsr -mabi=ilp32 -D__vexriscv__ \
+    -Wl,-Bstatic,-T,../../firmware/sections.lds,--strip-discarded \
+    -ffreestanding -nostartfiles -o counter_la_fir.elf ../../firmware/crt0_vex.S ../../firmware/isr.c fir.c counter_la_fir.c
+
+# Check if compilation was successful
+if [ $? -ne 0 ]; then
+    echo "Error: RISC-V GCC compilation failed."
+    exit 1
+fi
+
+# Generate Verilog hex file
+/opt/homebrew/bin/riscv64-unknown-elf-objcopy -O verilog counter_la_fir.elf counter_la_fir.hex
+
+# Check if objcopy was successful
+if [ $? -ne 0 ]; then
+    echo "Error: RISC-V objcopy failed."
+    exit 1
+fi
+
+# Generate disassembly listing
+/opt/homebrew/bin/riscv64-unknown-elf-objdump -D counter_la_fir.elf > counter_la_fir.out
+
+# Check if objdump was successful
+if [ $? -ne 0 ]; then
+    echo "Warning: RISC-V objdump failed."
+    # Decide if this is critical; maybe continue? For now, we continue.
+fi
+
+# Fix flash base address in the hex file
+# Check if hex file exists before running sed
+if [ -f counter_la_fir.hex ]; then
+    sed -ie 's/@10/@00/g' counter_la_fir.hex
+    # Check sed exit status
+    if [ $? -ne 0 ]; then
+        echo "Error: sed command failed."
+        # Check if the backup file exists and restore if needed
+        if [ -f counter_la_fir.hexe ]; then
+            mv counter_la_fir.hexe counter_la_fir.hex
+        fi
+        exit 1
+    fi
+    # Remove the backup file created by sed -i on macOS
+    rm -f counter_la_fir.hexe
+else
+    echo "Error: counter_la_fir.hex not found. Skipping sed command."
+    exit 1 # Exit if hex file wasn't created
+fi
+
+# Compile Verilog using Icarus Verilog
+iverilog -Ttyp -DFUNCTIONAL -DSIM -DUNIT_DELAY=#1 \
+    -f./include.rtl.list -o counter_la_fir.vvp counter_la_fir_tb.v
+
+# Check if iverilog succeeded before running vvp
+if [ ! -f counter_la_fir.vvp ]; then
+    echo "Error: iverilog compilation failed. Skipping vvp."
+    exit 1
+fi
+
+# Run the simulation using vvp
+vvp counter_la_fir.vvp
+
+# Clean up intermediate files
+rm -f counter_la_fir.vvp counter_la_fir.elf counter_la_fir.hexe
+
+echo "Simulation finished."
