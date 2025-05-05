@@ -6,7 +6,7 @@
 // 67d7842dbbe25473c3c32b93c0da8047785f30d78e8a024de1b57352245f9689
 
 `timescale 1ns/1ps
-`default_nettype none
+
 
 module read_romcode_BUS0_m_axi
 #(parameter

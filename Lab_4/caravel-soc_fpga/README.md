@@ -387,7 +387,7 @@ As demonstration, you should able to test Caravel counter with counter_wb.hex fi
 ### Revision from Caravel SoC (No PDK) to Caravel SoC FPGA
 In Xilinx FPGA revision stage, we had follow modifications to pass Xilinx compiler check without changing any logic behavior of Caravel.
 
-**`default_nettype none to wire (checked by Xilinx xvlog)**  
+** to wire (checked by Xilinx xvlog)**  
 * [caravel-soc_fpga/vip/tbuart.v](https://github.com/bol-edu/caravel-soc_fpga/blob/main/vip/tbuart.v):1  
 * [caravel-soc_fpga/vip/spiflash.v](https://github.com/bol-edu/caravel-soc_fpga/blob/main/vip/spiflash.v):1  
 * [caravel-soc_fpga/rtl/user/user_project_wrapper.v](https://github.com/bol-edu/caravel-soc_fpga/blob/main/rtl/user/user_project_wrapper.v):16  

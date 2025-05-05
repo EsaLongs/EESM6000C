@@ -1,9 +1,10 @@
 #!/bin/bash
 
+# --- Host machine RISC-V compilation ---
 # Clean previous hex file
 rm -f counter_la_fir.hex
 
-# Compile C code using the correct riscv64 toolchain path and targeting rv32i with zicsr
+# Compile C code using the riscv64 toolchain path targeting rv32i with zicsr
 /opt/homebrew/bin/riscv64-unknown-elf-gcc -Wl,--no-warn-rwx-segments -g \
     --save-temps \
     -Xlinker -Map=output.map \
@@ -12,7 +13,6 @@ rm -f counter_la_fir.hex
     -Wl,-Bstatic,-T,../../firmware/sections.lds,--strip-discarded \
     -ffreestanding -nostartfiles -o counter_la_fir.elf ../../firmware/crt0_vex.S ../../firmware/isr.c fir.c counter_la_fir.c
 
-# Check if compilation was successful
 if [ $? -ne 0 ]; then
     echo "Error: RISC-V GCC compilation failed."
     exit 1
@@ -21,7 +21,6 @@ fi
 # Generate Verilog hex file
 /opt/homebrew/bin/riscv64-unknown-elf-objcopy -O verilog counter_la_fir.elf counter_la_fir.hex
 
-# Check if objcopy was successful
 if [ $? -ne 0 ]; then
     echo "Error: RISC-V objcopy failed."
     exit 1
@@ -30,26 +29,128 @@ fi
 # Generate disassembly listing
 /opt/homebrew/bin/riscv64-unknown-elf-objdump -D counter_la_fir.elf > counter_la_fir.out
 
-# Check if objdump was successful
-if [ $? -ne 0 ]; then
-    echo "Warning: RISC-V objdump failed."
-    # Continue anyway as this is not critical
-fi
-
-# to fix flash base address
+# Fix flash base address
 sed -ie 's/@10/@00/g' counter_la_fir.hex
 cp counter_la_fir.hex counter_la_fir.modified.hex
-# Compile Verilog using Icarus Verilog with SystemVerilog support
-iverilog -g2012 -Ttyp -DFUNCTIONAL -DSIM -DUNIT_DELAY=#1 \
-    -f./include.rtl.list -o counter_la_fir.vvp counter_la_fir_tb.v
 
-# Check if iverilog succeeded before running vvp
-if [ ! -f counter_la_fir.vvp ]; then
-    echo "Error: iverilog compilation failed. Skipping vvp."
+# --- Vivado Simulation in Container ---
+echo "Starting Vivado simulation in container..."
+
+# Define container paths
+CONTAINER_NAME="vivado_x86"
+CONTAINER_WORK_DIR="/workspace"
+VIVADO_PATH="/tools/xilinx/Vivado/2021.1"
+DOCKER_CMD="docker exec -e DISPLAY=:0 -e LC_ALL=C -e LANG=C -e xilinx_JAVA_HOME=${VIVADO_PATH}/tps/lnx64/jre11.0.2 ${CONTAINER_NAME}"
+DOCKER_CMD_WORKDIR="docker exec -w ${CONTAINER_WORK_DIR} -e DISPLAY=:0 -e LC_ALL=C -e LANG=C -e xilinx_JAVA_HOME=${VIVADO_PATH}/tps/lnx64/jre11.0.2 ${CONTAINER_NAME}"
+
+# Create workspace in container and clean any previous files
+echo "Setting up workspace in container..."
+${DOCKER_CMD} rm -rf "${CONTAINER_WORK_DIR}/*" || true
+${DOCKER_CMD} mkdir -p "${CONTAINER_WORK_DIR}"
+
+# Get project root directory (two levels up from current dir)
+PROJECT_ROOT=$(realpath "$(pwd)/../..")
+PROJECT_DIR_NAME=$(basename "${PROJECT_ROOT}")
+
+# Create a directory in the workspace for the project
+${DOCKER_CMD} mkdir -p "${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}"
+
+# Copy the entire project directory to the container
+echo "Copying entire project directory to container..."
+docker cp "${PROJECT_ROOT}/." "${CONTAINER_NAME}:${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}"
+
+# Verify the project was copied correctly
+echo "Verifying project structure in container..."
+${DOCKER_CMD} ls -la "${CONTAINER_WORK_DIR}"
+
+# Set the correct testbench directory in container
+TESTBENCH_DIR="${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}/testbench/counter_la_fir"
+# Verify the testbench directory exists
+${DOCKER_CMD} ls -la "${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}/testbench" || echo "Warning: Testbench directory not found in expected location"
+
+# Copy the modified hex file to override the one in the project
+echo "Copying modified hex file to container..."
+docker cp "counter_la_fir.modified.hex" "${CONTAINER_NAME}:${TESTBENCH_DIR}/counter_la_fir.hex"
+
+# Set up docker command to run in testbench directory
+DOCKER_CMD_TESTBENCH="docker exec -w ${TESTBENCH_DIR} -e DISPLAY=:0 -e LC_ALL=C -e LANG=C -e xilinx_JAVA_HOME=${VIVADO_PATH}/tps/lnx64/jre11.0.2 ${CONTAINER_NAME}"
+
+echo "Working directory in container: ${TESTBENCH_DIR}"
+echo "Verifying working directory content:"
+${DOCKER_CMD} ls -la "${TESTBENCH_DIR}" || echo "Warning: Cannot list testbench directory. It might not exist."
+
+# Parse RTL file list for Vivado compilation
+RTL_FILES=""
+while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" == -v* ]]; then
+        # Extract file path, remove '-v ' prefix
+        file_path=$(echo "$line" | sed 's/^-v //')
+        # Adjust path to be relative to the testbench directory in container
+        container_path="${file_path}"
+        RTL_FILES="${RTL_FILES} ${container_path}"
+    fi
+done < ./include.rtl.list
+
+echo "RTL files to compile: ${RTL_FILES}"
+
+# Compile RTL files
+echo "Compiling RTL with Vivado..."
+${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xvlog" -sv \
+    --define FUNCTIONAL \
+    --define SIM \
+    --define UNIT_DELAY=\#1 \
+    -d default_nettype=wire \
+    ${RTL_FILES}
+
+if [ $? -ne 0 ]; then
+    echo "Error: Vivado xvlog compilation of RTL files failed."
     exit 1
 fi
 
-# Run the simulation using vvp
-vvp counter_la_fir.vvp
+# Compile testbench
+echo "Compiling testbench with Vivado..."
+${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xvlog" -sv \
+    --define FUNCTIONAL \
+    --define SIM \
+    --define UNIT_DELAY=\#1 \
+    -d default_nettype=wire \
+    "counter_la_fir_tb.v"
+
+if [ $? -ne 0 ]; then
+    echo "Error: Vivado xvlog compilation of testbench failed."
+    exit 1
+fi
+
+# Elaborate design
+echo "Elaborating design..."
+${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xelab" -debug typical counter_la_fir_tb -s counter_la_fir_sim \
+    --define FUNCTIONAL \
+    --define SIM \
+    --define UNIT_DELAY=\#1 \
+    -d default_nettype=wire
+
+if [ $? -ne 0 ]; then
+    echo "Error: Vivado xelab elaboration failed."
+    exit 1
+fi
+
+# Run simulation
+echo "Running simulation with Vivado xsim..."
+${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xsim" counter_la_fir_sim -runall
+
+if [ $? -ne 0 ]; then
+    echo "Error: Vivado xsim simulation failed."
+    exit 1
+fi
+
+# Copy waveform file back to host
+echo "Copying waveform file from container to host..."
+docker cp "${CONTAINER_NAME}:${TESTBENCH_DIR}/counter_la_fir_tb.vcd" ./counter_la_fir_tb.vcd
+
+if [ $? -ne 0 ]; then
+    echo "Warning: Failed to copy VCD file from container. It might not have been generated."
+else
+    echo "Waveform file copied to host."
+fi
 
 echo "Simulation finished."

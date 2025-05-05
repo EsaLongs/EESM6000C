@@ -27,7 +27,7 @@
  */
 
 
-`default_nettype none
+
 
 `ifndef _MGMT_CORE_WRAPPER_
 `define _MGMT_CORE_WRAPPER_

@@ -60,4 +60,7 @@
 `define OENB_INIT 1'b0
 `define DM_INIT 3'b110
 
+// POWER
+`define USE_POWER_PINS
+
 `endif // __GLOBAL_DEFINE_H
