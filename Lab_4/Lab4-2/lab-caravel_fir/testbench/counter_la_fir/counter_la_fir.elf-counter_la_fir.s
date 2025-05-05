@@ -6,7 +6,7 @@
 	.text
 .Ltext0:
 	.cfi_sections	.debug_frame
-	.file 0 "/Users/yue/hkust-soc-lab/Lab4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir" "counter_la_fir.c"
+	.file 0 "/Users/yue/EESM6000C-1/Lab_4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir" "counter_la_fir.c"
 	.align	2
 	.type	flush_cpu_icache, @function
 flush_cpu_icache:
@@ -784,6 +784,6 @@ main:
 .LASF0:
 	.string	"counter_la_fir.c"
 .LASF1:
-	.string	"/Users/yue/hkust-soc-lab/Lab4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir"
+	.string	"/Users/yue/EESM6000C-1/Lab_4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir"
 	.ident	"GCC: (g04696df09) 14.2.0"
 	.section	.note.GNU-stack,"",@progbits

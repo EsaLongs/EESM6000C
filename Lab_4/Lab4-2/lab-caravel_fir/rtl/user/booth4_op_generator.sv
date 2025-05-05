@@ -47,7 +47,7 @@ module booth4_op_generator #(
   genvar i;
   generate
     for (i = 0; i < OP_NUM; i = i + 1) begin
-      always @(*) begin : OUT_OP
+      always_comb begin : OUT_OP
         case (multiplier_booth[2 * i + 2 : 2 * i])
           3'b000 : out_op[i] = {ADDER_SIZE{1'b0}};
           3'b001 : out_op[i] = multipicand_base << (2 * i);
@@ -73,7 +73,7 @@ module booth4_op_generator #(
 
   generate
     for (i = 0; i < MUL_SIZE / 2 + 1; i = i + 1) begin
-      always @(*) begin : NEG_BOOTH_FLAG
+      always_comb begin : NEG_BOOTH_FLAG
         case (multiplier_booth[2 * i + 2 : 2 * i])
           3'b000 : neg_booth_flag[i] = 1'b0;
           3'b001 : neg_booth_flag[i] = 1'b0;
@@ -98,7 +98,7 @@ module booth4_op_generator #(
 
   generate
     for (i = 0; i < OP_NUM; i = i + 1) begin
-      always @(*) begin : FLAG_OP_EXTEND
+      always_comb begin : FLAG_OP_EXTEND
         case (neg_booth_flag[i])
           1'b0 : op_neg_flag[i]   = {$clog2(MUL_SIZE){1'b0}};
           1'b1 : op_neg_flag[i]   = {{($clog2(MUL_SIZE) - 1){1'b0}}, {1'b1}};
@@ -113,8 +113,8 @@ module booth4_op_generator #(
   // Extend to ADDER_SIZE bit
   logic [ADDER_SIZE - 1 : 0] op_neg [0 : 1];
 
-  op_n_to_2_17bit #(.OP_NUM ( OP_NUM ), .OP_WIDTH ( OP_NEG_FLAG_WIDTH )
-  ) u_op_n_to_2_17bit (
+  op_n_to_2_nbit #(.OP_NUM ( OP_NUM ), .OP_WIDTH ( OP_NEG_FLAG_WIDTH )
+  ) u_op_n_to_2_nbit (
     .in_op  ( op_neg_flag ),
     .out_op ( neg_sum     )
   );
@@ -122,9 +122,7 @@ module booth4_op_generator #(
   assign op_neg[0] = {{(ADDER_SIZE - OP_NEG_FLAG_WIDTH){1'b0}}, neg_sum[0]};
   assign op_neg[1] = {{(ADDER_SIZE - OP_NEG_FLAG_WIDTH){1'b0}}, neg_sum[1]};
 
-  always @(*) begin
-    out_op[OP_NUM]     <= op_neg[0];
-    out_op[OP_NUM + 1] <= op_neg[1];
-  end
+  assign out_op[OP_NUM]     = op_neg[0];
+  assign out_op[OP_NUM + 1] = op_neg[1];
 
 endmodule

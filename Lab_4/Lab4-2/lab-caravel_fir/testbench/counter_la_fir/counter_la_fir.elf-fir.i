@@ -1,5 +1,5 @@
 # 0 "fir.c"
-# 1 "/Users/yue/hkust-soc-lab/Lab4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir//"
+# 1 "/Users/yue/EESM6000C-1/Lab_4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir//"
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "fir.c"

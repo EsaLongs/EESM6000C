@@ -82,22 +82,10 @@ module booth4wallace_multiplier_nbit #(
     .out_op        ( op_generate   )
   );
 
-  always @( posedge clk or negedge rst_n ) begin : OP_GENERATE
-    if (!rst_n) begin
-      for (integer i = 0; i < OP_NUM_PIPE; i = i + 1) begin
-        op_generate_reg[i] <= {ADDER_SIZE{1'b0}};
-      end
-    end
-    else if (stall) begin 
-      for (integer i = 0; i < OP_NUM_PIPE; i = i + 1) begin
-      op_generate_reg[i] <= op_generate_reg[i];
-      end
-    end
-    else begin 
-      for (integer i = 0; i < OP_NUM_PIPE; i = i + 1) begin
-        op_generate_reg[i] <= op_generate[i];
-      end
-    end
+  always_ff @( posedge clk or negedge rst_n ) begin : OP_GENERATE
+    if (!rst_n) op_generate_reg <= '{default: '0};
+    else if (stall) op_generate_reg <= op_generate_reg;
+    else op_generate_reg <= op_generate;
   end
 
 //------------------------ Second Pipeline ------------------------------------------//
@@ -105,30 +93,18 @@ module booth4wallace_multiplier_nbit #(
   logic [ADDER_SIZE - 1 : 0] op_adder [1 : 0];
   logic [ADDER_SIZE - 1 : 0] op_adder_reg [1 : 0];
   
-  op_n_to_2_19bit #(
+  op_n_to_2_nbit #(
     .OP_NUM   ( OP_NUM_PIPE ),
     .OP_WIDTH ( ADDER_SIZE  )
-  ) u_op_n_to_2_19bit (
+  ) u_op_n_to_2_nbit (
     .in_op  ( op_generate_reg ),
     .out_op ( op_adder        )
   );
 
   always_ff @( posedge clk or negedge rst_n ) begin : OP_ADDER
-    if (!rst_n) begin 
-      for (integer i = 0; i < 2; i = i + 1) begin
-        op_adder_reg[i] <= {ADDER_SIZE{1'b0}};
-      end
-    end
-    else if (stall) begin
-      for (integer i = 0; i < 2; i = i + 1) begin
-        op_adder_reg[i] <= op_adder_reg[i];
-      end
-    end 
-    else begin
-      for (integer i = 0; i < 2; i = i + 1) begin
-        op_adder_reg[i] <= op_adder[i];
-      end
-    end
+    if (!rst_n) op_adder_reg <= '{default: '0};
+    else if (stall) op_adder_reg <= op_adder_reg;
+    else op_adder_reg <= op_adder;
   end
 
 //------------------------ Final Add ------------------------------------------------//

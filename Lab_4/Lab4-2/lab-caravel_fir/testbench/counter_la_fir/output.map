@@ -142,16 +142,16 @@ OUTPUT(counter_la_fir.elf elf32-littleriscv)
  .debug_line    0x000004c8      0x261 counter_la_fir.elf-counter_la_fir.o
 
 .debug_line_str
-                0x00000000      0x114
+                0x00000000      0x113
  .debug_line_str
-                0x00000000      0x114 counter_la_fir.elf-crt0_vex.o
-                                 0x68 (size before relaxing)
+                0x00000000      0x113 counter_la_fir.elf-crt0_vex.o
+                                 0x67 (size before relaxing)
  .debug_line_str
-                0x00000114      0x145 counter_la_fir.elf-isr.o
+                0x00000113      0x143 counter_la_fir.elf-isr.o
  .debug_line_str
-                0x00000114      0x132 counter_la_fir.elf-fir.o
+                0x00000113      0x130 counter_la_fir.elf-fir.o
  .debug_line_str
-                0x00000114      0x154 counter_la_fir.elf-counter_la_fir.o
+                0x00000113      0x152 counter_la_fir.elf-counter_la_fir.o
 
 .debug_info     0x00000000      0x39a
  .debug_info    0x00000000       0x25 counter_la_fir.elf-crt0_vex.o
@@ -175,12 +175,12 @@ OUTPUT(counter_la_fir.elf elf32-littleriscv)
  .debug_aranges
                 0x00000070       0x20 counter_la_fir.elf-counter_la_fir.o
 
-.debug_str      0x00000000      0x1a1
- .debug_str     0x00000000      0x1a1 counter_la_fir.elf-crt0_vex.o
-                                 0x76 (size before relaxing)
- .debug_str     0x000001a1      0x130 counter_la_fir.elf-isr.o
- .debug_str     0x000001a1      0x132 counter_la_fir.elf-fir.o
- .debug_str     0x000001a1      0x129 counter_la_fir.elf-counter_la_fir.o
+.debug_str      0x00000000      0x1a0
+ .debug_str     0x00000000      0x1a0 counter_la_fir.elf-crt0_vex.o
+                                 0x75 (size before relaxing)
+ .debug_str     0x000001a0      0x130 counter_la_fir.elf-isr.o
+ .debug_str     0x000001a0      0x132 counter_la_fir.elf-fir.o
+ .debug_str     0x000001a0      0x129 counter_la_fir.elf-counter_la_fir.o
 
 .debug_frame    0x00000000      0x238
  .debug_frame   0x00000000       0xb0 counter_la_fir.elf-isr.o
