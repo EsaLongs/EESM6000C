@@ -16,7 +16,7 @@ The firmware gains access to the FIR engine within the User Project by means of 
 ### Firmware and Testbench
 The Firmware and the Testbench establish communication via the mprj_io signal. The testbench designates mprj_io[23:16] as the checkbits for assessing the project's status. When the firmware initializes the FIR engine, it sets the checkbits to 8'A5. This serves as a signal to the testbench, prompting it to begin verifying the FIR output and measuring the latency.
 
-Once the FIR processing is finished, the firmware instructs the CPU to set the checkbits to 8'h5A. The testbench then compares the final Y[n] output with a reference output and logs the latency.
+Once the FIR processing is finished, the firmware instructs the CPU to set the checkbits to 8'h5A. The testbench then compares the final Y[n] output with a reference output and logs the latency
 
 ## Waveform
 ![Screenshot 2025-05-08 at 9.54.51 PM](https://hackmd.io/_uploads/r1XvdE5glx.png)
