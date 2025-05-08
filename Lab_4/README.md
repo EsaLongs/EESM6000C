@@ -19,16 +19,21 @@ The Firmware and the Testbench establish communication via the mprj_io signal. T
 Once the FIR processing is finished, the firmware instructs the CPU to set the checkbits to 8'h5A. The testbench then compares the final Y[n] output with a reference output and logs the latency.
 
 ## Waveform
-Still Working
+![Screenshot 2025-05-08 at 9.54.51 PM](https://hackmd.io/_uploads/r1XvdE5glx.png)
+![Screenshot 2025-05-08 at 9.55.51 PM](https://hackmd.io/_uploads/rJHP_45xee.png)
+![Screenshot 2025-05-08 at 9.57.32 PM](https://hackmd.io/_uploads/S1vPONqglx.png)
 
 ## What is the FIR engine theoretical throughput, i.e. data rate? Measured throughput?
-Still Working
+Idealy it needs 12 cycles, but actually costs 5151 / 11 around 469 cycles
+
+![Screenshot 2025-05-08 at 9.51.12 PM](https://hackmd.io/_uploads/ByycO45xxe.png)
+
 
 ## What is the latency for firmware to feed data?
-Still Working
+It takes total 5151 cycles to calculate 11 (dlength) data.
 
 ## What techniques are used to improve the throughput?
-Still Working
+Optimize C code, but I don't know how.
 
 ## Any other insights?
-Still Working
+No.

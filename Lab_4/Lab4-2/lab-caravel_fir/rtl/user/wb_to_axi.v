@@ -37,26 +37,29 @@ module wb2axi (
 
   wire valid;
   wire axil_ack, axis_ack, axis_s_ack, axis_m_ack;
-  reg [31:0] ss_last_cnt;
+  reg [31 : 0] ss_last_cnt;
   wire axilite_sel, axis_stream_s_sel, axis_stream_m_sel;
-  wire axilite_conf_ctrl_sel, axilite_conf_dl_sel, axilite_ram_sel;
+  wire axilite_conf_ctrl_sel, axilite_conf_dl_sel, axilite_conf_tn_sel, axilite_ram_sel;
   reg arvalid_en;
 
   assign valid = wbs_cyc_i & wbs_stb_i;
 
   assign axis_s_ack = axis_stream_s_sel && ss_tready;
   assign axis_m_ack = axis_stream_m_sel && sm_tvalid;
-  assign axil_ack   = (awready & wready) | rvalid;
+  assign axil_ack   = wready | rvalid;
   assign axis_ack   = axis_m_ack || axis_s_ack;
 
-  assign axilite_sel           = axilite_conf_ctrl_sel 
-                              || axilite_ram_sel 
-                              || axilite_conf_dl_sel;
+  assign axilite_sel = axilite_conf_ctrl_sel 
+                    || axilite_conf_dl_sel
+                    || axilite_conf_tn_sel
+                    || axilite_ram_sel;
+
   assign axis_stream_s_sel     = (wbs_adr_i == 32'h3000_0040); // Data ram
   assign axis_stream_m_sel     = (wbs_adr_i == 32'h3000_0044); // Output
   assign axilite_conf_ctrl_sel = (wbs_adr_i == 32'h3000_0000);
   assign axilite_conf_dl_sel   = (wbs_adr_i == 32'h3000_0010);
-  assign axilite_ram_sel       = (wbs_adr_i == 32'h3000_0080);
+  assign axilite_conf_tn_sel   = (wbs_adr_i == 32'h3000_0020);
+  assign axilite_ram_sel       = (wbs_adr_i >= 32'h3000_0080) && (wbs_adr_i <= 32'h3000_00A8);
   
   // AXI to WB
   assign wbs_ack_o = wbs_cyc_i & (axil_ack | axis_ack);
@@ -69,9 +72,13 @@ module wb2axi (
   assign wdata = wbs_dat_i;
 
   // Addr map
-  assign awaddr[11 : 0] = wbs_adr_i[11:0];
-  assign awaddr[27 : 12] = {16{1'b0}};
-  assign awaddr[31 : 28] = axilite_conf_ctrl_sel ? 4'b0000 : axilite_conf_dl_sel ? 4'b0010 : axilite_ram_sel ? 4'b0011 : 4'b0000;
+  assign araddr[11 : 0] = axilite_ram_sel ? {wbs_adr_i[11 : 0] - 8'b1000_0000} : wbs_adr_i[11 : 0];
+  assign araddr[27 : 12] = {16{1'b0}};
+  assign araddr[31 : 28] = axilite_conf_ctrl_sel ? 4'b0000 : 
+                           axilite_conf_tn_sel   ? 4'b0001 : 
+                           axilite_conf_dl_sel   ? 4'b0010 : 
+                           axilite_ram_sel       ? 4'b0011 : 
+                           4'b0000;
 
   // Read
   always @(posedge wb_clk_i or posedge wb_rst_i) begin
@@ -86,9 +93,13 @@ module wb2axi (
   assign arvalid = valid & !wbs_we_i & axilite_sel & arvalid_en;
 
   // Addr map
-  assign araddr[11 : 0] = wbs_adr_i[11:0];
-  assign araddr[27 : 12] = {16{1'b0}};
-  assign araddr[31 : 28] = axilite_conf_ctrl_sel ? 4'b0000 : axilite_conf_dl_sel ? 4'b0010 : axilite_ram_sel ? 4'b0011 : 4'b0000;
+  assign awaddr[11 : 0] = axilite_ram_sel ? {wbs_adr_i[11 : 0] - 8'b1000_0000} : wbs_adr_i[11 : 0];
+  assign awaddr[27 : 12] = {16{1'b0}};
+  assign awaddr[31 : 28] = axilite_conf_ctrl_sel ? 4'b0000 : 
+                           axilite_conf_tn_sel   ? 4'b0001 : 
+                           axilite_conf_dl_sel   ? 4'b0010 : 
+                           axilite_ram_sel       ? 4'b0011 : 
+                           4'b0000;
 
   // WB to AXIS
   // AXIS slave

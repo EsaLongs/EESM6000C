@@ -6,7 +6,7 @@
 `timescale 1ns / 1ps
 
 module tap_ram_behav #(
-  parameter pADDR_WIDTH = 32,
+  parameter pADDR_WIDTH = 10,
   parameter pDATA_WIDTH = 32
 ) (
   input  logic                           clk,

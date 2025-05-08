@@ -145,7 +145,7 @@ fi
 
 # Copy waveform file back to host
 echo "Copying waveform file from container to host..."
-docker cp "${CONTAINER_NAME}:${TESTBENCH_DIR}/counter_la_fir_tb.vcd" ./counter_la_fir_tb.vcd
+docker cp "${CONTAINER_NAME}:${TESTBENCH_DIR}/counter_la_fir.vcd" ./counter_la_fir.vcd
 
 if [ $? -ne 0 ]; then
     echo "Warning: Failed to copy VCD file from container. It might not have been generated."

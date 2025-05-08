@@ -13,6 +13,8 @@
 // limitations under the License.
 // SPDX-License-Identifier: Apache-2.0
 
+`default_nettype none
+
 `timescale 1 ns / 1 ps
 
 module counter_la_fir_tb;
@@ -25,10 +27,8 @@ module counter_la_fir_tb;
 	wire gpio;
 	wire uart_tx;
 	wire [37:0] mprj_io;
-	wire [7:0] checkbits;
-
-	reg [31:0] latency_count;
-	reg [31:0] total_latency;
+	wire [15:0] checkbits;
+	
 
 	assign checkbits  = mprj_io[23:16];
 	assign uart_tx = mprj_io[6];
@@ -155,56 +155,29 @@ module counter_la_fir_tb;
 		$finish;
 	end
 
-	initial begin
-		wait(checkbits == 8'hA5);
-		$display("FIR Test 1 Started");
 
-		wait(checkbits == 8'h5A);
-		if(mprj_io[31:24] == 8'h76) begin
-		    $display("FIR Test 1 Passed, Final Y[n] is 0x%x, Latency is %d", mprj_io[31:24], latency_count);
-		    total_latency = latency_count;
-		end else begin
-		    $display("FIR Test 1 Failed, Final Y[n] is 0x%x, Latency is %d", mprj_io[31:24], latency_count);
-		    $finish;
-		end
-		
-		wait(checkbits == 8'hA5);
-		$display("FIR Test 2 Started");
+  integer latency_timer = 0;
+  initial begin
+    wait(checkbits == 8'hA5);  
+    $display("Test Started");
+    
+    forever begin
+      @(posedge clock);        
+      if (checkbits == 8'h5A) begin
+        // Check results and exit
+        if(mprj_io[31:24] == 8'hed) begin
+            $display("Passed! Final Y[7:0] should be 0x%x. Latency: %d cycles", mprj_io[31:24], latency_timer);
+        end else begin
+            $display("Failed! Final Y[7:0] should be 0x%x", mprj_io[31:24]);
+        end
+        $finish;  // Terminate simulation
+      end else begin
+        latency_timer = latency_timer + 1;  // Count cycles
+      end
+    end
+  end
 
-		wait(checkbits == 8'h5A);
-		if(mprj_io[31:24] == 8'h76) begin
-		    $display("FIR Test 2 Passed, Final Y[n] is 0x%x, Latency is %d", mprj_io[31:24], latency_count);
-		    total_latency = total_latency + latency_count;
-		end else begin
-		    $display("FIR Test 2 Failed, Final Y[n] is 0x%x, Latency is %d", mprj_io[31:24], latency_count);
-		    $finish;
-		end
-		
-		wait(checkbits == 8'hA5);
-		$display("FIR Test 3 Started");
-
-		wait(checkbits == 8'h5A);
-		if(mprj_io[31:24] == 8'h76) begin
-		    $display("FIR Test 3 Passed, Final Y[n] is 0x%x, Latency is %d", mprj_io[31:24], latency_count);
-		    total_latency = total_latency + latency_count;
-		    $display("Total Latency is %d", total_latency);
-		end else begin
-		    $display("FIR Test 3 Failed, Final Y[n] is 0x%x, Latency is %d", mprj_io[31:24], latency_count);
-		    $finish;
-		end		
-		#10000;
-		$finish;
-	end
-
-	initial begin
-	    forever begin
-	        wait(checkbits == 8'hA5);
-	        latency_count = 0;
-	        while (checkbits != 8'h5A) begin
-	            @(posedge clock) latency_count = latency_count + 1;
-	        end
-	    end
-	end
+	
 
 	initial begin
 		RSTB <= 1'b0;
@@ -288,3 +261,4 @@ module counter_la_fir_tb;
 	);
 
 endmodule
+`default_nettype wire

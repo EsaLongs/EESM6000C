@@ -79,7 +79,7 @@ module fir_core #(
   assign stall = (!in_sm_tready && one_round_finish ) ? 1'b1 :
                  (all_round_finish)                   ? 1'b0 :
                  (in_ss_tvalid    )                   ? 1'b0 :
-                 1'b1;
+                 1'b0;
 
 //------------------------ State Machine --------------------------------------------//
   // **** The shifter we used is achieved by vivado bram shifter IP. Meanwhile, we also
