@@ -20,8 +20,16 @@ Once the FIR processing is finished, the firmware instructs the CPU to set the c
 
 ## Waveform
 ![Screenshot 2025-05-08 at 9.54.51 PM](https://hackmd.io/_uploads/r1XvdE5glx.png)
+
+<p style="text-align:center; color:black; font-size:16px;">Writting to tap RAM</p>
+
 ![Screenshot 2025-05-08 at 9.55.51 PM](https://hackmd.io/_uploads/rJHP_45xee.png)
+
+<p style="text-align:center; color:black; font-size:16px;">Read from data RAM</p>
+
 ![Screenshot 2025-05-08 at 9.57.32 PM](https://hackmd.io/_uploads/S1vPONqglx.png)
+
+<p style="text-align:center; color:black; font-size:16px;">Fir output</p>
 
 ## What is the FIR engine theoretical throughput, i.e. data rate? Measured throughput?
 Idealy it needs 12 cycles, but actually costs 5151 / 11 around 469 cycles
@@ -33,7 +41,9 @@ Idealy it needs 12 cycles, but actually costs 5151 / 11 around 469 cycles
 It takes total 5151 cycles to calculate 11 (dlength) data.
 
 ## What techniques are used to improve the throughput?
-Optimize C code, but I don't know how.
+From the perspective of the FIR, since there is no external buffer for this FIR, the calculation and data reception will be suspended when the receiving end is not ready to receive. Therefore, a FIFO can be connected at the input and output ends to temporarily store data and reduce the stall situation.
+
+From the software perspective, there is a large delay in the data provided by the firmware. To improve this, the input of X[n] can be separated from the output of Y[n], and X[n] can be allowed to be input into the user project area before receiving the output of Y[n]. This will improve the delay between each data input and increase the throughput.
 
 ## Any other insights?
 No.
