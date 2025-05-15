@@ -120,7 +120,7 @@ module brent_kung_adder_nbit #(
   function int cal_size_syn (input int size_conf);
     for (int i = 0; (2 ** i) < size_conf; i = i + 1) begin
       if ((2 ** (i + 1)) >= size_conf) begin
-        cal_size_syn = 2 ** i;
+        cal_size_syn = 2 ** (i + 1);
         return cal_size_syn;
       end
     end
