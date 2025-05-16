@@ -67,7 +67,7 @@ Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle
 ![128-bit Test Result](png/mul_128bit.png)  
 
 ## Scalability Notes
-  • Supported widths: 8, 16, 32... (2^n, n≥3)
+  • Supported widths: Ideally ant width
 
 ## Contribution
 Contributions to this project are highly encouraged and appreciated! Whether it's debug related, feature enhancements, or optimizations, your contributions can help improve the overall quality and functionality.

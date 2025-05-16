@@ -25,7 +25,7 @@ module csa_nto2 #(
   parameter PAR_WIDTH    = 24,
   parameter OUT_WIDTH    = 48,
   parameter EX_WIDTH     = 64,
-  parameter SHIF_WIDTH   = 2,
+  parameter SHIF_WIDTH   = 2, // This is used for radix-8 booth code extension
   
   parameter EX_NUM       = 1,
   parameter PAR_NUM      = PAR_NUM_NOEX + EX_NUM,
