@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 module csa_3to2 #(
+  parameter WIDTH_MAX = 10,
   parameter WIDTH_1   = 4,
   parameter WIDTH_2   = 4,
   parameter WIDTH_3   = 4,
@@ -47,19 +48,21 @@ module csa_3to2 #(
   // ** Find maximum width
   /////////////////////////////////////////////////////////////////////////////////////
   function int max_width_return(input int a, input int b, input int c);
-    if (a >= b) begin
-      if (a >= c) begin
-        max_width_return = a;
+    if ((WIDTH_MAX >= a) && (WIDTH_MAX >= b) && (WIDTH_MAX >= c)) begin
+      if (a >= b) begin
+        if (a >= c) begin
+          return a;
+        end else begin
+          return c;
+        end
       end else begin
-        max_width_return = c;
+        if (b >= c) begin
+          return b;
+        end else begin
+          return c;
+        end
       end
-    end else begin
-      if (b >= c) begin
-        max_width_return = b;
-      end else begin
-        max_width_return = c;
-      end
-    end
+    end else return WIDTH_MAX;
   endfunction
 
 endmodule

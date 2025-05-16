@@ -3,7 +3,7 @@
 
 module booth4_op_generator #(
   parameter MUL_SIZE = 32,
-  parameter MUL_SIZE_EX = MUL_SIZE + 2,
+  parameter MUL_SIZE_EX = (MUL_SIZE % 2 == 0) ? MUL_SIZE + 2 : MUL_SIZE + 3,
   parameter OP_NUM = MUL_SIZE / 2 + 1
 ) (
   input  logic [MUL_SIZE - 1 : 0] in_op1,   // Multiplicand
@@ -22,8 +22,8 @@ module booth4_op_generator #(
   assign multiplicand_sign = in_op1_signed ? in_op1[MUL_SIZE - 1] : 1'b0;
   assign multiplier_sign   = in_op2_signed ? in_op2[MUL_SIZE - 1] : 1'b0;
 
-  logic [MUL_SIZE + 1 + 2 - 1 : 0] multiplier_booth; 
-  assign multiplier_booth = {{2{multiplier_sign}}, in_op2, 1'b0};
+  logic [MUL_SIZE_EX + 1 - 1 : 0] multiplier_booth; 
+  assign multiplier_booth = {{(MUL_SIZE_EX - MUL_SIZE){multiplier_sign}}, in_op2, 1'b0};
 
   // Base multipicand to help writing generate code
   logic [MUL_SIZE_EX - 1 : 0] multipicand_base;
@@ -69,7 +69,7 @@ module booth4_op_generator #(
   logic [MUL_SIZE_EX - 1 : 0] op_neg;
 
   generate
-    for (i = 0; i < MUL_SIZE / 2 + 1; i = i + 1) begin
+    for (i = 0; i < MUL_SIZE_EX / 2; i = i + 1) begin
       always_comb begin : OP_NEG
         case (multiplier_booth[2 * i + 2 : 2 * i])
           3'b100 : {op_neg[i * 2 + 1], op_neg[i * 2]} = 2'b10;

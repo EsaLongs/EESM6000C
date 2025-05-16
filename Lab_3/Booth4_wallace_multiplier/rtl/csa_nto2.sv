@@ -58,66 +58,59 @@ module csa_nto2 #(
     for (genvar i = 0; i < STAGE_NUM; i = i + 1) begin : csa_block
       // ** First stage
       if (i == 0) begin
-        if ((PAR_NUM_STAGE[i] % 3) == 0) begin
-          // ** $floor(PAR_NUM_STAGE[i] / 3) shows how many 3to2 units we need
-          for (genvar j = 0; j < ($floor(PAR_NUM_STAGE[i] / 3)); j = j + 1) begin
-            if (j == $floor(PAR_NUM_STAGE[i] / 3) - 1) begin
-              csa_3to2 #(
-                .WIDTH_1 ( PAR_WIDTH_STAGE[i][j * 3    ] ),
-                .WIDTH_2 ( PAR_WIDTH_STAGE[i][j * 3 + 1] ),
-                .WIDTH_3 ( PAR_WIDTH_STAGE[i][j * 3 + 2] )
-              ) u_csa_3to2 (
-                .in_op1 ( {in_par[j * 3    ], {((j * 3    ) * SHIF_WIDTH){1'b0}}} ),
-                .in_op2 ( {in_par[j * 3 + 1], {((j * 3 + 1) * SHIF_WIDTH){1'b0}}} ),
-                .in_op3 ( in_par_ex                                               ),
-                .out_c  ( par_stage[i].genblk1[2 * j    ].par_stage_out           ),
-                .out_s  ( par_stage[i].genblk1[2 * j + 1].par_stage_out           )
-              );
-            end else begin
-              csa_3to2 #(
-                .WIDTH_1 ( PAR_WIDTH_STAGE[i][j * 3    ] ),
-                .WIDTH_2 ( PAR_WIDTH_STAGE[i][j * 3 + 1] ),
-                .WIDTH_3 ( PAR_WIDTH_STAGE[i][j * 3 + 2] )
-              ) u_csa_3to2 (
-                .in_op1 ( {in_par[j * 3    ], {((j * 3    ) * SHIF_WIDTH){1'b0}}} ),
-                .in_op2 ( {in_par[j * 3 + 1], {((j * 3 + 1) * SHIF_WIDTH){1'b0}}} ),
-                .in_op3 ( {in_par[j * 3 + 2], {((j * 3 + 2) * SHIF_WIDTH){1'b0}}} ),
-                .out_c  ( par_stage[i].genblk1[2 * j    ].par_stage_out                      ),
-                .out_s  ( par_stage[i].genblk1[2 * j + 1].par_stage_out                      )
-              );
-            end
-          end
-        end else begin
-          for (genvar j = 0; j < ($floor(PAR_NUM_STAGE[i] / 3)); j = j + 1) begin
+        // ** $floor(PAR_NUM_STAGE[i] / 3) shows how many 3to2 units we need
+        for (genvar j = 0; j < ($floor(PAR_NUM_STAGE[i] / 3)); j = j + 1) begin
+          if (j == 0) begin
             csa_3to2 #(
+              .WIDTH_MAX ( OUT_WIDTH ),
               .WIDTH_1 ( PAR_WIDTH_STAGE[i][j * 3    ] ),
               .WIDTH_2 ( PAR_WIDTH_STAGE[i][j * 3 + 1] ),
               .WIDTH_3 ( PAR_WIDTH_STAGE[i][j * 3 + 2] )
             ) u_csa_3to2 (
-              .in_op1 ( {in_par[j * 3    ], {((j * 3    ) * SHIF_WIDTH){1'b0}}} ),
-              .in_op2 ( {in_par[j * 3 + 1], {((j * 3 + 1) * SHIF_WIDTH){1'b0}}} ),
-              .in_op3 ( {in_par[j * 3 + 2], {((j * 3 + 2) * SHIF_WIDTH){1'b0}}} ),
+              .in_op1 ( in_par_ex                                     ),
+              .in_op2 ( in_par[0]                                     ),
+              .in_op3 ( {in_par[1], {SHIF_WIDTH{1'b0}}}               ),
+              .out_c  ( par_stage[i].genblk1[2 * j    ].par_stage_out ),
+              .out_s  ( par_stage[i].genblk1[2 * j + 1].par_stage_out )
+            );
+          end else begin
+            csa_3to2 #(
+              .WIDTH_MAX ( OUT_WIDTH ),
+              .WIDTH_1 ( PAR_WIDTH_STAGE[i][j * 3    ] ),
+              .WIDTH_2 ( PAR_WIDTH_STAGE[i][j * 3 + 1] ),
+              .WIDTH_3 ( PAR_WIDTH_STAGE[i][j * 3 + 2] )
+            ) u_csa_3to2 (
+              .in_op1 ( {in_par[(j - 1) * 3 + 2], {(((j - 1) * 3 + 2) * SHIF_WIDTH                 ){1'b0}}} ),
+              .in_op2 ( {in_par[(j - 1) * 3 + 3], {(((j - 1) * 3 + 2) * SHIF_WIDTH + SHIF_WIDTH    ){1'b0}}} ),
+              .in_op3 ( {in_par[(j - 1) * 3 + 4], {(((j - 1) * 3 + 2) * SHIF_WIDTH + SHIF_WIDTH * 2){1'b0}}} ),
               .out_c  ( par_stage[i].genblk1[2 * j    ].par_stage_out                      ),
               .out_s  ( par_stage[i].genblk1[2 * j + 1].par_stage_out                      )
             );
           end
-          // ** Situation when we have 1 partial left
-          if ((PAR_NUM_STAGE[i] % 3) == 1) begin
-            assign par_stage[i].genblk1[PAR_NUM_STAGE[i + 1] - 1].par_stage_out = in_par_ex;
-          // ** Situation when we have 2 partials left
-          end else if (PAR_NUM_STAGE[i] % 3 == 2) begin
-            assign par_stage[i].genblk1[PAR_NUM_STAGE[i + 1] - 1].par_stage_out = in_par_ex;
-            assign par_stage[i].genblk1[PAR_NUM_STAGE[i + 1] - 1 - 1].par_stage_out = {
-              in_par[PAR_NUM_STAGE[i] - 1], 
-              {(PAR_WIDTH_STAGE[i + 1][PAR_NUM_STAGE[i + 1] - 1 - 1] - PAR_WIDTH){1'b0}}
-              };
-          end
+        end
+        // ** Situation when we have 1 partial left
+        if ((PAR_NUM_STAGE[i] % 3) == 1) begin
+          assign par_stage[i].genblk1[PAR_NUM_STAGE[i + 1] - 1].par_stage_out = {
+            in_par[PAR_NUM_STAGE[i] - 1 - EX_NUM], 
+            {(PAR_WIDTH_STAGE[i + 1][PAR_NUM_STAGE[i + 1] - 1] - PAR_WIDTH){1'b0}}
+            };
+        // ** Situation when we have 2 partials left
+        end else if (PAR_NUM_STAGE[i] % 3 == 2) begin
+          assign par_stage[i].genblk1[PAR_NUM_STAGE[i + 1] - 1].par_stage_out = {
+            in_par[PAR_NUM_STAGE[i] - 1 - EX_NUM], 
+            {(PAR_WIDTH_STAGE[i + 1][PAR_NUM_STAGE[i + 1] - 1] - PAR_WIDTH){1'b0}}
+            };
+          assign par_stage[i].genblk1[PAR_NUM_STAGE[i + 1] - 1 - 1].par_stage_out = {
+            in_par[PAR_NUM_STAGE[i] - 1 - EX_NUM - 1], 
+            {(PAR_WIDTH_STAGE[i + 1][PAR_NUM_STAGE[i + 1] - 1 - 1] - PAR_WIDTH){1'b0}}
+            };
         end
       // ** Other stages
       end else begin
         // ** $floor(PAR_NUM_STAGE[i] / 3) shows how many 3to2 units we need
         for (genvar j = 0; j < ($floor(PAR_NUM_STAGE[i] / 3)); j = j + 1) begin
           csa_3to2 #(
+            .WIDTH_MAX ( OUT_WIDTH ),
             .WIDTH_1 ( PAR_WIDTH_STAGE[i][j * 3    ] ),
             .WIDTH_2 ( PAR_WIDTH_STAGE[i][j * 3 + 1] ),
             .WIDTH_3 ( PAR_WIDTH_STAGE[i][j * 3 + 2] )
@@ -206,8 +199,8 @@ module csa_nto2 #(
         // ** Range j < PAR_NUM_STAGE[0] will be needed
         end else begin
           if (i == 0) begin
-            if (j == PAR_NUM_STAGE[i] - 1) par_width_stage_return[i][j] = EX_WIDTH;           
-            else par_width_stage_return[i][j] = PAR_WIDTH + j * SHIF_WIDTH;
+            if (j == 0) par_width_stage_return[i][j] = EX_WIDTH;           
+            else par_width_stage_return[i][j] = PAR_WIDTH + (j - EX_NUM) * SHIF_WIDTH;
           end else begin
             // ** PAR_NUM_STAGE[i] - (PAR_NUM_STAGE[i - 1] % 3 
             //    This equation calculates how many 3to2 converter are needed for each stage

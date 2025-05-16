@@ -22,7 +22,7 @@
 
 module booth4wallace_multiplier_nbit #(
   parameter MUL_SIZE = 32,
-  parameter MUL_SIZE_EX = MUL_SIZE + 2,
+  parameter MUL_SIZE_EX = (MUL_SIZE % 2 == 0) ? MUL_SIZE + 2 : MUL_SIZE + 3,
   parameter ADDER_SIZE = 2 * MUL_SIZE
 ) (
   input  logic [MUL_SIZE - 1 : 0] in_op1,   // Multiplicand
