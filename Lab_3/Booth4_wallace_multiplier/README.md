@@ -54,7 +54,7 @@ booth4wallace_multiplier_nbit.sv
 
 ## Simulation Verification
 ### Waveform
-Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle delay to generate output.
+Following figure shows part of the waveform of 32-bit multiplier. It has 2-cycle initial delay to generate output.
 
 ![Timing Diagram](png/MUL_WAVE.png)
 
