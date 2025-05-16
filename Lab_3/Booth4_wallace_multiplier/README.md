@@ -50,7 +50,7 @@ booth4wallace_multiplier_nbit.sv
 
 • **`op_n_to_2_nbit.sv`**: Configurable Wallace tree compressor supporting arbitrary operand reduction (parameter `OP_NUM`, `OP_WIDTH`).
 
-• **`Brent_Kung_Adder_nbit.sv`**: Low-latency adder for final summation.
+• **`Brent_Kung_Adder_nbit.sv`**: Low-latency adder for final addtion.
 
 ## Simulation Verification
 ### Waveform
