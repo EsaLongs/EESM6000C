@@ -22,6 +22,7 @@
 
 module booth4wallace_multiplier_nbit #(
   parameter MUL_SIZE = 32,
+  parameter MUL_SIZE_EX = (MUL_SIZE % 2 == 0) ? MUL_SIZE + 2 : MUL_SIZE + 3,
   parameter ADDER_SIZE = 2 * MUL_SIZE
 ) (
   input  logic [MUL_SIZE - 1 : 0] in_op1,   // Multiplicand
@@ -39,6 +40,7 @@ module booth4wallace_multiplier_nbit #(
 
   input  logic clk, rst_n
 );
+
 
 //------------------------ Stall ----------------------------------------------------//
   // **** When in_really is 0 (the destination hasn't received data), the pipeline will
@@ -67,13 +69,12 @@ module booth4wallace_multiplier_nbit #(
 
 //------------------------ First Pipeline -------------------------------------------//
   // **** All the operands we need will be first store in registers.
-  localparam OP_NUM_PIPE = MUL_SIZE / 2 + 1 + 2;
-  logic [ADDER_SIZE - 1 : 0] op_generate     [OP_NUM_PIPE - 1 : 0];
-  logic [ADDER_SIZE - 1 : 0] op_generate_reg [OP_NUM_PIPE - 1 : 0];
+  localparam OP_NUM_PIPE = MUL_SIZE / 2 + 1 + 1;
+  logic [MUL_SIZE_EX - 1 : 0] op_generate     [0 : OP_NUM_PIPE - 1];
+  logic [MUL_SIZE_EX - 1 : 0] op_generate_reg [0 : OP_NUM_PIPE - 1];
 
   booth4_op_generator #(
-    .MUL_SIZE   (MUL_SIZE),
-    .ADDER_SIZE (ADDER_SIZE)
+    .MUL_SIZE   (MUL_SIZE)
   ) u_booth4_op_generator (
     .in_op1        ( in_op1        ),
     .in_op2        ( in_op2        ),
@@ -92,13 +93,18 @@ module booth4wallace_multiplier_nbit #(
   // **** After we transfer them into two operands, we will store them into registers.
   logic [ADDER_SIZE - 1 : 0] op_adder [1 : 0];
   logic [ADDER_SIZE - 1 : 0] op_adder_reg [1 : 0];
-  
-  op_n_to_2_nbit #(
-    .OP_NUM   ( OP_NUM_PIPE ),
-    .OP_WIDTH ( ADDER_SIZE  )
-  ) u_op_n_to_2_nbit (
-    .in_op  ( op_generate_reg ),
-    .out_op ( op_adder        )
+
+  csa_nto2 #(
+    .PAR_NUM_NOEX   ( OP_NUM_PIPE - 1 ),
+    .PAR_WIDTH      ( MUL_SIZE_EX     ),
+    .OUT_WIDTH      ( ADDER_SIZE      ),
+    .EX_WIDTH       ( MUL_SIZE_EX     ),
+    .SHIF_WIDTH     ( 2               ),
+    .EX_NUM         ( 1               )
+  ) u_csa_nto2 (
+    .in_par_ex ( op_generate_reg[OP_NUM_PIPE - 1]     ),
+    .in_par    ( op_generate_reg[0 : OP_NUM_PIPE - 2] ),
+    .out_par   ( op_adder                             )
   );
 
   always_ff @( posedge clk or negedge rst_n ) begin : OP_ADDER
