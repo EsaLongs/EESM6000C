@@ -9,9 +9,8 @@
 -v ../../rtl/user/axi4_stream_slave_bram.sv
 -v ../../rtl/user/booth4wallace_multiplier_nbit.sv
 -v ../../rtl/user/booth4_op_generator.sv
--v ../../rtl/user/op_n_to_2_nbit.sv
--v ../../rtl/user/op_n_to_2_nbit_onestage.sv
--v ../../rtl/user/op_3_to_2_nbit.sv
+-v ../../rtl/user/csa_3to2.sv
+-v ../../rtl/user/csa_nto2.sv
 -v ../../rtl/user/bram_access_arbiter.sv
 -v ../../rtl/user/brent_kung_adder_nbit.sv
 -v ../../rtl/user/data_ram_behav.sv
