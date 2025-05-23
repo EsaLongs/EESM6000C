@@ -59,14 +59,8 @@ ${DOCKER_CMD} mkdir -p "${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}"
 echo "Copying entire project directory to container..."
 docker cp "${PROJECT_ROOT}/." "${CONTAINER_NAME}:${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}"
 
-# Verify the project was copied correctly
-echo "Verifying project structure in container..."
-${DOCKER_CMD} ls -la "${CONTAINER_WORK_DIR}"
-
 # Set the correct testbench directory in container
 TESTBENCH_DIR="${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}/testbench/counter_la_fir"
-# Verify the testbench directory exists
-${DOCKER_CMD} ls -la "${CONTAINER_WORK_DIR}/${PROJECT_DIR_NAME}/testbench" || echo "Warning: Testbench directory not found in expected location"
 
 # Copy the modified hex file to override the one in the project
 echo "Copying modified hex file to container..."
@@ -74,10 +68,6 @@ docker cp "counter_la_fir.modified.hex" "${CONTAINER_NAME}:${TESTBENCH_DIR}/coun
 
 # Set up docker command to run in testbench directory
 DOCKER_CMD_TESTBENCH="docker exec -w ${TESTBENCH_DIR} -e DISPLAY=:0 -e LC_ALL=C -e LANG=C -e xilinx_JAVA_HOME=${VIVADO_PATH}/tps/lnx64/jre11.0.2 ${CONTAINER_NAME}"
-
-echo "Working directory in container: ${TESTBENCH_DIR}"
-echo "Verifying working directory content:"
-${DOCKER_CMD} ls -la "${TESTBENCH_DIR}" || echo "Warning: Cannot list testbench directory. It might not exist."
 
 # Parse RTL file list for Vivado compilation
 RTL_FILES=""
@@ -99,7 +89,6 @@ ${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xvlog" -sv \
     --define FUNCTIONAL \
     --define SIM \
     --define UNIT_DELAY=\#1 \
-    -d default_nettype=wire \
     ${RTL_FILES}
 
 if [ $? -ne 0 ]; then
@@ -113,7 +102,6 @@ ${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xvlog" -sv \
     --define FUNCTIONAL \
     --define SIM \
     --define UNIT_DELAY=\#1 \
-    -d default_nettype=wire \
     "counter_la_fir_tb.v"
 
 if [ $? -ne 0 ]; then
@@ -127,7 +115,6 @@ ${DOCKER_CMD_TESTBENCH} "${VIVADO_PATH}/bin/xelab" -debug typical counter_la_fir
     --define FUNCTIONAL \
     --define SIM \
     --define UNIT_DELAY=\#1 \
-    -d default_nettype=wire
 
 if [ $? -ne 0 ]; then
     echo "Error: Vivado xelab elaboration failed."
