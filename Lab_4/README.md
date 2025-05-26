@@ -309,12 +309,9 @@ Idealy it needs 12 cycles, but actually costs 5151 / 11 around 469 cycles
 
 
 ## What is the latency for firmware to feed data?
-It takes total 5151 cycles to calculate 11 (dlength) data.
+It takes total 5151 cycles to calculate 11 (dlength) data without optimization.
 
 ## What techniques are used to improve the throughput?
-From the perspective of the FIR, since there is no external buffer for this FIR, the calculation and data reception will be suspended when the receiving end is not ready to receive. Therefore, a FIFO can be connected at the input and output ends to temporarily store data and reduce the stall situation.
-
-From the software perspective, there is a large delay in the data provided by the firmware. To improve this, the input of X[n] can be separated from the output of Y[n], and X[n] can be allowed to be input into the user project area before receiving the output of Y[n]. This will improve the delay between each data input and increase the throughput.
-
-## Any other insights?
-No.
+After oberservasation, I found that what caused the calculation slow is the super long interval bettween each write data operation. The calculation time is about 20 cycles
+![Screenshot 2025-05-26 at 1.57.03 PM](https://hackmd.io/_uploads/r1ipzKZGex.png)
+![Screenshot 2025-05-26 at 2.12.22 PM](https://hackmd.io/_uploads/S1GD8F-Mle.png)
