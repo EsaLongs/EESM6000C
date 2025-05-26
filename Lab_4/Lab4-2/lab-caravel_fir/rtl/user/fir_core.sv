@@ -70,16 +70,7 @@ module fir_core #(
   logic one_round_finish;
   logic all_round_finish;
 
-  // **** Stall signal will stall the pipeline.
-  // **** Consider about a situation, when the master send the last data, and the 
-  //      "in_ss_tvalid" deasserted. However, we still need a few cycles to transmit
-  //      the output, so we don't want the pipeline stall here. Therefore, we can
-  //      use a "all_round_finish" signal to keep the pipeline working during this
-  //      period of time.
-  assign stall = (!in_sm_tready && one_round_finish ) ? 1'b1 :
-                 (all_round_finish)                   ? 1'b0 :
-                 (in_ss_tvalid    )                   ? 1'b0 :
-                 1'b0;
+  assign stall = ((!in_sm_tready) && one_round_finish ) ? 1'b1 : 1'b0;
 
 //------------------------ State Machine --------------------------------------------//
   // **** The shifter we used is achieved by vivado bram shifter IP. Meanwhile, we also
@@ -184,10 +175,10 @@ module fir_core #(
     //      set it to 0 (or remain unchanged) to reduce dynamic power consumpation.
     // **** When state is not calc, we don't need to generate address and we hope 
     //      the initial address to be 0, then we set the counter to be 0.
-    else if (
-             one_round_finish || all_round_finish || state_is_not_calc
-            ) counter_tap <= {TAP_NUM_WIDTH{1'b0}};
     else if (stall) counter_tap <= counter_tap;
+    else if (
+              one_round_finish || all_round_finish || state_is_not_calc
+            ) counter_tap <= {TAP_NUM_WIDTH{1'b0}};
     else counter_tap <= counter_tap + 1;
   end
 

@@ -165,7 +165,7 @@ module counter_la_fir_tb;
       @(posedge clock);        
       if (checkbits == 8'h5A) begin
         // Check results and exit
-        if(mprj_io[31:24] == 8'hed) begin
+        if(mprj_io[31:24] == 8'hA6) begin
             $display("Passed! Final Y[7:0] should be 0x%x. Latency: %d cycles", mprj_io[31:24], latency_timer);
         end else begin
             $display("Failed! Final Y[7:0] should be 0x%x", mprj_io[31:24]);

@@ -303,15 +303,63 @@ You can find the generated VCD file under the same directory (counter_la_fir). T
 <p style="text-align:center; color:black; font-size:16px;">Fir output</p>
 
 ## What is the FIR engine theoretical throughput, i.e. data rate? Measured throughput?
-Idealy it needs 12 cycles, but actually costs 5151 / 11 around 469 cycles
-
 ![Screenshot 2025-05-08 at 9.51.12 PM](https://hackmd.io/_uploads/ByycO45xxe.png)
+
+![Screenshot 2025-05-26 at 9.29.42 PM](https://hackmd.io/_uploads/SJyJ6yMMex.png)
+
+After viewing the waveform, I found it is wierd because ideally it just takes 12 cycles to generate an output valid signl, then after analyze the code and waveform, I found my stall signal doesn't work properly. Because my output valid signal is generate by ` valid_shifter_first` signal with shifter. However, we have 
+````
+  assign valid_shifter_first = one_round_finish;
+````
+The problem is because the stall signal doesn't not be asserted, which means the calculation just start round and round again, which makes it can't generate the output valid signal correctly.
+
+```` Original code
+  assign stall = (!in_sm_tready && one_round_finish ) ? 1'b1 :
+                 (all_round_finish)                   ? 1'b0 :
+                 (in_ss_tvalid    )                   ? 1'b0 :
+                 1'b0;
+````
+
+```` New code
+  assign stall = ((!in_sm_tready) && one_round_finish ) ? 1'b1 : 1'b0;
+````
+
+Here we don't use `in_ss_tvalid` because I found the next `in_ss_tvalid` won't be generated unless it receive the output valid signal, making simulation hang.
+
+![Screenshot 2025-05-26 at 10.12.47 PM](https://hackmd.io/_uploads/HkQWPezfgl.png)
+
+The new waveform show it uses 14 cycles to calculate the output, the two cycles difference is mainly caused by the 2 stage valid signal pipeline, which can be considerd as the cycles need to start the engine. If the `in_ss_tvalid` can be asserted as long as `out_ss_tready` is 1, it will be 12 cycles.
 
 
 ## What is the latency for firmware to feed data?
-It takes total 5151 cycles to calculate 11 (dlength) data without optimization.
+It needs 12 cycles to calculation, but because of the input generate speed of SOC, it takes total 5082 cycles to calculate 11 (dlength) data.
+
+````
+
+****** xsim v2021.1 (64-bit)
+  **** SW Build 3247384 on Thu Jun 10 19:36:07 MDT 2021
+  **** IP Build 3246043 on Fri Jun 11 00:30:35 MDT 2021
+    ** Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
+
+source xsim.dir/counter_la_fir_sim/xsim_script.tcl
+# xsim {counter_la_fir_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+Reading counter_la_fir.hex
+counter_la_fir.hex loaded into memory
+Memory 5 bytes = 0x6f 0x00 0x00 0x0b 0x13
+Test Started
+Passed! Final Y[7:0] should be 0xa6. Latency:        5082 cycles
+$finish called at time : 1604187500 ps : File "/workspace/lab-caravel_fir/testbench/counter_la_fir/counter_la_fir_tb.v" Line 173
+exit
+INFO: [Common 17-206] Exiting xsim at Mon May 26 14:21:31 2025...
+Copying waveform file from container to host...
+Successfully copied 48.1MB to /Users/yue/EESM6000C-1/Lab_4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir/counter_la_fir.vcd
+Waveform file copied to host.
+Simulation finished.
+````
+
+![Screenshot 2025-05-26 at 10.24.54 PM](https://hackmd.io/_uploads/BJHRKxfMxg.png)
 
 ## What techniques are used to improve the throughput?
-After oberservasation, I found that what caused the calculation slow is the super long interval bettween each write data operation. The calculation time is about 20 cycles
-![Screenshot 2025-05-26 at 1.57.03 PM](https://hackmd.io/_uploads/r1ipzKZGex.png)
-![Screenshot 2025-05-26 at 2.12.22 PM](https://hackmd.io/_uploads/S1GD8F-Mle.png)
+We can find that it has a very long period of time that `out_ss_tready` is 1 and waiting for the input data. We may need some methods to improve the SOC performance or optimize our C code.
