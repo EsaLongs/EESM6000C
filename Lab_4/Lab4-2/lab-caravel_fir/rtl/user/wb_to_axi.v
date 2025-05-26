@@ -107,7 +107,7 @@ module wb2axi (
   assign ss_tdata = wbs_dat_i;
   assign ss_tlast = ss_tvalid & (  ss_last_cnt == 1);
 
-  // TODO: latch data_length
+  // Remain data_length
   always @(posedge wb_clk_i) begin
     if (valid & wbs_we_i & (wbs_adr_i == 32'h3000_0010)) begin
       ss_last_cnt <= wbs_dat_i;
