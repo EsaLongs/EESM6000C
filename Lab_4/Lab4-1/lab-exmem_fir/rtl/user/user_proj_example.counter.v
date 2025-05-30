@@ -104,7 +104,7 @@ module user_proj_example #(
 	end
     
 	bram user_bram (
-		.CLK ( clk       ),
+		.clk ( clk       ),
 		.WE0 ( wstrb     ),
 		.EN0 ( valid     ),
 		.Di0 ( wbs_dat_i ),
