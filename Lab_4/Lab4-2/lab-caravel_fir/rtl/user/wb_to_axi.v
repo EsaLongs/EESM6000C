@@ -72,7 +72,7 @@ module wb2axi (
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // ** AXI to WB
   assign wbs_ack_o = wbs_cyc_i & (axil_ack | axis_ack);
-  assign wbs_dat_o = { 32{axis_stream_m_sel} } & sm_tdata | { 32{rvalid} } & rdata;
+  assign wbs_dat_o = { 32{axis_stream_m_sel} } & sm_tdata | { 32{rvalid} } & rdata
 
   // ** WB to AXI-Lite for write
   assign awvalid = valid & wbs_we_i & axilite_sel;
