@@ -8,15 +8,10 @@ module exmem (
   input  [31 : 0] wbs_dat_i,
   input  [31 : 0] wbs_adr_i,
   output          wbs_ack_o,
-  output [31 : 0] wbs_dat_o
+  output [31 : 0] wbs_dat_o,
+
+  input           in_sm_tvalid
 );
-
-  reg ack_cnt;
-
-  always @(posedge wb_clk_i or posedge wb_rst_i) begin
-    if (en) ack_cnt <= 1'b1;
-    else    ack_cnt <= 1'b0;
-  end
 
   wire valid;
   wire we;
@@ -35,6 +30,6 @@ module exmem (
     .A0  ( wbs_adr_i << 2      )
   );
 
-  assign wbs_ack_o = ((valid & wbs_we_i));
+  assign wbs_ack_o = (valid && wbs_we_i) || in_sm_tvalid;
 
 endmodule
