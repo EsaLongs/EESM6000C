@@ -32,16 +32,11 @@ The fir.h file defines filter parameters and data arrays:
 ```c
 #define N 11
 
-int taps[N] = {0,-10,-9,23,56,63,56,23,-9,-10,0};
-int inputbuffer[N];
-int inputsignal[N] = {1,2,3,4,5,6,7,8,9,10,11};
-int outputsignal[N];
+    int taps[N] = {0,-10,-9,23,56,63,56,23,-9,-10,0};
+    int inputbuffer[N];
+    int inputsignal[N] = {1,2,3,4,5,6,7,8,9,10,11};
+    int outputsignal[N];
 ```
-
-Key points:
-- `__attribute__((section(".mprjram")))` directive marks these functions to be placed in user memory
-- The FIR algorithm implements a convolution between the input signal and filter taps
-- Filter size N=11 with symmetrical taps centered around 63
 
 ### 1.2 BRAM Implementation (bram.v)
 ```verilog
@@ -113,7 +108,7 @@ endmodule
 Key points:
 - Implements a Wishbone slave interface
 - Features a 10-cycle delay mechanism controlled by DELAYS parameter
-- Generates acknowledgment signal after exactly 10 cycles
+- Generates acknowledgment feedback signal after exactly 10 cycles
 - Connects CPU's Wishbone bus to the BRAM module
 
 ## 2. Memory Map & Linker (LDS)
@@ -132,65 +127,20 @@ MEMORY {
     csr            : ORIGIN = 0xf0000000, LENGTH = 0x00010000
 }
 ```
-
-Memory sections allocation:
-- `.text`: Program code placed in flash (0x10000000)
-- `.rodata`: Read-only data placed in flash
-- `.data`: Initialized data, loaded from flash but copied to dff (0x00000000) at startup
-- `.bss`: Uninitialized data in dff
-- `.mprjram`: Special section for code that will run from user project RAM (0x38000000)
-
-The linker script includes special symbols that assist with memory relocation:
-- `_fdata_rom` and `_edata_rom`: Source locations in flash for .data section
-- `_fsram` and `_esram`: Destination addresses for .mprjram section
-- `_esram_rom`: Source location in flash for .mprjram section
-
+We can find that it is designed with 4 KB Bram storage.
 ## 3. How to Move Code from SPI Flash to User Project Area Memory
 
-The process involves several steps:
+The data from SPI Flash can be written to user project memory through the wishbone interface.
 
-1. **Source Code Marking**:
-   - Functions to be executed from user memory must be explicitly marked using:
-     ```c
-     __attribute__((section(".mprjram")))
-     ```
-   - This tells the compiler to place these functions in the `.mprjram` section
+Following figures show the instructions are written to BRAM.
 
-2. **Linker Script Configuration**:
-   - The sections.lds script defines where code sections are located:
-     ```
-     .mprjram :
-     {
-         . = ALIGN(8);
-         _fsram = .;
-         *libgcc.a:*(.text .text.*)
-     } > mprjram AT > flash
-     ```
-   - `> mprjram` indicates the VMA (Virtual Memory Address) where the section should be loaded for execution
-   - `AT > flash` indicates the LMA (Load Memory Address) where the section is stored in the binary
-
-3. **Startup Code Operation**:
-   - During system startup, code in crt0_vex.S performs memory relocation
-   - It copies the `.mprjram` section data from flash (LMA) to user memory (VMA)
-   - Uses symbols `_fsram` (destination start), `_esram` (destination end), and `_esram_rom` (source start)
-
-4. **Hardware Support**:
-   - The physical BRAM in the user project is mapped to the mprjram address range (0x38000000)
-   - When CPU accesses this address range, requests are routed to the user project via Wishbone bus
+![Screenshot 2025-05-30 at 2.47.20 PM](https://hackmd.io/_uploads/SkP94RIGee.png)
 
 ## 4. How to Execute Code from User Project Memory
 
 Once the code is relocated to user memory, execution involves:
 
-1. **Function Calling Mechanism**:
-   - In the main program (counter_la_fir.c), the function is called normally:
-     ```c
-     extern int* fir();  // Function prototype
-     int* tmp = fir();   // Call the function in user memory
-     ```
-   - The CPU fetches instructions from the mprjram address space
-
-2. **Memory Access Protocol**:
+1. **Memory Access Protocol**:
    - When the CPU needs to fetch instructions from the mprjram address (0x38xxxxxx):
      - It asserts Wishbone signals (wbs_cyc_i, wbs_stb_i)
      - Address is placed on wbs_adr_i
@@ -199,61 +149,31 @@ Once the code is relocated to user memory, execution involves:
      - BRAM output (Do0) is returned on wbs_dat_o
      - CPU receives the instruction/data and continues execution
 
-3. **Delayed Response Mechanism**:
+2. **Delayed Response Mechanism**:
    - The 10-cycle delay is implemented by the counter module in user_proj_example.counter.v
    - This delay mimics real-world memory access latency
    - The CPU waits for the acknowledgment before proceeding
 
+Following figures show the instructions are read from to BRAM.
+
+![Screenshot 2025-05-30 at 2.49.11 PM](https://hackmd.io/_uploads/HJbWHAUzll.png)
+
+The read delay is caused by setting delay parameter in user_proj_example.counter.v to simulate fir delay.
+
 ## 5. Operation Sequence and Waveform Analysis
+###  Operation Sequence
+1. Initial system
 
-The complete operation sequence involves these steps:
+2. Start test when GPIO == 0x0xAB400000
 
-1. **System Initialization**:
-   - System boots from SPI Flash
-   - CPU executes startup code (crt0_vex.S)
-   - Copies .data section to dff memory
-   - Copies .mprjram section to user memory (BRAM)
+3. FIR engine calculation
 
-2. **Main Program Execution**:
-   - Configures I/O pins (GPIO_MODE_MGMT_STD_OUTPUT)
-   - Sets up Logic Analyzer probes
-   - Signals test start via GPIO (0xAB400000)
+4. Waiting for correct result GPIO (0xAB510000)
 
-3. **FIR Execution from User Memory**:
-   - CPU calls the fir() function located at 0x38xxxxxx
-   - For each instruction fetch:
-     - CPU issues request on Wishbone bus
-     - Controller receives request, enables BRAM
-     - Delay counter increments for 10 cycles
-     - Acknowledgment is sent to CPU
-     - CPU receives instruction and continues
-   - FIR algorithm executes inside user memory:
-     - Initializes arrays using initfir()
-     - Processes each input sample
-     - Computes convolution with filter taps
-     - Returns pointer to result array
+The start of testing
+![Screenshot 2025-05-30 at 3.02.45 PM](https://hackmd.io/_uploads/r16NuALGee.png)
+![Screenshot 2025-05-30 at 2.56.31 PM](https://hackmd.io/_uploads/rkxJvCUfxe.png)
 
-4. **Result Display**:
-   - Main program displays results on GPIO pins:
-     ```c
-     reg_mprj_datal = *tmp << 16;
-     reg_mprj_datal = *(tmp+1) << 16;
-     // ... remaining values
-     ```
-   - Signals test completion via GPIO (0xAB510000)
-
-### Waveform Analysis
-
-1. **Wishbone Bus Activity (part)**:
-
-![Screenshot 2025-05-04 at 12.36.59 PM](https://hackmd.io/_uploads/Byx-J_Elxx.png)
-
-
-2. **Delay Controller Signals (part)**:
-
-![Screenshot 2025-05-04 at 12.39.42 PM](https://hackmd.io/_uploads/rJDskdEelx.png)
-
-
-3. **BRAM Interface (part)**:
-
-![Screenshot 2025-05-04 at 12.41.02 PM](https://hackmd.io/_uploads/HJPMxdEeeg.png)
+The end of testing
+![Screenshot 2025-05-30 at 3.02.53 PM](https://hackmd.io/_uploads/ByZHdC8feg.png)
+![Screenshot 2025-05-30 at 3.04.20 PM](https://hackmd.io/_uploads/BkqFdC8fxe.png)
