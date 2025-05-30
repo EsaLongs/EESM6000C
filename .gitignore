@@ -1,5 +1,5 @@
 # Ignore large simulation files
-# *.vcd - now tracked with Git LFS
+*.vcd
 *.vvp
 *.lxt2
 *.ghw
