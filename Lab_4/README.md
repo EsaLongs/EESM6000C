@@ -289,18 +289,203 @@ Simulation finished.
 
 You can find the generated VCD file under the same directory (counter_la_fir). The github has been updated and you can use that VCD file directly if you want to examine the waveform result.
 
-## Waveform
-![Screenshot 2025-05-08 at 9.54.51 PM](https://hackmd.io/_uploads/r1XvdE5glx.png)
+## Waveform about key operation
+Full waveform
+![image](https://hackmd.io/_uploads/S1OkuevGlg.png)
 
-<p style="text-align:center; color:black; font-size:16px;">Writting to tap RAM</p>
+```
+MEMORY {
+    vexriscv_debug : ORIGIN = 0xf00f0000, LENGTH = 0x00000100
+    dff            : ORIGIN = 0x00000000, LENGTH = 0x00000400
+    dff2           : ORIGIN = 0x00000400, LENGTH = 0x00000200
+    flash          : ORIGIN = 0x10000000, LENGTH = 0x01000000
+    mprj           : ORIGIN = 0x30000000, LENGTH = 0x00100000
+    mprjram        : ORIGIN = 0x38000000, LENGTH = 0x00400000
+    hk             : ORIGIN = 0x26000000, LENGTH = 0x00100000
+    csr            : ORIGIN = 0xf0000000, LENGTH = 0x00010000
+}
+```
+According to the mprjram, we can find that the instructions will be moved to user Bram from 0x38000000 with a 4K range. Follong picture shows one example.
+![image](https://hackmd.io/_uploads/ByU4_gPGlg.png)
 
-![Screenshot 2025-05-08 at 9.55.51 PM](https://hackmd.io/_uploads/rJHP_45xee.png)
+```
+38000000 <initfir>:
+38000000:	fe010113          	addi	sp,sp,-32
+38000004:	00112e23          	sw	ra,28(sp)
+38000008:	00812c23          	sw	s0,24(sp)
+3800000c:	02010413          	addi	s0,sp,32
+38000010:	300007b7          	lui	a5,0x30000
+38000014:	01078793          	addi	a5,a5,16 # 30000010 <_esram_rom+0x1ffff910>
+38000018:	00b00713          	li	a4,11
+3800001c:	00e7a023          	sw	a4,0(a5)
+38000020:	300007b7          	lui	a5,0x30000
+38000024:	02078793          	addi	a5,a5,32 # 30000020 <_esram_rom+0x1ffff920>
+38000028:	00b00713          	li	a4,11
+3800002c:	00e7a023          	sw	a4,0(a5)
+38000030:	fe042623          	sw	zero,-20(s0)
+38000034:	0400006f          	j	38000074 <initfir+0x74>
+38000038:	00000713          	li	a4,0
+3800003c:	fec42783          	lw	a5,-20(s0)
+38000040:	00279793          	slli	a5,a5,0x2
+38000044:	00f707b3          	add	a5,a4,a5
+38000048:	0007a683          	lw	a3,0(a5)
+3800004c:	fec42783          	lw	a5,-20(s0)
+38000050:	00279713          	slli	a4,a5,0x2
+38000054:	300007b7          	lui	a5,0x30000
+38000058:	08078793          	addi	a5,a5,128 # 30000080 <_esram_rom+0x1ffff980>
+3800005c:	00f707b3          	add	a5,a4,a5
+38000060:	00068713          	mv	a4,a3
+38000064:	00e7a023          	sw	a4,0(a5)
+38000068:	fec42783          	lw	a5,-20(s0)
+3800006c:	00178793          	addi	a5,a5,1
+38000070:	fef42623          	sw	a5,-20(s0)
+38000074:	fec42703          	lw	a4,-20(s0)
+38000078:	00a00793          	li	a5,10
+3800007c:	fae7fee3          	bgeu	a5,a4,38000038 <initfir+0x38>
+38000080:	00000013          	nop
+38000084:	00000013          	nop
+38000088:	01c12083          	lw	ra,28(sp)
+3800008c:	01812403          	lw	s0,24(sp)
+38000090:	02010113          	addi	sp,sp,32
+38000094:	00008067          	ret
+```
+This part is corresponding to C code
+```
+void __attribute__ ( ( section ( ".mprjram" ) ) ) initfir() {
 
-<p style="text-align:center; color:black; font-size:16px;">Read from data RAM</p>
+    reg_fir_dlength = N;
+    reg_fir_tnum    = 11;
 
-![Screenshot 2025-05-08 at 9.57.32 PM](https://hackmd.io/_uploads/S1vPONqglx.png)
+    for (uint32_t i = 0; i < 11; i++) {
+        reg_fir_coeff(i) = taps[i];
+    }
 
-<p style="text-align:center; color:black; font-size:16px;">Fir output</p>
+}
+```
+
+```
+38000094 <fir>:
+38000094:	fe010113          	addi	sp,sp,-32
+38000098:	00112e23          	sw	ra,28(sp)
+3800009c:	00812c23          	sw	s0,24(sp)
+380000a0:	02010413          	addi	s0,sp,32
+380000a4:	f81ff0ef          	jal	38000024 <initfir>
+380000a8:	fe042623          	sw	zero,-20(s0)
+380000ac:	0c40006f          	j	38000170 <fir+0xdc>
+380000b0:	fe042423          	sw	zero,-24(s0)
+380000b4:	02c00713          	li	a4,44
+380000b8:	fec42783          	lw	a5,-20(s0)
+380000bc:	00279793          	slli	a5,a5,0x2
+380000c0:	00f707b3          	add	a5,a4,a5
+380000c4:	0007a703          	lw	a4,0(a5)
+380000c8:	05c00693          	li	a3,92
+380000cc:	fec42783          	lw	a5,-20(s0)
+380000d0:	00279793          	slli	a5,a5,0x2
+380000d4:	00f687b3          	add	a5,a3,a5
+380000d8:	00e7a023          	sw	a4,0(a5)
+380000dc:	fe042223          	sw	zero,-28(s0)
+380000e0:	0600006f          	j	38000140 <fir+0xac>
+380000e4:	05c00713          	li	a4,92
+380000e8:	fe442783          	lw	a5,-28(s0)
+380000ec:	00279793          	slli	a5,a5,0x2
+380000f0:	00f707b3          	add	a5,a4,a5
+380000f4:	0007a683          	lw	a3,0(a5)
+380000f8:	fec42703          	lw	a4,-20(s0)
+380000fc:	fe442783          	lw	a5,-28(s0)
+38000100:	40f707b3          	sub	a5,a4,a5
+38000104:	00000713          	li	a4,0
+38000108:	00279793          	slli	a5,a5,0x2
+3800010c:	00f707b3          	add	a5,a4,a5
+38000110:	0007a783          	lw	a5,0(a5)
+38000114:	00078593          	mv	a1,a5
+38000118:	00068513          	mv	a0,a3
+3800011c:	ee5ff0ef          	jal	38000000 <__mulsi3>
+38000120:	00050793          	mv	a5,a0
+38000124:	00078713          	mv	a4,a5
+38000128:	fe842783          	lw	a5,-24(s0)
+3800012c:	00e787b3          	add	a5,a5,a4
+38000130:	fef42423          	sw	a5,-24(s0)
+38000134:	fe442783          	lw	a5,-28(s0)
+38000138:	00178793          	addi	a5,a5,1
+3800013c:	fef42223          	sw	a5,-28(s0)
+38000140:	fe442703          	lw	a4,-28(s0)
+38000144:	fec42783          	lw	a5,-20(s0)
+38000148:	f8e7dee3          	bge	a5,a4,380000e4 <fir+0x50>
+3800014c:	08800713          	li	a4,136
+38000150:	fec42783          	lw	a5,-20(s0)
+38000154:	00279793          	slli	a5,a5,0x2
+38000158:	00f707b3          	add	a5,a4,a5
+3800015c:	fe842703          	lw	a4,-24(s0)
+38000160:	00e7a023          	sw	a4,0(a5)
+38000164:	fec42783          	lw	a5,-20(s0)
+38000168:	00178793          	addi	a5,a5,1
+3800016c:	fef42623          	sw	a5,-20(s0)
+38000170:	fec42703          	lw	a4,-20(s0)
+38000174:	00a00793          	li	a5,10
+38000178:	f2e7dce3          	bge	a5,a4,380000b0 <fir+0x1c>
+3800017c:	08800793          	li	a5,136
+38000180:	00078513          	mv	a0,a5
+38000184:	01c12083          	lw	ra,28(sp)
+38000188:	01812403          	lw	s0,24(sp)
+3800018c:	02010113          	addi	sp,sp,32
+38000190:	00008067          	ret
+```
+
+This part is corresponding to C code
+```
+int* __attribute__ ( ( section ( ".mprjram" ) ) ) fir(){
+    
+	initfir();
+	// ** write down your fir
+	reg_fir_control = 0x00000001;
+	
+	reg_mprj_datal = 0x00A50000;  // start Testbench
+	
+	for (int i = 1; i <= N; i++) {
+		reg_fir_x = i;
+		outputsignal[i] = reg_fir_y;
+	}
+	
+	reg_mprj_datal = (outputsignal[N] << 24) + 0x005A0000;  // end Testbench
+	
+	return outputsignal;
+}
+```
+
+![Screenshot 2025-05-30 at 5.47.29 PM](https://hackmd.io/_uploads/rJ88-ZDMxl.png)
+This waveform shows the latency between two output valid signals. From observation, it excutes instrnctions from 0x38000000 to 0x38000190, then back to 0x38000000 and reach 0x380000fc, which is just a loop. The distance between 
+
+The clock cycles needed for a instruction to finish is set by exemem.v, and it is set to 10 cycles here.
+```
+  reg [3:0] cnt; // This cnt is used for C code
+
+  wire valid;
+  wire we;
+  wire en;
+  
+  always @(posedge wb_clk_i or posedge wb_rst_i) begin
+    if (wb_rst_i) cnt <= 0;
+    else begin
+      if      (cnt == 4'd10)          cnt <= 0;
+      else if (wbs_cyc_i & !wbs_we_i) cnt <= cnt + 1;
+    end
+  end
+
+  assign valid = wbs_cyc_i & wbs_stb_i;
+  assign we    = valid & wbs_we_i;
+  assign en    = 1'b1;
+  
+  bram user_mem (
+    .clk ( wb_clk_i            ),
+    .WE0 ( wbs_sel_i & {4{we}} ),
+    .EN0 ( en                  ),
+    .Di0 ( wbs_dat_i           ),
+    .Do0 ( wbs_dat_o           ),
+    .A0  ( wbs_adr_i << 2      )
+  );
+
+  assign wbs_ack_o = ((valid & wbs_we_i) || cnt == 4'd10);
+```
 
 ## What is the FIR engine theoretical throughput, i.e. data rate? Measured throughput?
 ![Screenshot 2025-05-08 at 9.51.12 PM](https://hackmd.io/_uploads/ByycO45xxe.png)

@@ -10,7 +10,6 @@ void __attribute__ ( ( section ( ".mprjram" ) ) ) initfir() {
     for (uint32_t i = 0; i < 11; i++) {
         reg_fir_coeff(i) = taps[i];
     }
-
 }
 
 int* __attribute__ ( ( section ( ".mprjram" ) ) ) fir(){

@@ -135,8 +135,7 @@ module user_project_wrapper #(
       .wbs_dat_i    (wbs_dat_i ),
       .wbs_adr_i    (wbs_adr_i ),
       .wbs_ack_o    (mem_ack   ),
-      .wbs_dat_o    (mem_dat   ),
-      .in_sm_tvalid (sm_tvalid )
+      .wbs_dat_o    (mem_dat   )
     );
 
     // ** WB to AXI
