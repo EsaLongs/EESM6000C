@@ -1,0 +1,31 @@
+# Ignore large simulation files
+# *.vcd - now tracked with Git LFS
+*.vvp
+*.lxt2
+*.ghw
+*.wlf
+
+# Ignore Vivado build files
+*.jou
+*.log
+*.str
+*.xpr
+*.xpe
+.Xil/
+vivado*.zip
+
+# Ignore other large build artifacts
+*.out
+*.elf
+*.bin
+*.hex
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+*~
+*.tmp
+*.swp
+*.swo
