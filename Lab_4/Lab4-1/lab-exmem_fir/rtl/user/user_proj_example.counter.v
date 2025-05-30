@@ -83,7 +83,7 @@ module user_proj_example #(
 	assign rst = wb_rst_i;
 	
 	// WB MI A
-	assign valid     = wbs_cyc_i && wbs_stb_i;
+	assign valid     = wbs_cyc_i && wbs_stb_i && (wbs_adr_i[31 : 24] == 8'h38);
 	assign wstrb     = wbs_sel_i & {4{wbs_we_i}};
 	assign wbs_ack_o = (cnt_delay == (DELAYS - 1));
 	

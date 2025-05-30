@@ -154,18 +154,18 @@ OUTPUT(counter_la_fir.elf elf32-littleriscv)
  .debug_line    0x00000a37       0x7a /opt/homebrew/Cellar/riscv-gnu-toolchain/main/lib/gcc/riscv64-unknown-elf/14.2.0/rv32i/ilp32/libgcc.a(muldi3.o)
 
 .debug_line_str
-                0x00000000      0x1ba
+                0x00000000      0x1b9
  .debug_line_str
-                0x00000000      0x1ba counter_la_fir.elf-crt0_vex.o
-                                 0x66 (size before relaxing)
+                0x00000000      0x1b9 counter_la_fir.elf-crt0_vex.o
+                                 0x65 (size before relaxing)
  .debug_line_str
-                0x000001ba      0x141 counter_la_fir.elf-isr.o
+                0x000001b9      0x13f counter_la_fir.elf-isr.o
  .debug_line_str
-                0x000001ba       0xb0 counter_la_fir.elf-fir.o
+                0x000001b9       0xae counter_la_fir.elf-fir.o
  .debug_line_str
-                0x000001ba      0x150 counter_la_fir.elf-counter_la_fir.o
+                0x000001b9      0x14e counter_la_fir.elf-counter_la_fir.o
  .debug_line_str
-                0x000001ba       0xa8 /opt/homebrew/Cellar/riscv-gnu-toolchain/main/lib/gcc/riscv64-unknown-elf/14.2.0/rv32i/ilp32/libgcc.a(muldi3.o)
+                0x000001b9       0xa8 /opt/homebrew/Cellar/riscv-gnu-toolchain/main/lib/gcc/riscv64-unknown-elf/14.2.0/rv32i/ilp32/libgcc.a(muldi3.o)
 
 .debug_info     0x00000000      0x38a
  .debug_info    0x00000000       0x25 counter_la_fir.elf-crt0_vex.o
@@ -193,13 +193,13 @@ OUTPUT(counter_la_fir.elf elf32-littleriscv)
  .debug_aranges
                 0x00000088       0x20 /opt/homebrew/Cellar/riscv-gnu-toolchain/main/lib/gcc/riscv64-unknown-elf/14.2.0/rv32i/ilp32/libgcc.a(muldi3.o)
 
-.debug_str      0x00000000      0x26c
- .debug_str     0x00000000      0x26c counter_la_fir.elf-crt0_vex.o
-                                 0x74 (size before relaxing)
- .debug_str     0x0000026c      0x130 counter_la_fir.elf-isr.o
- .debug_str     0x0000026c       0xac counter_la_fir.elf-fir.o
- .debug_str     0x0000026c      0x129 counter_la_fir.elf-counter_la_fir.o
- .debug_str     0x0000026c       0xbf /opt/homebrew/Cellar/riscv-gnu-toolchain/main/lib/gcc/riscv64-unknown-elf/14.2.0/rv32i/ilp32/libgcc.a(muldi3.o)
+.debug_str      0x00000000      0x26b
+ .debug_str     0x00000000      0x26b counter_la_fir.elf-crt0_vex.o
+                                 0x73 (size before relaxing)
+ .debug_str     0x0000026b      0x130 counter_la_fir.elf-isr.o
+ .debug_str     0x0000026b       0xac counter_la_fir.elf-fir.o
+ .debug_str     0x0000026b      0x129 counter_la_fir.elf-counter_la_fir.o
+ .debug_str     0x0000026b       0xbf /opt/homebrew/Cellar/riscv-gnu-toolchain/main/lib/gcc/riscv64-unknown-elf/14.2.0/rv32i/ilp32/libgcc.a(muldi3.o)
 
 .debug_frame    0x00000000      0x1e8
  .debug_frame   0x00000000       0xb0 counter_la_fir.elf-isr.o
