@@ -1012,7 +1012,7 @@ Disassembly of section .debug_line:
  3bc:	0c090003          	lb	zero,192(s2)
  3c0:	0100                	.insn	2, 0x0100
  3c2:	0105                	.insn	2, 0x0105
- 3c4:	0c090403          	lb	s0,192(s2)
+ 3c4:	0c090303          	lb	t1,192(s2)
  3c8:	0100                	.insn	2, 0x0100
  3ca:	3805                	.insn	2, 0x3805
  3cc:	18090203          	lb	tp,384(s2)
@@ -1855,8 +1855,7 @@ Disassembly of section .debug_info:
  1b8:	0000                	.insn	2, 0x
  1ba:	7269660b          	.insn	4, 0x7269660b
  1be:	0200                	.insn	2, 0x0200
- 1c0:	3310                	.insn	2, 0x3310
- 1c2:	00d9                	.insn	2, 0x00d9
+ 1c0:	00d9330f          	.insn	4, 0x00d9330f
  1c4:	0000                	.insn	2, 0x
  1c6:	0098                	.insn	2, 0x0098
  1c8:	3800                	.insn	2, 0x3800
@@ -1870,8 +1869,7 @@ Disassembly of section .debug_info:
  1da:	0000                	.insn	2, 0x
  1dc:	0400                	.insn	2, 0x0400
  1de:	0069                	.insn	2, 0x0069
- 1e0:	0b18                	.insn	2, 0x0b18
- 1e2:	003d                	.insn	2, 0x003d
+ 1e0:	003d0b17          	auipc	s6,0x3d0
  1e4:	0000                	.insn	2, 0x
  1e6:	9102                	.insn	2, 0x9102
  1e8:	006c                	.insn	2, 0x006c

@@ -150,7 +150,7 @@ initfir:
 	li	a5,10
 	bleu	a4,a5,.L5
 .LBE2:
-	.loc 2 14 1
+	.loc 2 13 1
 	nop
 	nop
 	lw	ra,28(sp)
@@ -169,7 +169,7 @@ initfir:
 	.type	fir, @function
 fir:
 .LFB317:
-	.loc 2 16 56
+	.loc 2 15 56
 	.cfi_startproc
 	addi	sp,sp,-32
 	.cfi_def_cfa_offset 32
@@ -179,72 +179,72 @@ fir:
 	.cfi_offset 8, -8
 	addi	s0,sp,32
 	.cfi_def_cfa 8, 0
-	.loc 2 18 2
+	.loc 2 17 2
 	call	initfir
-	.loc 2 20 3
+	.loc 2 19 3
 	li	a5,805306368
-	.loc 2 20 36
+	.loc 2 19 36
 	li	a4,1
 	sw	a4,0(a5)
-	.loc 2 22 3
+	.loc 2 21 3
 	li	a5,637534208
 	addi	a5,a5,12
-	.loc 2 22 36
+	.loc 2 21 36
 	li	a4,10813440
 	sw	a4,0(a5)
 .LBB3:
-	.loc 2 24 11
+	.loc 2 23 11
 	li	a5,1
 	sw	a5,-20(s0)
-	.loc 2 24 2
+	.loc 2 23 2
 	j	.L7
 .L8:
-	.loc 2 25 4
+	.loc 2 24 4
 	li	a5,805306368
 	addi	a5,a5,64
-	.loc 2 25 37
+	.loc 2 24 37
 	lw	a4,-20(s0)
 	sw	a4,0(a5)
-	.loc 2 26 22
+	.loc 2 25 22
 	li	a5,805306368
 	addi	a5,a5,68
 	lw	a5,0(a5)
 	mv	a3,a5
-	.loc 2 26 19
+	.loc 2 25 19
 	lui	a5,%hi(outputsignal)
 	addi	a4,a5,%lo(outputsignal)
 	lw	a5,-20(s0)
 	slli	a5,a5,2
 	add	a5,a4,a5
 	sw	a3,0(a5)
-	.loc 2 24 28 discriminator 3
+	.loc 2 23 28 discriminator 3
 	lw	a5,-20(s0)
 	addi	a5,a5,1
 	sw	a5,-20(s0)
 .L7:
-	.loc 2 24 20 discriminator 1
+	.loc 2 23 20 discriminator 1
 	lw	a4,-20(s0)
 	li	a5,11
 	ble	a4,a5,.L8
 .LBE3:
-	.loc 2 29 51
+	.loc 2 28 51
 	lui	a5,%hi(outputsignal)
 	addi	a5,a5,%lo(outputsignal)
 	lw	a5,44(a5)
-	.loc 2 29 56
+	.loc 2 28 56
 	slli	a4,a5,24
-	.loc 2 29 63
+	.loc 2 28 63
 	li	a5,5898240
 	add	a4,a4,a5
-	.loc 2 29 3
+	.loc 2 28 3
 	li	a5,637534208
 	addi	a5,a5,12
-	.loc 2 29 36
+	.loc 2 28 36
 	sw	a4,0(a5)
-	.loc 2 31 9
+	.loc 2 30 9
 	lui	a5,%hi(outputsignal)
 	addi	a5,a5,%lo(outputsignal)
-	.loc 2 32 1
+	.loc 2 31 1
 	mv	a0,a5
 	lw	ra,28(sp)
 	.cfi_restore 1
@@ -346,7 +346,7 @@ fir:
 	.uleb128 0xb
 	.string	"fir"
 	.byte	0x2
-	.byte	0x10
+	.byte	0xf
 	.byte	0x33
 	.4byte	0xd9
 	.4byte	.LFB317
@@ -359,7 +359,7 @@ fir:
 	.4byte	.LBE3-.LBB3
 	.uleb128 0x4
 	.string	"i"
-	.byte	0x18
+	.byte	0x17
 	.byte	0xb
 	.4byte	0x3d
 	.uleb128 0x2
