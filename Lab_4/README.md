@@ -548,4 +548,4 @@ Simulation finished.
 ![Screenshot 2025-05-26 at 10.24.54 PM](https://hackmd.io/_uploads/BJHRKxfMxg.png)
 
 ## What techniques are used to improve the throughput?
-We can find that it has a very long period of time that `out_ss_tready` is 1 and waiting for the input data. We may need some methods to improve the SOC performance or optimize our C code.
+We can find that it has a very long period of time that `out_ss_tready` is 1 and waiting for the input data. We may need some methods to improve the SOC performance or optimize our C code. Another method is modify our counter in exmem. Because we don't know how many cycles it takes for one instruction to excute, here we set 10 cylces but it may too large. We can modify the counter value to a smaller one if it still works.
