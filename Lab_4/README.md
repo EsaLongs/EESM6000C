@@ -452,8 +452,9 @@ int* __attribute__ ( ( section ( ".mprjram" ) ) ) fir(){
 }
 ```
 
-![Screenshot 2025-05-30 at 5.47.29 PM](https://hackmd.io/_uploads/rJ88-ZDMxl.png)
-This waveform shows the latency between two output valid signals. From observation, it excutes instrnctions from 0x38000000 to 0x38000190, then back to 0x38000000 and reach 0x380000fc, which is just a loop. The distance between 
+![image](https://hackmd.io/_uploads/r1mWLM_Gge.png)
+
+This waveform shows the latency between two output valid signals. From observation, it excutes instrnctions from 0x38000100 to 0x3800013C, then back to 0x380000C0 and reach 0x380000FC, which is just a loop. The distance between 
 
 The clock cycles needed for a instruction to finish is set by exemem.v, and it is set to 10 cycles here.
 ```
