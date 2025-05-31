@@ -542,7 +542,7 @@ INFO: [Common 17-206] Exiting xsim at Mon May 26 14:21:31 2025...
 Copying waveform file from container to host...
 Successfully copied 48.1MB to /Users/yue/EESM6000C-1/Lab_4/Lab4-2/lab-caravel_fir/testbench/counter_la_fir/counter_la_fir.vcd
 Waveform file copied to host.
-Simulation finished.
+Simulation finished
 ````
 
 ![Screenshot 2025-05-26 at 10.24.54 PM](https://hackmd.io/_uploads/BJHRKxfMxg.png)
